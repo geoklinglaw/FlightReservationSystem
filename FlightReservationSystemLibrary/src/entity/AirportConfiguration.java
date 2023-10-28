@@ -5,10 +5,15 @@
 package entity;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import util.enumeration.AircraftName;
 
 /**
@@ -22,15 +27,23 @@ public class AirportConfiguration implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private AircraftName name;
-    private int maxSeatCapacity;
+    @Column(nullable = false)
+    private String name;
+    @Column(nullable = false)
+    private BigDecimal maxSeatCapacity;
+    @Column(nullable = false)
+    
+    @OneToMany
+    private List<CabinClass> cabinClassList;
+    
 
     public AirportConfiguration() {
     }
     
     public AirportConfiguration(AircraftType type) {
-        String name = type.getName();
-        int maxSeatCapacity = type.getMaxSeatCapacity();
+        this.name = type.getName();
+        this.maxSeatCapacity = type.getMaxSeatCapacity();
+        this.cabinClassList = new ArrayList<CabinClass>();
 
         
     }    
@@ -71,28 +84,28 @@ public class AirportConfiguration implements Serializable {
     /**
      * @return the name
      */
-    public AircraftName getName() {
+    public String getName() {
         return name;
     }
 
     /**
      * @param name the name to set
      */
-    public void setName(AircraftName name) {
+    public void setName(String name) {
         this.name = name;
     }
 
     /**
      * @return the maxSeatCapacity
      */
-    public int getMaxSeatCapacity() {
+    public BigDecimal getMaxSeatCapacity() {
         return maxSeatCapacity;
     }
 
     /**
      * @param maxSeatCapacity the maxSeatCapacity to set
      */
-    public void setMaxSeatCapacity(int maxSeatCapacity) {
+    public void setMaxSeatCapacity(BigDecimal maxSeatCapacity) {
         this.maxSeatCapacity = maxSeatCapacity;
     }
     

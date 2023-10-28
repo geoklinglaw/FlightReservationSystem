@@ -5,11 +5,17 @@
 package entity;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import util.enumeration.FlightScheduleType;
 
 /**
@@ -17,21 +23,30 @@ import util.enumeration.FlightScheduleType;
  * @author apple
  */
 @Entity
+@Inheritance(strategy = InheritanceType.JOINED)
 public class FlightSchedulePlan implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(nullable = false)
     private FlightScheduleType type;
+    @Column(nullable = false)
     private List<FlightSchedule> flightList;
+    @Column(nullable = false)
+    private Flight flight;
+    
+    @OneToMany (mappedBy = "flightSchedulePlan")
+    private FlightSchedule flightSchedule;
 
     public FlightSchedulePlan() {
     }
 
-    public FlightSchedulePlan(int type, List<FlightSchedule> flightList) {
+    public FlightSchedulePlan(int type, Flight flight) {
         this.type = FlightScheduleType.fromValue(type);
-        this.flightList = flightList;
+        this.flightList = new ArrayList<FlightSchedule>();
+        this.flight = flight;
     }
     
 

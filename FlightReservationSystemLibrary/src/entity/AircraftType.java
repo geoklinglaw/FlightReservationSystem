@@ -5,6 +5,7 @@
 package entity;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -23,7 +24,7 @@ public class AircraftType implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private AircraftName name;
-    private int maxSeatCapacity;
+    private BigDecimal maxSeatCapacity;
 
     public AircraftType() {
     }
@@ -31,7 +32,8 @@ public class AircraftType implements Serializable {
     public AircraftType(int aircraftValue) {
         this.name = AircraftName.fromValue(aircraftValue);
         if (this.name == AircraftName.B737) {
-            this.maxSeatCapacity = 10;
+            BigDecimal seatCap = new BigDecimal("10");
+            this.maxSeatCapacity = seatCap;
         }
     }
     
@@ -86,14 +88,14 @@ public class AircraftType implements Serializable {
     /**
      * @return the maxSeatCapacity
      */
-    public int getMaxSeatCapacity() {
+    public BigDecimal getMaxSeatCapacity() {
         return maxSeatCapacity;
     }
 
     /**
      * @param maxSeatCapacity the maxSeatCapacity to set
      */
-    public void setMaxSeatCapacity(int maxSeatCapacity) {
+    public void setMaxSeatCapacity(BigDecimal maxSeatCapacity) {
         this.maxSeatCapacity = maxSeatCapacity;
     }
     

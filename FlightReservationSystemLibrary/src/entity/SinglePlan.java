@@ -5,16 +5,11 @@
 package entity;
 
 import java.io.Serializable;
-import java.time.Duration;
-import java.util.Date;
-import javax.persistence.Column;
+import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import util.enumeration.FlightScheduleType;
 
 /**
@@ -22,37 +17,26 @@ import util.enumeration.FlightScheduleType;
  * @author apple
  */
 @Entity
-public class FlightSchedule implements Serializable {
+public class SinglePlan extends FlightSchedulePlan implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(nullable = false)
     private FlightScheduleType type;
-    @Column(nullable = false)
-    private Date departureTime;
-    @Column(nullable = false)
-    private Duration flightDuration;
-    @Column(nullable = false)
-    private Date arrivalTime;
-    
-    
-    @ManyToOne (optional = false)
-    private FlightSchedulePlan flightSchedulePlan;
-    
-    @OneToMany (mappedBy = "cabinClass")
-    private CabinClass cabinClass;
+    private List<FlightSchedule> flightList;
+    private Flight flight;
 
-    public FlightSchedule() {
+    public SinglePlan() {
+        super();
     }
 
-    public FlightSchedule(int type, FlightSchedulePlan flightSchedulePlan, CabinClass cabinClass) {
-        this.type = FlightScheduleType.fromValue(type);
-        this.flightSchedulePlan = flightSchedulePlan;
-        this.cabinClass = cabinClass;
+    public SinglePlan(int type, Flight flight) {
+        super(type, flight);
     }
     
+    
+
     public Long getId() {
         return id;
     }
@@ -71,10 +55,10 @@ public class FlightSchedule implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof FlightSchedule)) {
+        if (!(object instanceof SinglePlan)) {
             return false;
         }
-        FlightSchedule other = (FlightSchedule) object;
+        SinglePlan other = (SinglePlan) object;
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
@@ -83,18 +67,7 @@ public class FlightSchedule implements Serializable {
 
     @Override
     public String toString() {
-        return "entity.FlightSchedule[ id=" + id + " ]";
-    }
-    
-    public FlightScheduleType getType() {
-        return type;
-    }
-
-    /**
-     * @param type the type to set
-     */
-    public void setType(FlightScheduleType type) {
-        this.type = type;
+        return "entity.SinglePlan[ id=" + id + " ]";
     }
     
 }

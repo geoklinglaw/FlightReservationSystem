@@ -5,10 +5,13 @@
 package entity;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import util.enumeration.CabinClassType;
 
 /**
@@ -22,23 +25,41 @@ public class CabinClass implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(nullable = false)
     private CabinClassType type;
-    private int seatingCapacity;
-    private int numAisles;
-    private int numRows;
-    private int numAbreastSide;
-    private int numAbreastCenter;
-
+    @Column(nullable = false)
+    private BigDecimal seatingCapacity;
+    @Column(nullable = false)
+    private BigDecimal numAisles;
+    @Column(nullable = false)
+    private BigDecimal numRows;
+    @Column(nullable = false)
+    private BigDecimal numAbreastSide;
+    @Column(nullable = false)
+    private BigDecimal numAbreastCenter;
+    @Column(nullable = false)
+    private BigDecimal numAvailableSeats;
+    @Column(nullable = false)
+    private BigDecimal numReservedSeats;
+    @Column(nullable = false)
+    private BigDecimal numBalanceSeats;
+    
+    @ManyToOne 
+    private FlightSchedule flightSchedule;
+    
     public CabinClass() {
     }
 
-    public CabinClass(int type, int seatingCapacity, int numAisles, int numRows, int numAbreastSide, int numAbreastCenter) {
+    public CabinClass(int type, BigDecimal seatingCapacity, BigDecimal numAisles, BigDecimal numRows, BigDecimal numAbreastSide, BigDecimal numAbreastCenter, BigDecimal numAvailableSeats, BigDecimal numReservedSeats, BigDecimal numBalanceSeats) {
         this.type = CabinClassType.fromValue(type);
         this.seatingCapacity = seatingCapacity;
         this.numAisles = numAisles;
         this.numRows = numRows;
         this.numAbreastSide = numAbreastSide;
         this.numAbreastCenter = numAbreastCenter;
+        this.numAvailableSeats = numAvailableSeats;
+        this.numBalanceSeats = numBalanceSeats;
+        this.numReservedSeats = numReservedSeats;
     }
     
 
