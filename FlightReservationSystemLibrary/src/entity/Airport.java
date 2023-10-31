@@ -5,10 +5,12 @@
 package entity;
 
 import java.io.Serializable;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 
 /**
  *
@@ -21,11 +23,19 @@ public class Airport implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(nullable = false)
     private String airportCode;
+    @Column(nullable = false)
     private String airportName;
+    @Column(nullable = false)
     private String city;
+    @Column(nullable = false)
     private String state;
+    @Column(nullable = false)
     private String country;
+    
+    @ManyToOne
+    private FlightRoute flightRoute;
 
     public Airport() {
     }
@@ -140,6 +150,20 @@ public class Airport implements Serializable {
      */
     public void setCountry(String country) {
         this.country = country;
+    }
+
+    /**
+     * @return the flightRoute
+     */
+    public FlightRoute getFlightRoute() {
+        return flightRoute;
+    }
+
+    /**
+     * @param flightRoute the flightRoute to set
+     */
+    public void setFlightRoute(FlightRoute flightRoute) {
+        this.flightRoute = flightRoute;
     }
     
 }

@@ -7,10 +7,13 @@ package entity;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 
 /**
  *
@@ -23,23 +26,22 @@ public class FlightBooking implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Flight flight;
-    private List<Person> passengerList;
-    private BigDecimal price;
-    private CabinClass cabin;
-    private List<Seat> seatList;
-    private String fareBasisCode;
+    
+    @ManyToMany (mappedBy = "flightBooking")
+    private List<Seat> seatBookings;
+    
+    @ManyToOne (optional = false)
+    private FlightSchedule flightSchedule;
 
+    @ManyToOne
+    private FlightReservation flightReservation;
+    
     public FlightBooking() {
     }
 
-    public FlightBooking(Flight flight, List<Person> passengerList, BigDecimal price, CabinClass cabin, List<Seat> seatList, String fareBasisCode) {
-        this.flight = flight;
-        this.passengerList = passengerList;
-        this.price = price;
-        this.cabin = cabin;
-        this.seatList = seatList;
-        this.fareBasisCode = fareBasisCode;
+    public FlightBooking(FlightSchedule flightSchedule, List<Seat> seatList) {
+        this.flightSchedule = flightSchedule;
+        this.seatBookings = seatList;
     }
     
 
@@ -77,87 +79,48 @@ public class FlightBooking implements Serializable {
     }
 
     /**
-     * @return the flight
+     * @return the seatBookings
      */
-    public Flight getFlight() {
-        return flight;
+    public List<Seat> getSeatBookings() {
+        return seatBookings;
     }
 
     /**
-     * @param flight the flight to set
+     * @param seatBookings the seatBookings to set
      */
-    public void setFlight(Flight flight) {
-        this.flight = flight;
+    public void setSeatBookings(List<Seat> seatBookings) {
+        this.seatBookings = seatBookings;
     }
 
     /**
-     * @return the passengerList
+     * @return the flightSchedule
      */
-    public List<Person> getPassengerList() {
-        return passengerList;
+    public FlightSchedule getFlightSchedule() {
+        return flightSchedule;
     }
 
     /**
-     * @param passengerList the passengerList to set
+     * @param flightSchedule the flightSchedule to set
      */
-    public void setPassengerList(List<Person> passengerList) {
-        this.passengerList = passengerList;
+    public void setFlightSchedule(FlightSchedule flightSchedule) {
+        this.flightSchedule = flightSchedule;
     }
 
     /**
-     * @return the price
+     * @return the flightReservation
      */
-    public BigDecimal getPrice() {
-        return price;
+    public FlightReservation getFlightReservation() {
+        return flightReservation;
     }
 
     /**
-     * @param price the price to set
+     * @param flightReservation the flightReservation to set
      */
-    public void setPrice(BigDecimal price) {
-        this.price = price;
+    public void setFlightReservation(FlightReservation flightReservation) {
+        this.flightReservation = flightReservation;
     }
 
-    /**
-     * @return the cabin
-     */
-    public CabinClass getCabin() {
-        return cabin;
-    }
 
-    /**
-     * @param cabin the cabin to set
-     */
-    public void setCabin(CabinClass cabin) {
-        this.cabin = cabin;
-    }
 
-    /**
-     * @return the seatList
-     */
-    public List<Seat> getSeatList() {
-        return seatList;
-    }
-
-    /**
-     * @param seatList the seatList to set
-     */
-    public void setSeatList(List<Seat> seatList) {
-        this.seatList = seatList;
-    }
-
-    /**
-     * @return the fareBasisCode
-     */
-    public String getFareBasisCode() {
-        return fareBasisCode;
-    }
-
-    /**
-     * @param fareBasisCode the fareBasisCode to set
-     */
-    public void setFareBasisCode(String fareBasisCode) {
-        this.fareBasisCode = fareBasisCode;
-    }
     
 }

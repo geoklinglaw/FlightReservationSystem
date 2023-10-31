@@ -14,6 +14,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import util.enumeration.FlightScheduleType;
@@ -32,20 +33,19 @@ public class FlightSchedulePlan implements Serializable {
     private Long id;
     @Column(nullable = false)
     private FlightScheduleType type;
-    @Column(nullable = false)
-    private List<FlightSchedule> flightList;
-    @Column(nullable = false)
-    private Flight flight;
     
     @OneToMany (mappedBy = "flightSchedulePlan")
-    private FlightSchedule flightSchedule;
+    private List<FlightSchedule> flightSchedule;
+    
+    @ManyToOne
+    private Flight flight;
 
     public FlightSchedulePlan() {
     }
 
     public FlightSchedulePlan(int type, Flight flight) {
         this.type = FlightScheduleType.fromValue(type);
-        this.flightList = new ArrayList<FlightSchedule>();
+        this.flightSchedule = new ArrayList<FlightSchedule>();
         this.flight = flight;
     }
     
@@ -99,18 +99,34 @@ public class FlightSchedulePlan implements Serializable {
     }
 
     /**
-     * @return the flightList
+     * @return the flight
      */
-    public List<FlightSchedule> getFlightList() {
-        return flightList;
+    public Flight getFlight() {
+        return flight;
     }
 
     /**
-     * @param flightList the flightList to set
+     * @param flight the flight to set
      */
-    public void setFlightList(List<FlightSchedule> flightList) {
-        this.flightList = flightList;
+    public void setFlight(Flight flight) {
+        this.flight = flight;
     }
+
+    /**
+     * @return the flightSchedule
+     */
+    public List<FlightSchedule> getFlightSchedule() {
+        return flightSchedule;
+    }
+
+    /**
+     * @param flightSchedule the flightSchedule to set
+     */
+    public void setFlightSchedule(List<FlightSchedule> flightSchedule) {
+        this.flightSchedule = flightSchedule;
+    }
+
+
 
 
     

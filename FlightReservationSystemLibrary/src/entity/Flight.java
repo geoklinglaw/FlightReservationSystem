@@ -7,10 +7,14 @@ package entity;
 import java.io.Serializable;
 import java.sql.Time;
 import java.util.Date;
+import java.util.List;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import util.enumeration.FlightStatus;
 import util.enumeration.FlightType;
 
@@ -25,24 +29,27 @@ public class Flight implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(nullable = false)
     private String flightNumber;
-    private FlightType type;
-    private Date deptDate;
-    private Time deptTime;
-    private Date returnDate;
-    private Time returnTime;
+    @Column(nullable = false)
     private FlightStatus status;
+    
+    @ManyToOne 
+    private AircraftConfiguration aircraftConfig;
+    
+    @ManyToOne
+    private FlightRoute flightRoute;
+    
+    @ManyToOne 
+    @JoinColumn (nullable=false)
+    private FlightSchedulePlan flightSchedulePlan;
+    
 
     public Flight() {
     }
 
-    public Flight(String flightNumber, FlightType type, Date deptDate, Time deptTime, Date returnDate, Time returnTime, int status) {
+    public Flight(String flightNumber, int status) {
         this.flightNumber = flightNumber;
-        this.type = type;
-        this.deptDate = deptDate;
-        this.deptTime = deptTime;
-        this.returnDate = returnDate;
-        this.returnTime = returnTime;
         this.status = FlightStatus.fromValue(status);
         
     }
@@ -82,6 +89,76 @@ public class Flight implements Serializable {
     @Override
     public String toString() {
         return "entity.Flight[ id=" + id + " ]";
+    }
+
+    /**
+     * @return the flightNumber
+     */
+    public String getFlightNumber() {
+        return flightNumber;
+    }
+
+    /**
+     * @param flightNumber the flightNumber to set
+     */
+    public void setFlightNumber(String flightNumber) {
+        this.flightNumber = flightNumber;
+    }
+
+    /**
+     * @return the status
+     */
+    public FlightStatus getStatus() {
+        return status;
+    }
+
+    /**
+     * @param status the status to set
+     */
+    public void setStatus(FlightStatus status) {
+        this.status = status;
+    }
+
+    /**
+     * @return the aircraftConfig
+     */
+    public AircraftConfiguration getAircraftConfig() {
+        return aircraftConfig;
+    }
+
+    /**
+     * @param aircraftConfig the aircraftConfig to set
+     */
+    public void setAircraftConfig(AircraftConfiguration aircraftConfig) {
+        this.aircraftConfig = aircraftConfig;
+    }
+
+    /**
+     * @return the fightRoute
+     */
+    public FlightRoute getFightRoute() {
+        return flightRoute;
+    }
+
+    /**
+     * @param fightRoute the fightRoute to set
+     */
+    public void setFightRoute(FlightRoute fightRoute) {
+        this.flightRoute = fightRoute;
+    }
+
+    /**
+     * @return the flightSchedulePlan
+     */
+    public FlightSchedulePlan getFlightSchedulePlan() {
+        return flightSchedulePlan;
+    }
+
+    /**
+     * @param flightSchedulePlan the flightSchedulePlan to set
+     */
+    public void setFlightSchedulePlan(FlightSchedulePlan flightSchedulePlan) {
+        this.flightSchedulePlan = flightSchedulePlan;
     }
     
 }

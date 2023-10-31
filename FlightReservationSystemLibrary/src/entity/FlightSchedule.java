@@ -7,11 +7,13 @@ package entity;
 import java.io.Serializable;
 import java.time.Duration;
 import java.util.Date;
+import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
@@ -41,16 +43,20 @@ public class FlightSchedule implements Serializable {
     @ManyToOne (optional = false)
     private FlightSchedulePlan flightSchedulePlan;
     
-    @OneToMany (mappedBy = "cabinClass")
-    private CabinClass cabinClass;
+    @OneToMany (mappedBy = "flightSchedule")
+    private List<CabinClass> cabinClass;
+    
+    @OneToMany
+//    @JoinColumn(nullable = false)
+    private List<FlightBooking> flightBookings;
 
     public FlightSchedule() {
     }
 
-    public FlightSchedule(int type, FlightSchedulePlan flightSchedulePlan, CabinClass cabinClass) {
+    public FlightSchedule(int type, FlightSchedulePlan flightSchedulePlan, List<CabinClass> cabinClassList) {
         this.type = FlightScheduleType.fromValue(type);
         this.flightSchedulePlan = flightSchedulePlan;
-        this.cabinClass = cabinClass;
+        this.cabinClass = cabinClassList;
     }
     
     public Long getId() {

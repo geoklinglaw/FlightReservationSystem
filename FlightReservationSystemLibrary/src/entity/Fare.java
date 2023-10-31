@@ -6,10 +6,12 @@ package entity;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 
 /**
  *
@@ -22,8 +24,14 @@ public class Fare implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(nullable = false)
     private String fareID;
+    @Column(nullable = false)
     private BigDecimal fareAmount;
+    
+    @ManyToOne 
+    private CabinClass cabinClass;
+    
 
     public Fare() {
     }
@@ -94,6 +102,20 @@ public class Fare implements Serializable {
      */
     public void setFareAmount(BigDecimal fareAmount) {
         this.fareAmount = fareAmount;
+    }
+
+    /**
+     * @return the cabinClass
+     */
+    public CabinClass getCabinClass() {
+        return cabinClass;
+    }
+
+    /**
+     * @param cabinClass the cabinClass to set
+     */
+    public void setCabinClass(CabinClass cabinClass) {
+        this.cabinClass = cabinClass;
     }
     
 }

@@ -13,6 +13,10 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import util.enumeration.AircraftName;
 
@@ -21,7 +25,7 @@ import util.enumeration.AircraftName;
  * @author apple
  */
 @Entity
-public class AirportConfiguration implements Serializable {
+public class AircraftConfiguration implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -29,21 +33,26 @@ public class AirportConfiguration implements Serializable {
     private Long id;
     @Column(nullable = false)
     private String name;
-    @Column(nullable = false)
-    private BigDecimal maxSeatCapacity;
-    @Column(nullable = false)
     
-    @OneToMany
+    @ManyToMany (mappedBy = "aircraftConfig")
     private List<CabinClass> cabinClassList;
     
+    @ManyToOne (optional = false)
+    private AircraftType aircraftType;
+    
+    @OneToMany (mappedBy = "aircraftConfig")
+    @JoinColumn(nullable = false)
+    private List<Flight> flight;
+    
 
-    public AirportConfiguration() {
+    public AircraftConfiguration() {
     }
     
-    public AirportConfiguration(AircraftType type) {
+    public AircraftConfiguration(AircraftType type) {
         this.name = type.getName();
-        this.maxSeatCapacity = type.getMaxSeatCapacity();
         this.cabinClassList = new ArrayList<CabinClass>();
+        this.aircraftType = type;
+        this.flight = new ArrayList<Flight>();
 
         
     }    
@@ -66,10 +75,10 @@ public class AirportConfiguration implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof AirportConfiguration)) {
+        if (!(object instanceof AircraftConfiguration)) {
             return false;
         }
-        AirportConfiguration other = (AirportConfiguration) object;
+        AircraftConfiguration other = (AircraftConfiguration) object;
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
@@ -96,17 +105,45 @@ public class AirportConfiguration implements Serializable {
     }
 
     /**
-     * @return the maxSeatCapacity
+     * @return the cabinClassList
      */
-    public BigDecimal getMaxSeatCapacity() {
-        return maxSeatCapacity;
+    public List<CabinClass> getCabinClassList() {
+        return cabinClassList;
     }
 
     /**
-     * @param maxSeatCapacity the maxSeatCapacity to set
+     * @param cabinClassList the cabinClassList to set
      */
-    public void setMaxSeatCapacity(BigDecimal maxSeatCapacity) {
-        this.maxSeatCapacity = maxSeatCapacity;
+    public void setCabinClassList(List<CabinClass> cabinClassList) {
+        this.cabinClassList = cabinClassList;
+    }
+
+    /**
+     * @return the aircraftType
+     */
+    public AircraftType getAircraftType() {
+        return aircraftType;
+    }
+
+    /**
+     * @param aircraftType the aircraftType to set
+     */
+    public void setAircraftType(AircraftType aircraftType) {
+        this.aircraftType = aircraftType;
+    }
+
+    /**
+     * @return the flight
+     */
+    public List<Flight> getFlight() {
+        return flight;
+    }
+
+    /**
+     * @param flight the flight to set
+     */
+    public void setFlight(List<Flight> flight) {
+        this.flight = flight;
     }
     
 }

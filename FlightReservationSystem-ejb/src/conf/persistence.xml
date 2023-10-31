@@ -19,6 +19,11 @@
     <class>entity.FareType</class>
     <class>entity.Flight</class>
     <class>entity.FlightBooking</class>
+    <class>entity.AircraftConfiguration</class>
+    <class>entity.MultiplePlan</class>
+    <class>entity.RecurrentPlan</class>
+    <class>entity.RecurrentWeeklyPlan</class>
+    <class>entity.SinglePlan</class>
     <exclude-unlisted-classes>true</exclude-unlisted-classes>
     <properties>
       <property name="javax.persistence.schema-generation.database.action" value="create"/>

@@ -6,23 +6,36 @@ package entity;
 
 import java.io.Serializable;
 import java.util.List;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 
 /**
  *
  * @author apple
  */
 @Entity
+@Inheritance(strategy= InheritanceType.JOINED)
 public class FlightReservation implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    
+    @OneToMany 
+    @JoinColumn (nullable = false)
     private List<FlightBooking> flightBooking;
+    
+    @ManyToOne 
+    private Person person;
     
     
 
@@ -67,6 +80,34 @@ public class FlightReservation implements Serializable {
     @Override
     public String toString() {
         return "entity.FlightReservation[ id=" + id + " ]";
+    }
+
+    /**
+     * @return the flightBooking
+     */
+    public List<FlightBooking> getFlightBooking() {
+        return flightBooking;
+    }
+
+    /**
+     * @param flightBooking the flightBooking to set
+     */
+    public void setFlightBooking(List<FlightBooking> flightBooking) {
+        this.flightBooking = flightBooking;
+    }
+
+    /**
+     * @return the person
+     */
+    public Person getPerson() {
+        return person;
+    }
+
+    /**
+     * @param person the person to set
+     */
+    public void setPerson(Person person) {
+        this.person = person;
     }
     
 }

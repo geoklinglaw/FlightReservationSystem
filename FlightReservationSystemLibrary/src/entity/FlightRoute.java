@@ -5,10 +5,14 @@
 package entity;
 
 import java.io.Serializable;
+import java.util.List;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import util.enumeration.FlightRouteStatus;
 
 /**
@@ -22,16 +26,23 @@ public class FlightRoute implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String origin;
-    private String destination;
+    @Column(nullable = false)
     private FlightRouteStatus status;
+    
+    @OneToMany (mappedBy = "flightRoute")
+    @JoinColumn(nullable = false)
+    private List<Flight> flightList;
+    
+    @OneToMany 
+    @JoinColumn(nullable = false)
+    private List<Airport> airportList;
+    
 
     public FlightRoute() {
     }
 
-    public FlightRoute(String origin, String destination, int routeStatus) {
-        this.origin = origin;
-        this.destination = destination;
+    public FlightRoute(List<Airport> airportList,int routeStatus) {
+        this.airportList = airportList;
         this.status = FlightRouteStatus.fromValue(routeStatus);
     }
     
@@ -70,32 +81,47 @@ public class FlightRoute implements Serializable {
         return "entity.FlightRoute[ id=" + id + " ]";
     }
 
+
     /**
-     * @return the origin
+     * @return the status
      */
-    public String getOrigin() {
-        return origin;
+    public FlightRouteStatus getStatus() {
+        return status;
     }
 
     /**
-     * @param origin the origin to set
+     * @param status the status to set
      */
-    public void setOrigin(String origin) {
-        this.origin = origin;
+    public void setStatus(FlightRouteStatus status) {
+        this.status = status;
     }
 
     /**
-     * @return the destination
+     * @return the flightList
      */
-    public String getDestination() {
-        return destination;
+    public List<Flight> getFlightList() {
+        return flightList;
     }
 
     /**
-     * @param destination the destination to set
+     * @param flightList the flightList to set
      */
-    public void setDestination(String destination) {
-        this.destination = destination;
+    public void setFlightList(List<Flight> flightList) {
+        this.flightList = flightList;
+    }
+
+    /**
+     * @return the airportList
+     */
+    public List<Airport> getAirportList() {
+        return airportList;
+    }
+
+    /**
+     * @param airportList the airportList to set
+     */
+    public void setAirportList(List<Airport> airportList) {
+        this.airportList = airportList;
     }
     
 }
