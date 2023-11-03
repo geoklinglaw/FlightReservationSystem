@@ -21,9 +21,6 @@ FlightReservationSystem-ejb/nbproject/private/
 FlightReservationSystem-ejb/build/
 FlightReservationSystem-ejb/dist/
 
-FlightReservationSystem-war/nbproject/private/
-FlightReservationSystem-war/build/
-FlightReservationSystem-war/dist/
 
 FRSManagementClient/nbproject/private/
 FRSManagementClient/build/
@@ -33,4 +30,7 @@ FRSReservationClient/nbproject/private/
 FRSReservationClient/build/
 FRSReservationClient/dist/
 
+FlightReservationSystemLibrary/nbproject/private/
+FlightReservationSystemLibrary/build/
+FlightReservationSystemLibrary/dist/
 
