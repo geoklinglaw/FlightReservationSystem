@@ -34,7 +34,6 @@ public class FlightRoute implements Serializable {
     private List<Flight> flightList;
     
     @OneToMany 
-    @JoinColumn(nullable = false)
     private List<Airport> airportList;
     
 
