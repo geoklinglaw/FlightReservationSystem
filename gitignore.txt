@@ -1,0 +1,36 @@
+# Compiled class file
+*.class
+
+# Log file
+*.log
+
+# Package Files #
+*.jar
+*.war
+*.nar
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# User defined
+nbproject/private/
+build/
+dist/
+FlightReservationSystem-ejb/nbproject/private/
+FlightReservationSystem-ejb/build/
+FlightReservationSystem-ejb/dist/
+
+FlightReservationSystem-war/nbproject/private/
+FlightReservationSystem-war/build/
+FlightReservationSystem-war/dist/
+
+FRSManagementClient/nbproject/private/
+FRSManagementClient/build/
+FRSManagementClient/dist/
+
+FRSReservationClient/nbproject/private/
+FRSReservationClient/build/
+FRSReservationClient/dist/
+
+
