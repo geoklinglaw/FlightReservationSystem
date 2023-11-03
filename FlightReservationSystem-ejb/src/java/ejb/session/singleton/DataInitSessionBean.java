@@ -44,6 +44,8 @@ public class DataInitSessionBean implements DataInitSessionBeanLocal {
     @PersistenceContext(unitName = "FlightReservationSystem-ejbPU")
     private EntityManager em;
     
+    private String str;
+    
 
     @PostConstruct
     public void postConstruct() {
