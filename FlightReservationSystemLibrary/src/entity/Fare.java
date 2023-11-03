@@ -25,7 +25,7 @@ public class Fare implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(nullable = false)
-    private String fareID;
+    private String fareBasisCode;
     @Column(nullable = false)
     private BigDecimal fareAmount;
     
@@ -37,7 +37,7 @@ public class Fare implements Serializable {
     }
 
     public Fare(String fareID, BigDecimal fareAmount) {
-        this.fareID = fareID;
+        this.fareBasisCode = fareID;
         this.fareAmount = fareAmount;
     }
     
@@ -80,14 +80,14 @@ public class Fare implements Serializable {
      * @return the fareID
      */
     public String getFareID() {
-        return fareID;
+        return fareBasisCode;
     }
 
     /**
      * @param fareID the fareID to set
      */
     public void setFareID(String fareID) {
-        this.fareID = fareID;
+        this.fareBasisCode = fareID;
     }
 
     /**
