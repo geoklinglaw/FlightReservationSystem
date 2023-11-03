@@ -54,13 +54,13 @@ public class DataInitSessionBean implements DataInitSessionBeanLocal {
             Long acType0id = aircraftTypeSessionBean.createNewAircraftType(aircraftType0);
             Long acType1id = aircraftTypeSessionBean.createNewAircraftType(aircraftType1);
             
-            AircraftType acType0 = aircraftTypeSessionBean.retrieveAircraftType(acType0id);
-            AircraftType acType1 = aircraftTypeSessionBean.retrieveAircraftType(acType1id);
-
-            AircraftConfiguration aircraftConfig0 = new AircraftConfiguration(aircraftType0);
-            AircraftConfiguration aircraftConfig1 = new AircraftConfiguration(aircraftType1);
-            aircraftConfig0.setAircraftType(aircraftType0);
-            aircraftConfig1.setAircraftType(aircraftType1);
+//            AircraftType acType0 = aircraftTypeSessionBean.retrieveAircraftType(acType0id);
+//            AircraftType acType1 = aircraftTypeSessionBean.retrieveAircraftType(acType1id);
+//
+//            AircraftConfiguration aircraftConfig0 = new AircraftConfiguration(aircraftType0);
+//            AircraftConfiguration aircraftConfig1 = new AircraftConfiguration(aircraftType1);
+//            aircraftConfig0.setAircraftType(aircraftType0);
+//            aircraftConfig1.setAircraftType(aircraftType1);
             
             Long acConfig0 = aircraftConfigurationSessionBean.createNewAircraftConfiguration(aircraftConfig0);
             Long acConfig1 = aircraftConfigurationSessionBean.createNewAircraftConfiguration(aircraftConfig1);

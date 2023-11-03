@@ -9,6 +9,7 @@ import entity.Fare;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 
 /**
  *
@@ -32,5 +33,13 @@ public class AircraftTypeSessionBean implements AircraftTypeSessionBeanRemote, A
         return aircraftType;
 
     }
+    
+    public AircraftType retrieveAircraftTypeByValue(int value) {
+        String jpql = "SELECT act FROM AircraftType act WHERE act.name = :Type";
+        Query query = em.createQuery(jpql);
+        query.setParameter("Type", (String) value);
+        Person result = (Person) query.getSingleResult();
+    }
+        
 
 }
