@@ -35,7 +35,7 @@ public class Flight implements Serializable {
     private FlightStatus status;
     
     @ManyToOne 
-    private AircraftConfiguration aircraftConfig;
+    private AircraftConfiguration aircraftConf;
     
     @ManyToOne
     private FlightRoute flightRoute;
@@ -123,14 +123,14 @@ public class Flight implements Serializable {
      * @return the aircraftConfig
      */
     public AircraftConfiguration getAircraftConfig() {
-        return aircraftConfig;
+        return aircraftConf;
     }
 
     /**
      * @param aircraftConfig the aircraftConfig to set
      */
     public void setAircraftConfig(AircraftConfiguration aircraftConfig) {
-        this.aircraftConfig = aircraftConfig;
+        this.aircraftConf = aircraftConfig;
     }
 
     /**

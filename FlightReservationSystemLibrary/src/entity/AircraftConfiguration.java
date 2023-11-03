@@ -40,8 +40,8 @@ public class AircraftConfiguration implements Serializable {
     @ManyToOne (optional = false)
     private AircraftType aircraftType;
     
-    @OneToMany (mappedBy = "aircraftConfig")
-    @JoinColumn(nullable = false)
+    @OneToMany (mappedBy = "aircraftConf")
+//    @JoinColumn(nullable = false) JOIN COLUMN IS NOT USED FOR ONETOMANY?
     private List<Flight> flight;
     
 

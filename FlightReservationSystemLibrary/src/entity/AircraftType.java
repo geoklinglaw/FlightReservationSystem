@@ -33,8 +33,11 @@ public class AircraftType implements Serializable {
     private BigDecimal maxSeatCapacity;
     
     @OneToMany
-    @JoinColumn(nullable = false)
+//    @JoinColumn(nullable = false)
     private List<AircraftConfiguration> aircraftConfig;
+    
+    public static final String B737_SEATCAPACITY = "120"; // 20 rows of 3-3
+    public static final String B747_SEATCAPACITY = "180"; // 20 rows of 3-3-3
 
     public AircraftType() {
     }
@@ -42,7 +45,10 @@ public class AircraftType implements Serializable {
     public AircraftType(int aircraftValue) {
         this.name = AircraftName.fromValue(aircraftValue);
         if (this.name == AircraftName.B737) {
-            BigDecimal seatCap = new BigDecimal("10");
+            BigDecimal seatCap = new BigDecimal(B737_SEATCAPACITY);
+            this.maxSeatCapacity = seatCap;
+        } else {
+            BigDecimal seatCap = new BigDecimal(B747_SEATCAPACITY);
             this.maxSeatCapacity = seatCap;
         }
     }
