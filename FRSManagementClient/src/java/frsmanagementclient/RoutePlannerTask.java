@@ -6,6 +6,7 @@ package frsmanagementclient;
 
 import ejb.session.stateless.FRSManagementSessionBeanRemote;
 import entity.Airport;
+import entity.FlightRoute;
 import java.util.List;
 import java.util.Scanner;
 
@@ -26,7 +27,7 @@ public class RoutePlannerTask {
         
         while(true) {
             System.out.println("\n\n*** Route Planner ***\n");
-            System.out.println("Enter your task: \n");
+            System.out.print("Enter your task: \n");
             System.out.println("1: Create Flight Route");
             System.out.println("2: View all Flight Route");
             System.out.println("3: Delete Flight Route");
@@ -40,9 +41,9 @@ public class RoutePlannerTask {
 
                 if(response == 1){
                     createFlightRoute(scanner);
-                    
                 }
                 else if (response == 2) {
+                    viewAllFlightRoutes();
                 }
                 else if (response == 3) {
                 }
@@ -89,15 +90,20 @@ public class RoutePlannerTask {
             }
         }
         
-        FRSManagementSessionBeanRemote.createFlightRoute(originID, destID);
-       
-
-
-
+        FRSManagementSessionBeanRemote.createFlightRoute(originID, destID); 
+    }
+    
+    private void viewAllFlightRoutes() {
+        System.out.println("\n\n*** Creating Flight Route *** \n");
+        List<FlightRoute> flightRoutes = FRSManagementSessionBeanRemote.viewAllFlightRoutes();
         
-
+        String routeText = "List of FLight Routes:\n";
         
-        
+        for (FlightRoute flightRoute: flightRoutes) {
+            routeText += flightRoute.getAirportList().get(0).getCountry() + " --> " + flightRoute.getAirportList().get(1).getCountry() +"\n";
+            
+        }
+        System.out.print(routeText);
         
         
     }

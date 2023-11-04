@@ -150,9 +150,12 @@ public class FRSManagementSessionBean implements FRSManagementSessionBeanRemote,
         flightRouteSessionBeanLocal.createNewFlightRoute(flightRoute);
         origin.getFlightRoute().add(flightRoute);
         destination.getFlightRoute().add(flightRoute);
-
     }
     
+    public List<FlightRoute> viewAllFlightRoutes() {
+        List<FlightRoute> flightRoute = flightRouteSessionBeanLocal.viewAllFlightRoute();
+        return flightRoute;
+    }
 
 
 

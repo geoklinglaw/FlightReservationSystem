@@ -13,6 +13,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import util.enumeration.FlightRouteStatus;
 
@@ -21,6 +23,13 @@ import util.enumeration.FlightRouteStatus;
  * @author apple
  */
 @Entity
+@NamedQueries({
+    @NamedQuery(
+        name = "viewAllFlightRoutes",
+        query = "SELECT fr FROM FlightRoute fr"
+    )
+
+})
 public class FlightRoute implements Serializable {
 
     private static final long serialVersionUID = 1L;

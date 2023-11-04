@@ -28,7 +28,7 @@ public class FleetManagerTask {
         
         while(true) {
             System.out.println("\n\n*** Fleet Manager ***\n");
-            System.out.println("Enter your task: \n");
+            System.out.print("Enter your task: \n");
             System.out.println("1: Create Aircraft Configuration");
             System.out.println("2: View all Aircraft Configurations");
             System.out.println("3: View Aircraft Configuration Details");
