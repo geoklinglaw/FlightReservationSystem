@@ -44,12 +44,10 @@ public class DataInitSessionBean implements DataInitSessionBeanLocal {
     @PersistenceContext(unitName = "FlightReservationSystem-ejbPU")
     private EntityManager em;
     
-    private String str;
-    
 
     @PostConstruct
     public void postConstruct() {
-        if (em.find(AircraftConfiguration.class, 1l) == null) {
+        if (em.find(AircraftType.class, 1l) == null) {
             AircraftType aircraftType0 = new AircraftType(1);
             AircraftType aircraftType1 = new AircraftType(0);
             
@@ -64,8 +62,8 @@ public class DataInitSessionBean implements DataInitSessionBeanLocal {
 //            aircraftConfig0.setAircraftType(aircraftType0);
 //            aircraftConfig1.setAircraftType(aircraftType1);
             
-            Long acConfig0 = aircraftConfigurationSessionBean.createNewAircraftConfiguration(aircraftConfig0);
-            Long acConfig1 = aircraftConfigurationSessionBean.createNewAircraftConfiguration(aircraftConfig1);
+//            Long acConfig0 = aircraftConfigurationSessionBean.createNewAircraftConfiguration(aircraftConfig0);
+//            Long acConfig1 = aircraftConfigurationSessionBean.createNewAircraftConfiguration(aircraftConfig1);
         }
         
         if (em.find(Airport.class, 1l) == null) {

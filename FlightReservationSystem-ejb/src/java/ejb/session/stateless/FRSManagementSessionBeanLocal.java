@@ -13,4 +13,6 @@ import javax.ejb.Local;
 @Local
 public interface FRSManagementSessionBeanLocal {
     
+    public void createAircraftConfiguration(int aircraftType);
+    
 }

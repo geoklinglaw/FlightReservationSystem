@@ -13,6 +13,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import util.enumeration.AircraftName;
 
@@ -21,6 +23,13 @@ import util.enumeration.AircraftName;
  * @author apple
  */
 @Entity
+@NamedQueries({
+    @NamedQuery(
+        name = "selectAircraftTypeByName",
+        query = "SELECT act FROM AircraftType act WHERE act.name = :inName"
+    )
+
+})
 public class AircraftType implements Serializable {
 
     private static final long serialVersionUID = 1L;

@@ -18,4 +18,6 @@ public interface AircraftTypeSessionBeanLocal {
     
     public AircraftType retrieveAircraftType(Long id);
     
+    public AircraftType retrieveAircraftTypeByValue(int value);
+    
 }

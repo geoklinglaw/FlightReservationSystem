@@ -18,4 +18,6 @@ public interface AircraftTypeSessionBeanRemote {
     
     public AircraftType retrieveAircraftType(Long id);
     
+    public AircraftType retrieveAircraftTypeByValue(int value);
+    
 }

@@ -13,4 +13,6 @@ import javax.ejb.Remote;
 @Remote
 public interface FRSManagementSessionBeanRemote {
     
+    public void createAircraftConfiguration(int aircraftType);
+    
 }

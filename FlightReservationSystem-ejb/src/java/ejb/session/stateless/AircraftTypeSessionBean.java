@@ -10,6 +10,7 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import util.enumeration.AircraftName;
 
 /**
  *
@@ -21,6 +22,7 @@ public class AircraftTypeSessionBean implements AircraftTypeSessionBeanRemote, A
     @PersistenceContext(unitName = "FlightReservationSystem-ejbPU")
     private EntityManager em;
 
+    @Override
     public Long createNewAircraftType(AircraftType aircraftType) {
         em.persist(aircraftType);
         em.flush();
@@ -28,17 +30,20 @@ public class AircraftTypeSessionBean implements AircraftTypeSessionBeanRemote, A
         return aircraftType.getId();
     }
     
+    @Override
     public AircraftType retrieveAircraftType(Long id) {
         AircraftType aircraftType = em.find(AircraftType.class, id);
         return aircraftType;
 
     }
     
+    @Override
     public AircraftType retrieveAircraftTypeByValue(int value) {
-        String jpql = "SELECT act FROM AircraftType act WHERE act.name = :Type";
-        Query query = em.createQuery(jpql);
-        query.setParameter("Type", (String) value);
-        Person result = (Person) query.getSingleResult();
+        AircraftName aircraftNameEnum = AircraftName.fromValue(value);
+        Query query = em.createNamedQuery("selectAircraftTypeByName");
+        query.setParameter("inName", aircraftNameEnum);
+        
+        return (AircraftType) query.getSingleResult();
     }
         
 

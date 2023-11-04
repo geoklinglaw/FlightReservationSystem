@@ -5,6 +5,7 @@
 package ejb.session.stateless;
 
 import entity.AircraftConfiguration;
+import entity.AircraftType;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
@@ -15,20 +16,20 @@ import javax.ejb.Stateless;
 @Stateless
 public class FRSManagementSessionBean implements FRSManagementSessionBeanRemote, FRSManagementSessionBeanLocal {
 
+    @EJB(name = "AircraftTypeSessionBeanLocal")
+    private AircraftTypeSessionBeanLocal aircraftTypeSessionBeanLocal;
+
     @EJB
     private AircraftConfigurationSessionBeanLocal aircraftConfigurationSessionBean;
     
     public void createAircraftConfiguration(int aircraftType) {
-              
-//            AircraftType acType0 = aircraftTypeSessionBean.retrieveAircraftType(acType0id);
-//            AircraftType acType1 = aircraftTypeSessionBean.retrieveAircraftType(acType1id);
-//
-//            AircraftConfiguration aircraftConfig0 = new AircraftConfiguration(aircraftType0);
-//            AircraftConfiguration aircraftConfig1 = new AircraftConfiguration(aircraftType1);
-//            aircraftConfig0.setAircraftType(aircraftType0);
-//            aircraftConfig1.setAircraftType(aircraftType1);
         
+        AircraftType acType = aircraftTypeSessionBeanLocal.retrieveAircraftTypeByValue(aircraftType);
+        AircraftConfiguration aircraftConfig = new AircraftConfiguration(acType);
+        aircraftConfig.setAircraftType(acType);
         
+        Long acConfig = aircraftConfigurationSessionBean.createNewAircraftConfiguration(aircraftConfig);
+
     }
 
 
