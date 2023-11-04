@@ -24,6 +24,9 @@ import util.enumeration.CabinClassType;
 @Stateless
 public class FRSManagementSessionBean implements FRSManagementSessionBeanRemote, FRSManagementSessionBeanLocal {
 
+    @EJB(name = "SeatEntitySessionBeanLocal")
+    private SeatEntitySessionBeanLocal seatEntitySessionBeanLocal;
+
     @EJB(name = "CabinClassSessionBeanLocal")
     private CabinClassSessionBeanLocal cabinClassSessionBeanLocal;
 
@@ -58,21 +61,28 @@ public class FRSManagementSessionBean implements FRSManagementSessionBeanRemote,
 
         
         for (int i = 0; i < ccList.size(); i++) {
-            
             if (acType.getName() == "Boeing 737") {
                if (i == ccList.size() - 1 && numSRow != 0) {
                    CabinClass cc = new CabinClass((int) ccList.get(i), new BigDecimal(seatCapacityForEachCabinClass), new BigDecimal("2"), new BigDecimal(numSRow), new BigDecimal("6"), new BigDecimal(seatCapacityForEachCabinClass), new BigDecimal(seatCapacityForEachCabinClass), new BigDecimal(seatCapacityForEachCabinClass));
+                   List<Seat> seatList = createSeatsPerCabinClass(6, numSRow, cc);
+                   cc.setSeatList(seatList);
                    cabinClassList.add(cc);
                } else {
                    CabinClass cc = new CabinClass((int) ccList.get(i), new BigDecimal(seatCapacityForEachCabinClass), new BigDecimal("2"), new BigDecimal(numRows), new BigDecimal("6"), new BigDecimal(seatCapacityForEachCabinClass), new BigDecimal(seatCapacityForEachCabinClass), new BigDecimal(seatCapacityForEachCabinClass));
+                   List<Seat> seatList = createSeatsPerCabinClass(6, numRows, cc);
+                   cc.setSeatList(seatList);
                    cabinClassList.add(cc);
                }
             } else {
                if (i == ccList.size() - 1 && numSRow != 0) {
-                   CabinClass cc = new CabinClass((int) ccList.get(i), new BigDecimal(seatCapacityForEachCabinClass), new BigDecimal("2"), new BigDecimal(numSRow), new BigDecimal("6"), new BigDecimal(seatCapacityForEachCabinClass), new BigDecimal(seatCapacityForEachCabinClass), new BigDecimal(seatCapacityForEachCabinClass));
+                   CabinClass cc = new CabinClass((int) ccList.get(i), new BigDecimal(seatCapacityForEachCabinClass), new BigDecimal("2"), new BigDecimal(numSRow), new BigDecimal("9"), new BigDecimal(seatCapacityForEachCabinClass), new BigDecimal(seatCapacityForEachCabinClass), new BigDecimal(seatCapacityForEachCabinClass));
+                   List<Seat> seatList = createSeatsPerCabinClass(6, numSRow, cc);
+                   cc.setSeatList(seatList);
                    cabinClassList.add(cc);
                } else {
-                   CabinClass cc = new CabinClass((int) ccList.get(i), new BigDecimal(seatCapacityForEachCabinClass), new BigDecimal("2"), new BigDecimal(numRows), new BigDecimal("6"), new BigDecimal(seatCapacityForEachCabinClass), new BigDecimal(seatCapacityForEachCabinClass), new BigDecimal(seatCapacityForEachCabinClass));
+                   CabinClass cc = new CabinClass((int) ccList.get(i), new BigDecimal(seatCapacityForEachCabinClass), new BigDecimal("2"), new BigDecimal(numRows), new BigDecimal("9"), new BigDecimal(seatCapacityForEachCabinClass), new BigDecimal(seatCapacityForEachCabinClass), new BigDecimal(seatCapacityForEachCabinClass));
+                   List<Seat> seatList = createSeatsPerCabinClass(6, numRows, cc);
+                   cc.setSeatList(seatList);
                    cabinClassList.add(cc);
                }
             }
@@ -96,6 +106,26 @@ public class FRSManagementSessionBean implements FRSManagementSessionBeanRemote,
         
         return aircraftConfigList;
     }
+    
+    public List<Seat> createSeatsPerCabinClass(int numSeatAbreast, int numRows, CabinClass cabinClass) {
+        String[] charArr = new String[]{"A", "B", "C", "D", "E", "F", "G", "H", "I"};
+        String seatName = "";
+        List<Seat> seatList = new ArrayList<>();
+        
+        for (int i = 1; i <= numRows; i++) {
+            for (int j = 0; j < numSeatAbreast - 1; j++) {
+                seatName = i + charArr[j];
+                Seat seat = new Seat(seatName, 0);
+                seat.setCabinClass(cabinClass);
+                seatEntitySessionBeanLocal.createNewSeat(seat);
+                seatList.add(seat);
+            }
+        }
+        
+        return seatList;
+    }
+    
+
 
 
 }

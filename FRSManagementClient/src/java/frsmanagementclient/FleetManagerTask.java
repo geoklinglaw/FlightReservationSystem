@@ -144,8 +144,7 @@ public class FleetManagerTask {
         configDetails += "Name: " + selectedACConfig.getName() + "\n";
         configDetails += "Max Seat Capacity: " + selectedACConfig.getAircraftType().getMaxSeatCapacity();
         List<CabinClass> cabinClassList = selectedACConfig.getCabinClassList();
-        System.out.println(cabinClassList.size());
-        configDetails += "Cabin Class: ";
+        configDetails += "\nCabin Class: ";
         for (CabinClass cc: cabinClassList) {
             configDetails += cc.getType().name() + ", ";
         }
