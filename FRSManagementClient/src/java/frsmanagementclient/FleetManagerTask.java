@@ -6,6 +6,7 @@ package frsmanagementclient;
 
 import ejb.session.stateless.FRSManagementSessionBeanRemote;
 import entity.AircraftConfiguration;
+import entity.CabinClass;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -142,6 +143,12 @@ public class FleetManagerTask {
         String configDetails = "-- Aircraft Configuration Details -- \n";
         configDetails += "Name: " + selectedACConfig.getName() + "\n";
         configDetails += "Max Seat Capacity: " + selectedACConfig.getAircraftType().getMaxSeatCapacity();
+        List<CabinClass> cabinClassList = selectedACConfig.getCabinClassList();
+        System.out.println(cabinClassList.size());
+        configDetails += "Cabin Class: ";
+        for (CabinClass cc: cabinClassList) {
+            configDetails += cc.getType().name() + ", ";
+        }
         System.out.println(configDetails);
     }
 

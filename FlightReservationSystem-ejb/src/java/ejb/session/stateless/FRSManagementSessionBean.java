@@ -93,6 +93,7 @@ public class FRSManagementSessionBean implements FRSManagementSessionBeanRemote,
     
     public List<AircraftConfiguration> viewAllAircraftConfiguration() {
         List<AircraftConfiguration> aircraftConfigList = aircraftConfigurationSessionBean.viewAllAircraftConfiguration();
+        
         return aircraftConfigList;
     }
 

@@ -30,9 +30,11 @@ public class AircraftConfigurationSessionBean implements AircraftConfigurationSe
     }
     
     public List<AircraftConfiguration> viewAllAircraftConfiguration() {
-        Query query = em.createNamedQuery("viewAllAircraftConfigurations");
-        
-        return query.getResultList();
+        List<AircraftConfiguration> aircraftConfig = em.createNamedQuery("viewAllAircraftConfigurations").getResultList();
+        for (AircraftConfiguration config : aircraftConfig) {
+            config.getCabinClassList().size();
+        }
+        return aircraftConfig;
     }
     
 
