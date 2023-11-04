@@ -4,6 +4,8 @@
  */
 package ejb.session.stateless;
 
+import entity.AircraftConfiguration;
+import java.util.List;
 import javax.ejb.Remote;
 
 /**
@@ -14,5 +16,7 @@ import javax.ejb.Remote;
 public interface FRSManagementSessionBeanRemote {
     
     public void createAircraftConfiguration(int aircraftType);
+    
+    public List<AircraftConfiguration> viewAllAircraftConfiguration();
     
 }

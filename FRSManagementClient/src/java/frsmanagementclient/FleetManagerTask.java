@@ -6,6 +6,7 @@ package frsmanagementclient;
 
 import ejb.session.stateless.FRSManagementSessionBeanRemote;
 import entity.AircraftConfiguration;
+import java.util.List;
 import java.util.Scanner;
 
 /**
@@ -24,7 +25,8 @@ public class FleetManagerTask {
         Integer response = 0;
         
         while(true) {
-            System.out.println("\n\nEnter your task: \n");
+            System.out.println("\n\n*** Fleet Manager ***\n");
+            System.out.println("Enter your task: \n");
             System.out.println("1: Create Aircraft Configuration");
             System.out.println("2: View all Aircraft Configurations");
             System.out.println("3: View Aircraft Configuration Details");
@@ -40,6 +42,7 @@ public class FleetManagerTask {
                     createAircraftConfiguration(scanner);
                 }
                 else if (response == 2) {
+                    viewAircraftConfigurations();
                 }
                 else if (response == 3) {
                 }
@@ -68,9 +71,21 @@ public class FleetManagerTask {
         String msg;
         msg = response == 0 ? "Boeing 737" : "Boeing 747";
         
-        System.out.println("Successfully created " + msg);
-
+        System.out.println("Successfully created " + msg);  
+    }
+    
+    private void viewAircraftConfigurations() {
+        List <AircraftConfiguration> aircraftConfigList = FRSManagementSessionBeanRemote.viewAllAircraftConfiguration();
+        String acListString = "List of Aircraft Configurations\n";
+        int index = 1;
         
+        for (AircraftConfiguration acConfig: aircraftConfigList) {
+            acListString += index + ": " + acConfig.getName() + "\n";
+            index += 1; 
+        }
+        
+        System.out.println(acListString);
+        System.out.println("Total Number of Aircraft Configurations created: " + index);
     }
      
      

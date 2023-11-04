@@ -27,6 +27,13 @@ import util.enumeration.AircraftName;
  * @author apple
  */
 @Entity
+@NamedQueries({
+    @NamedQuery(
+        name = "viewAllAircraftConfigurations",
+        query = "SELECT acc FROM AircraftConfiguration acc"
+    )
+
+})
 public class AircraftConfiguration implements Serializable {
 
     private static final long serialVersionUID = 1L;

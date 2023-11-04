@@ -6,6 +6,7 @@ package ejb.session.stateless;
 
 import entity.AircraftConfiguration;
 import entity.AircraftType;
+import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
@@ -29,7 +30,11 @@ public class FRSManagementSessionBean implements FRSManagementSessionBeanRemote,
         aircraftConfig.setAircraftType(acType);
         
         Long acConfig = aircraftConfigurationSessionBean.createNewAircraftConfiguration(aircraftConfig);
-
+    }
+    
+    public List<AircraftConfiguration> viewAllAircraftConfiguration() {
+        List<AircraftConfiguration> aircraftConfigList = aircraftConfigurationSessionBean.viewAllAircraftConfiguration();
+        return aircraftConfigList;
     }
 
 
