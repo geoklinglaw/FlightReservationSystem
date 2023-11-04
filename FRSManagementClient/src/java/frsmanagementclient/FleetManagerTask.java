@@ -6,6 +6,7 @@ package frsmanagementclient;
 
 import ejb.session.stateless.FRSManagementSessionBeanRemote;
 import entity.AircraftConfiguration;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -65,12 +66,38 @@ public class FleetManagerTask {
         aircraftTypeText += "1: Boeing 747";
         System.out.println(aircraftTypeText);
 
-        System.out.print("Enter Aircraft Type> ");
-        int response = sc.nextInt();
-        FRSManagementSessionBeanRemote.createAircraftConfiguration(response);
+        System.out.print("Enter Aircraft Type \n> ");
+        int type = sc.nextInt();
+        
+        boolean selecting = true;
+        List<Integer> cabinClassSelection = new ArrayList<>();
+        
+        while (selecting) {
+            String cabinClassText = "Enter Select Cabin Class(es) \n";
+            cabinClassText += "0: First Class \n";
+            cabinClassText += "1: Business Class \n";
+            cabinClassText += "2: Premium Economy \n";
+            cabinClassText += "3: Economy \n";
+            cabinClassText += "4: Selection Complete\n";
+            cabinClassText += "> ";
+            System.out.print(cabinClassText);
+            Integer cc = sc.nextInt();
+            if (cc == 4) {
+                selecting = false;
+                break;
+            }
+            cabinClassSelection.add(cc);
+        }
+        
+        for (int i = 0; i < cabinClassSelection.size(); i++) {
+            System.out.println(cabinClassSelection.get(i));
+        }
+        
+
+        FRSManagementSessionBeanRemote.createAircraftConfiguration(type, cabinClassSelection);
         
         String msg;
-        msg = response == 0 ? "Boeing 737" : "Boeing 747";
+        msg = type == 0 ? "Boeing 737" : "Boeing 747";
         
         System.out.println("Successfully created " + msg);  
     }
@@ -108,7 +135,7 @@ public class FleetManagerTask {
     
     private void viewConfigurationDetails(Scanner sc) {
         List<AircraftConfiguration> aircraftconfigList = viewAircraftConfigurationList();
-        System.out.print("Select which aircraft configuration details you would like to know:\n>");
+        System.out.print("Select which aircraft configuration details you would like to know:\n> ");
         int response = sc.nextInt();
         AircraftConfiguration selectedACConfig = aircraftconfigList.get(response - 1);
         

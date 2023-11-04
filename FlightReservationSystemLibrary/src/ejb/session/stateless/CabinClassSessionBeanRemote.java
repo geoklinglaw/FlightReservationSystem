@@ -4,8 +4,7 @@
  */
 package ejb.session.stateless;
 
-import entity.AircraftConfiguration;
-import java.util.List;
+import entity.CabinClass;
 import javax.ejb.Remote;
 
 /**
@@ -13,10 +12,8 @@ import javax.ejb.Remote;
  * @author apple
  */
 @Remote
-public interface FRSManagementSessionBeanRemote {
+public interface CabinClassSessionBeanRemote {
     
-    public void createAircraftConfiguration(int aircraftType, List<Integer> ccList);
-    
-    public List<AircraftConfiguration> viewAllAircraftConfiguration();
+    public void createNewCabinClass(CabinClass cc);
     
 }
