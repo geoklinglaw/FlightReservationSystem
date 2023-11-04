@@ -4,7 +4,7 @@
  */
 package ejb.session.stateless;
 
-import entity.AircraftConfiguration;
+import entity.FlightRoute;
 import java.util.List;
 import javax.ejb.Remote;
 
@@ -13,10 +13,11 @@ import javax.ejb.Remote;
  * @author apple
  */
 @Remote
-public interface AircraftConfigurationSessionBeanRemote {
+public interface FlightRouteSessionBeanRemote {
     
-    public Long createNewAircraftConfiguration(AircraftConfiguration aircraftConfig);
+    public void createNewFlightRoute(FlightRoute flightRoute);
     
-    public List<AircraftConfiguration> viewAllAircraftConfiguration();
+    public List<FlightRoute> viewAllFlightRoute();
+    
     
 }

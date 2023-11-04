@@ -5,18 +5,30 @@
 package entity;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 
 /**
  *
  * @author apple
  */
 @Entity
+@NamedQueries({
+    @NamedQuery(
+        name = "viewAllAirports",
+        query = "SELECT ap FROM Airport ap"
+    )
+
+})
 public class Airport implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -34,8 +46,8 @@ public class Airport implements Serializable {
     @Column(nullable = false)
     private String country;
     
-    @ManyToOne
-    private FlightRoute flightRoute;
+    @ManyToMany 
+    private List<FlightRoute> flightRoute;
 
     public Airport() {
     }
@@ -46,6 +58,7 @@ public class Airport implements Serializable {
         this.city = city;
         this.state = state;
         this.country = country;
+        this.flightRoute = new ArrayList<FlightRoute>();
     }
     
 
@@ -155,14 +168,14 @@ public class Airport implements Serializable {
     /**
      * @return the flightRoute
      */
-    public FlightRoute getFlightRoute() {
+    public List<FlightRoute> getFlightRoute() {
         return flightRoute;
     }
 
     /**
      * @param flightRoute the flightRoute to set
      */
-    public void setFlightRoute(FlightRoute flightRoute) {
+    public void setFlightRoute(List<FlightRoute> flightRoute) {
         this.flightRoute = flightRoute;
     }
     

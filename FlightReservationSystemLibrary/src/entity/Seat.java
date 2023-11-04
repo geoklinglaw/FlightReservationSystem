@@ -81,6 +81,62 @@ public class Seat implements Serializable {
     public String toString() {
         return "entity.Seat[ id=" + id + " ]";
     }
+
+    /**
+     * @return the seatID
+     */
+    public String getSeatID() {
+        return seatID;
+    }
+
+    /**
+     * @param seatID the seatID to set
+     */
+    public void setSeatID(String seatID) {
+        this.seatID = seatID;
+    }
+
+    /**
+     * @return the seatStatus
+     */
+    public SeatStatus getSeatStatus() {
+        return seatStatus;
+    }
+
+    /**
+     * @param seatStatus the seatStatus to set
+     */
+    public void setSeatStatus(SeatStatus seatStatus) {
+        this.seatStatus = seatStatus;
+    }
+
+    /**
+     * @return the cabinClass
+     */
+    public CabinClass getCabinClass() {
+        return cabinClass;
+    }
+
+    /**
+     * @param cabinClass the cabinClass to set
+     */
+    public void setCabinClass(CabinClass cabinClass) {
+        this.cabinClass = cabinClass;
+    }
+
+    /**
+     * @return the flightBooking
+     */
+    public List<FlightBooking> getFlightBooking() {
+        return flightBooking;
+    }
+
+    /**
+     * @param flightBooking the flightBooking to set
+     */
+    public void setFlightBooking(List<FlightBooking> flightBooking) {
+        this.flightBooking = flightBooking;
+    }
     
 }
 

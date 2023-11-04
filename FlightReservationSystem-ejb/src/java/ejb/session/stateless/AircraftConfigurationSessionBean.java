@@ -6,9 +6,11 @@ package ejb.session.stateless;
 
 import entity.AircraftConfiguration;
 import entity.AircraftType;
+import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 
 /**
  *
@@ -26,4 +28,14 @@ public class AircraftConfigurationSessionBean implements AircraftConfigurationSe
         
         return aircraftConfig.getId();
     }
+    
+    public List<AircraftConfiguration> viewAllAircraftConfiguration() {
+        List<AircraftConfiguration> aircraftConfig = em.createNamedQuery("viewAllAircraftConfigurations").getResultList();
+        for (AircraftConfiguration config : aircraftConfig) {
+            config.getCabinClassList().size();
+        }
+        return aircraftConfig;
+    }
+    
+
 }

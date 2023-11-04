@@ -6,6 +6,7 @@ package ejb.session.stateless;
 
 import entity.AircraftType;
 import entity.Airport;
+import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -30,7 +31,12 @@ public class AirportEntitySessionBean implements AirportEntitySessionBeanRemote,
     public Airport retrieveAirport(Long id) {
         Airport airport = em.find(Airport.class, id);
         return airport;
-
+    }
+    
+    public List<Airport> retrieveAllAirports() {
+        List<Airport> airportList = em.createNamedQuery("viewAllAirports").getResultList();
+        return airportList;
+      
     }
 
 

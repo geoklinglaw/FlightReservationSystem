@@ -5,6 +5,7 @@
 package ejb.session.stateless;
 
 import entity.Airport;
+import java.util.List;
 import javax.ejb.Remote;
 
 /**
@@ -17,5 +18,7 @@ public interface AirportEntitySessionBeanRemote {
     public Long createNewAirport(Airport airport);
     
     public Airport retrieveAirport(Long id);
+    
+    public List<Airport> retrieveAllAirports();
     
 }

@@ -69,7 +69,7 @@ public class DataInitSessionBean implements DataInitSessionBeanLocal {
         if (em.find(Airport.class, 1l) == null) {
             
             Airport changi = new Airport("SIN", "Changi", "Changi", "Singapore", "Singapore");
-            Airport denpasar = new Airport("BALI", "Denpasar", "Bali", "Kuta", "Indonesia");
+            Airport denpasar = new Airport("DPS", "Denpasar", "Bali", "Kuta", "Indonesia");
             Airport taoyuan = new Airport("TW", "Taoyuan", "Taoyuan", "Taoyuan", "Taiwan");
             Airport incheon = new Airport("ICN", "Incheon", "Incheon", "Incheon", "Korea");
             Airport perth = new Airport("PER", "Perth", "Perth", "Perth", "Australia");

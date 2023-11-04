@@ -88,7 +88,8 @@ public class Main {
                     
                 }
                 else if (response == 2) {
-                    performRoutePlannerTasks();
+                    RoutePlannerTask routeManagerTasks = new RoutePlannerTask(FRSManagementSessionBeanRemote);
+                    routeManagerTasks.getTasks();
                 }
                 else if (response == 3) {
                     performScheduleManagerTasks();
@@ -106,9 +107,6 @@ public class Main {
     }
     
 
-    private static void performRoutePlannerTasks() {
-        
-    }
     
     private static void performScheduleManagerTasks() {
         
