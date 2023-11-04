@@ -5,6 +5,8 @@
 package frsmanagementclient;
 
 import ejb.session.stateless.FRSManagementSessionBeanRemote;
+import entity.Airport;
+import java.util.List;
 import java.util.Scanner;
 
 /**
@@ -53,6 +55,49 @@ public class RoutePlannerTask {
     }
     
     private void createFlightRoute(Scanner sc) {
+        System.out.println("\n\n*** Creating Flight Route *** \n");
+        System.out.println("List of Airports:");
+        
+        List<Airport> airportList =  FRSManagementSessionBeanRemote.viewAllAirports();
+        String airportText = "";
+        int index = 1;
+        for (Airport airport: airportList) {
+            airportText += index + ": " + airport.getCountry() + " -- " + airport.getAirportName() + " (" + airport.getAirportCode() + ")\n";
+            index += 1;
+        }
+        sc.nextLine();
+        
+        System.out.print(airportText);
+        System.out.print("\nEnter IATA code of ORIGIN location: \n> ");
+        String origin = sc.nextLine().trim();
+        System.out.print("Enter IATA code of DESTINATION location: \n> ");
+        String destination = sc.nextLine().trim();
+        
+        
+        Long originID = null;
+        Long destID = null;
+        for (Airport airport: airportList) {
+            if (origin.equals(airport.getAirportCode())) {
+                originID = airport.getId();
+                System.out.println("Your Chosen Origin is " + airport.getCountry());
+                
+            }
+            if (destination.equals(airport.getAirportCode())) {
+                destID = airport.getId();
+                System.out.println("Your Chosen Destination is " + airport.getCountry());
+                
+            }
+        }
+        
+        FRSManagementSessionBeanRemote.createFlightRoute(originID, destID);
+       
+
+
+
+        
+
+        
+        
         
         
     }

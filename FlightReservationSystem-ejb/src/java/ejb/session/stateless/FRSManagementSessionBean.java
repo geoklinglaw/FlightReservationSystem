@@ -6,8 +6,10 @@ package ejb.session.stateless;
 
 import entity.AircraftConfiguration;
 import entity.AircraftType;
+import entity.Airport;
 import entity.CabinClass;
 import entity.Fare;
+import entity.FlightRoute;
 import entity.FlightSchedule;
 import entity.Seat;
 import java.math.BigDecimal;
@@ -23,6 +25,12 @@ import util.enumeration.CabinClassType;
  */
 @Stateless
 public class FRSManagementSessionBean implements FRSManagementSessionBeanRemote, FRSManagementSessionBeanLocal {
+
+    @EJB(name = "FlightRouteSessionBeanLocal")
+    private FlightRouteSessionBeanLocal flightRouteSessionBeanLocal;
+
+    @EJB(name = "AirportEntitySessionBeanLocal")
+    private AirportEntitySessionBeanLocal airportEntitySessionBeanLocal;
 
     @EJB(name = "SeatEntitySessionBeanLocal")
     private SeatEntitySessionBeanLocal seatEntitySessionBeanLocal;
@@ -123,6 +131,26 @@ public class FRSManagementSessionBean implements FRSManagementSessionBeanRemote,
         }
         
         return seatList;
+    }
+    
+    public List<Airport> viewAllAirports() {
+        List<Airport> airportList = airportEntitySessionBeanLocal.retrieveAllAirports();
+        return airportList;
+    }
+    
+    public void createFlightRoute(Long originId, Long destId) {
+        Airport origin = airportEntitySessionBeanLocal.retrieveAirport(originId);
+        Airport destination = airportEntitySessionBeanLocal.retrieveAirport(destId);
+        
+        List<Airport> odPair = new ArrayList<Airport>();
+        odPair.add(origin);
+        odPair.add(destination);
+        
+        FlightRoute flightRoute = new FlightRoute(odPair, 1);
+        flightRouteSessionBeanLocal.createNewFlightRoute(flightRoute);
+        origin.getFlightRoute().add(flightRoute);
+        destination.getFlightRoute().add(flightRoute);
+
     }
     
 

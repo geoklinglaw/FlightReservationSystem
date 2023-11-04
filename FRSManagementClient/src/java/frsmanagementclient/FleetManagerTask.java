@@ -129,6 +129,7 @@ public class FleetManagerTask {
         }
         
         System.out.println(acListString);
+        index -= 1;
         System.out.println("Total Number of Aircraft Configurations created: " + index);
         
         return aircraftConfigList;

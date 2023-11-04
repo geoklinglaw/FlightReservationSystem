@@ -5,6 +5,9 @@
 package ejb.session.stateless;
 
 import entity.AircraftConfiguration;
+import entity.Airport;
+import entity.CabinClass;
+import entity.Seat;
 import java.util.List;
 import javax.ejb.Local;
 
@@ -18,5 +21,12 @@ public interface FRSManagementSessionBeanLocal {
     public void createAircraftConfiguration(int aircraftType, List<Integer> ccList);
     
     public List<AircraftConfiguration> viewAllAircraftConfiguration();
+    
+    public List<Seat> createSeatsPerCabinClass(int numSeatAbreast, int numRows, CabinClass cabinClass);
+    
+    public List<Airport> viewAllAirports();
+    
+    public void createFlightRoute(Long originId, Long destId);
+    
     
 }

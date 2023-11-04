@@ -4,8 +4,7 @@
  */
 package ejb.session.stateless;
 
-import entity.Airport;
-import java.util.List;
+import entity.FlightRoute;
 import javax.ejb.Local;
 
 /**
@@ -13,12 +12,8 @@ import javax.ejb.Local;
  * @author apple
  */
 @Local
-public interface AirportEntitySessionBeanLocal {
+public interface FlightRouteSessionBeanLocal {
     
-    public Long createNewAirport(Airport airport);
-    
-    public Airport retrieveAirport(Long id);
-    
-    public List<Airport> retrieveAllAirports();
+    public void createNewFlightRoute(FlightRoute flightRoute);
     
 }

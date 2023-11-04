@@ -12,6 +12,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import util.enumeration.FlightRouteStatus;
 
@@ -33,7 +34,7 @@ public class FlightRoute implements Serializable {
     @JoinColumn(nullable = false)
     private List<Flight> flightList;
     
-    @OneToMany 
+    @ManyToMany (mappedBy= "flightRoute")
     private List<Airport> airportList;
     
 
