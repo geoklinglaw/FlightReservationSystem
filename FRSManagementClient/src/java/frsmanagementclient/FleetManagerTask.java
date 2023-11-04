@@ -45,6 +45,7 @@ public class FleetManagerTask {
                     viewAircraftConfigurations();
                 }
                 else if (response == 3) {
+                    viewConfigurationDetails(scanner);
                 }
                 else {
                     System.out.println("Invalid option, please try again!\n");                
@@ -59,7 +60,7 @@ public class FleetManagerTask {
         
         AircraftConfiguration aircraftConfig = new AircraftConfiguration();
         
-        String aircraftTypeText = "Enter Aircraft Type \n";
+        String aircraftTypeText = "Enter Aircraft Type\n";
         aircraftTypeText += "0: Boeing 737 \n";
         aircraftTypeText += "1: Boeing 747";
         System.out.println(aircraftTypeText);
@@ -76,7 +77,22 @@ public class FleetManagerTask {
     
     private void viewAircraftConfigurations() {
         List <AircraftConfiguration> aircraftConfigList = FRSManagementSessionBeanRemote.viewAllAircraftConfiguration();
-        String acListString = "List of Aircraft Configurations\n";
+        String acListString = "\nList of Aircraft Configurations\n";
+        int index = 1;
+        
+        for (AircraftConfiguration acConfig: aircraftConfigList) {
+            acListString += index + ": " + acConfig.getName() + "\n";
+            index += 1; 
+        }
+        
+        System.out.println(acListString);
+        index -= 1;
+        System.out.println("Total Number of Aircraft Configurations created: " + index);
+    }
+    
+    private List <AircraftConfiguration> viewAircraftConfigurationList() {
+        List <AircraftConfiguration> aircraftConfigList = FRSManagementSessionBeanRemote.viewAllAircraftConfiguration();
+        String acListString = "\nList of Aircraft Configurations\n";
         int index = 1;
         
         for (AircraftConfiguration acConfig: aircraftConfigList) {
@@ -86,9 +102,20 @@ public class FleetManagerTask {
         
         System.out.println(acListString);
         System.out.println("Total Number of Aircraft Configurations created: " + index);
+        
+        return aircraftConfigList;
     }
-     
-     
-     
     
+    private void viewConfigurationDetails(Scanner sc) {
+        List<AircraftConfiguration> aircraftconfigList = viewAircraftConfigurationList();
+        System.out.print("Select which aircraft configuration details you would like to know:\n>");
+        int response = sc.nextInt();
+        AircraftConfiguration selectedACConfig = aircraftconfigList.get(response - 1);
+        
+        String configDetails = "-- Aircraft Configuration Details -- \n";
+        configDetails += "Name: " + selectedACConfig.getName() + "\n";
+        configDetails += "Max Seat Capacity: " + selectedACConfig.getAircraftType().getMaxSeatCapacity();
+        System.out.println(configDetails);
+    }
+
 }
