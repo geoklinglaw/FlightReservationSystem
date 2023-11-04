@@ -30,11 +30,11 @@ public class FlightReservation implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
-    @OneToMany 
-    @JoinColumn (nullable = false)
+    @OneToMany (mappedBy = "flightReservation")
     private List<FlightBooking> flightBooking;
     
     @ManyToOne 
+    @JoinColumn(name = "person_id")
     private Person person;
     
     

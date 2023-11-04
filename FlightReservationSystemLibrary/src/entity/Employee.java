@@ -5,6 +5,7 @@
 package entity;
 
 import java.io.Serializable;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -22,9 +23,13 @@ public class Employee implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(nullable = false, length = 50)
     private String employeeName;
+    @Column(nullable = false, length = 30)
     private String username;
+    @Column(nullable = false, length = 10)
     private String password;
+    @Column(nullable = false)
     private EmployeePosition position;
 
     public Employee() {

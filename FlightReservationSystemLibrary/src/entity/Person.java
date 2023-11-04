@@ -6,6 +6,7 @@ package entity;
 
 import java.io.Serializable;
 import java.util.List;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -24,13 +25,17 @@ public class Person implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(nullable = false, length = 30)
     private String firstName;
+    @Column(nullable = false, length = 30)
     private String lastName;
+    private String username;
+    private String password;
+    @Column(nullable = false)
     private PersonRoleType role;
     
     @OneToMany (mappedBy= "person")
     private List<FlightReservation> flightReservations;
-    
     
 
     public Person() {
@@ -40,8 +45,17 @@ public class Person implements Serializable {
         this.firstName = firstName;
         this.lastName = lastName;
         this.role = PersonRoleType.fromValue(role);
+        this.username = null;
+        this.password = null;
     }
     
+    public Person(String firstName, String lastName, String username, String password, int role) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.username = username;
+        this.password = password;
+        this.role = PersonRoleType.fromValue(role);
+    }
 
     public Long getId() {
         return id;
@@ -116,6 +130,48 @@ public class Person implements Serializable {
      */
     public void setRole(PersonRoleType role) {
         this.role = role;
+    }
+
+    /**
+     * @return the password
+     */
+    public String getPassword() {
+        return password;
+    }
+
+    /**
+     * @param password the password to set
+     */
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    /**
+     * @return the flightReservations
+     */
+    public List<FlightReservation> getFlightReservations() {
+        return flightReservations;
+    }
+
+    /**
+     * @param flightReservations the flightReservations to set
+     */
+    public void setFlightReservations(List<FlightReservation> flightReservations) {
+        this.flightReservations = flightReservations;
+    }
+
+    /**
+     * @return the username
+     */
+    public String getUsername() {
+        return username;
+    }
+
+    /**
+     * @param username the username to set
+     */
+    public void setUsername(String username) {
+        this.username = username;
     }
     
 }

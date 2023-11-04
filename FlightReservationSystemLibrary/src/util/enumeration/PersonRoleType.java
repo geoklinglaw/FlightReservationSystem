@@ -10,7 +10,9 @@ package util.enumeration;
  */
 public enum PersonRoleType {
     VISITOR(0),
-    CUSTOMER(1);
+    CUSTOMER(1),
+    PARTNER_EMPLOYEE(2),
+    PARTNER_RESERVATION_MANAGER(3);
     
     private final int value;
     
