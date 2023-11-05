@@ -26,8 +26,11 @@ import javax.persistence.NamedQuery;
     @NamedQuery(
         name = "viewAllAirports",
         query = "SELECT ap FROM Airport ap"
+    ),
+    @NamedQuery(
+        name = "retrieveAirportByCode",
+        query = "SELECT ap FROM Airport ap WHERE ap.airportCode = :airportCode"
     )
-
 })
 public class Airport implements Serializable {
 
