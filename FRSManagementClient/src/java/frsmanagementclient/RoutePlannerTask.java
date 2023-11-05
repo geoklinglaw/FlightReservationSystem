@@ -46,6 +46,7 @@ public class RoutePlannerTask {
                     viewAllFlightRoutes();
                 }
                 else if (response == 3) {
+                    deleteFlightRoute(scanner);
                 }
                 else {
                     System.out.println("Invalid option, please try again!\n");                
@@ -104,6 +105,22 @@ public class RoutePlannerTask {
             
         }
         System.out.print(routeText);
+        
+        
+    }
+    
+    private void deleteFlightRoute(Scanner sc) {
+        System.out.println("\n\n*** Deleting Flight Route *** \n");
+        System.out.print("Enter IATA code of ORIGIN location: \n> ");
+        sc.nextLine();
+        String origin = sc.nextLine().trim();
+        System.out.print("Enter IATA code of DESTINATION location: \n> ");
+        String destination = sc.nextLine().trim();
+        
+        List<Airport> airportList = FRSManagementSessionBeanRemote.deleteFlightRoute(origin, destination);
+        System.out.println("Successfully deleted flight route: " + airportList.get(0).getCountry() + " --> " + airportList.get(1).getCountry());
+        
+        
         
         
     }
