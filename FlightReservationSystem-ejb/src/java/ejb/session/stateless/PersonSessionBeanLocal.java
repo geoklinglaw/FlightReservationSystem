@@ -5,6 +5,7 @@
 package ejb.session.stateless;
 
 import entity.Person;
+import java.util.List;
 import javax.ejb.Local;
 import util.exception.InvalidLoginCredentialException;
 import util.exception.PersonNotFoundException;
@@ -20,12 +21,23 @@ public interface PersonSessionBeanLocal {
 
     public boolean checkPersonExists(String username);
 
-    public Long registerAsCustomer(Person newPerson) throws UsernameExistException, UnknownPersistenceException;
+    public Long createNewPerson(Person newPerson);
     
-    public Person retrievePersonById(Long id) throws PersonNotFoundException;
+    public Person retrievePersonById(Long id);
+    
+//    public Person retrievePersonById(Long id) throws PersonNotFoundException;
     
     public Person retrievePersonByUsername(String username) throws PersonNotFoundException;
 
-    public Person login(String username, String password) throws InvalidLoginCredentialException;
+//    public Person login(String username, String password) throws InvalidLoginCredentialException;
+    public Person login(String username, String password);
+    
+    public List<Person> retrieveAllVisitors();
+
+    public List<Person> retrieveAllCustomers();
+    
+    public List<Person> retrieveAllPartnerEmployees();
+    
+    public List<Person> retrieveAllPartnerReservationManagers();
     
 }

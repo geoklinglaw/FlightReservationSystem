@@ -5,12 +5,14 @@
 package ejb.session.stateless;
 
 import entity.Person;
+import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
+import util.enumeration.PersonRoleType;
 import util.exception.InvalidLoginCredentialException;
 import util.exception.PersonNotFoundException;
 import util.exception.UnknownPersistenceException;
@@ -44,44 +46,36 @@ public class PersonSessionBean implements PersonSessionBeanRemote, PersonSession
     }
     
     @Override
-    public Long registerAsCustomer(Person newPerson) throws UsernameExistException, UnknownPersistenceException {
-        try
-        {   
+    public Long createNewPerson(Person newPerson) {
+        
             em.persist(newPerson);
             em.flush();
 
             return newPerson.getId();
-        } 
-        catch (PersistenceException ex) {
-            if(ex.getCause() != null && ex.getCause().getClass().getName().equals("org.eclipse.persistence.exceptions.DatabaseException"))
-            {
-                if(ex.getCause().getCause() != null && ex.getCause().getCause().getClass().getName().equals("java.sql.SQLIntegrityConstraintViolationException"))
-                {
-                    throw new UsernameExistException();
-                }
-                else
-                {
-                    throw new UnknownPersistenceException(ex.getMessage());
-                }
-            }
-            else
-            {
-                throw new UnknownPersistenceException(ex.getMessage());
-            }
-        }
+            
     }
     
     
+//    @Override
+//    public Person retrievePersonById(Long id) throws PersonNotFoundException {
+//        Person person = em.find(Person.class, id);
+//        
+//        if (person != null) {
+//            return person;
+//        } else {
+//            throw new PersonNotFoundException("User does not exist: " + id);
+//        }
+//        
+//    }
+    
     @Override
-    public Person retrievePersonById(Long id) throws PersonNotFoundException {
+    public Person retrievePersonById(Long id) {
         Person person = em.find(Person.class, id);
-        
         if (person != null) {
             return person;
         } else {
-            throw new PersonNotFoundException("User does not exist: " + id);
+            return null;
         }
-        
     }
     
     @Override
@@ -101,29 +95,90 @@ public class PersonSessionBean implements PersonSessionBeanRemote, PersonSession
     }
     
     @Override
-    public Person login(String username, String password) throws InvalidLoginCredentialException {
-      
-        try
-        {
-            Query query = em.createQuery("SELECT p FROM Person p WHERE p.username = :inUsername");
+    public Person login(String username, String password) {
+        
+        Query query = em.createQuery("SELECT p FROM Person p WHERE p.username = :inUsername");
             query.setParameter("inUsername", username);
             Person person = (Person)query.getSingleResult();
-            
+
             if(person.getPassword().equals(password))
             {
                 return person;
             }
             else
             {
-                throw new InvalidLoginCredentialException("Invalid login credential");
+                return null;
             }
-        }
-        catch(NoResultException ex)
-        {
-            throw new InvalidLoginCredentialException("Invalid login credential");
-        }
+
+//        try
+//        {
+//            Query query = em.createQuery("SELECT p FROM Person p WHERE p.username = :inUsername");
+//            query.setParameter("inUsername", username);
+//            Person person = (Person)query.getSingleResult();
+//            
+//            if(person.getPassword().equals(password))
+//            {
+//                return person;
+//            }
+//            else
+//            {
+//                throw new InvalidLoginCredentialException("Invalid login credential");
+//            }
+//        }
+//        catch(NoResultException ex)
+//        {
+//            throw new InvalidLoginCredentialException("Invalid login credential");
+//        }
     }
-        
     
+    @Override
+    public List<Person> retrieveAllVisitors() {
+        
+        Query query = em.createQuery("SELECT p from Person p WHERE p.role = :role");
+        query.setParameter("role", PersonRoleType.VISITOR);
+        List<Person> visitors = query.getResultList();
+
+        return visitors;
+        
+    }
+    
+    @Override
+    public List<Person> retrieveAllCustomers() {
+        
+       Query query = em.createQuery("SELECT p from Person p WHERE p.role = :role");
+       query.setParameter("role", PersonRoleType.CUSTOMER);
+       List<Person> customers = query.getResultList();
+//       if (customers.isEmpty()) throw new EmptyListException("List of customers is empty.\n");
+        for (Person c : customers) {
+            c.getFlightReservations().size();
+        }
+        
+       return customers;
+    }
+    
+    @Override
+    public List<Person> retrieveAllPartnerEmployees() {
+        
+        Query query = em.createQuery("SELECT p from Person p WHERE p.role = :role");
+        query.setParameter("role", PersonRoleType.PARTNER_EMPLOYEE);
+        List<Person> partnerEmployees = query.getResultList();
+        
+        return partnerEmployees;
+    }
+    
+    
+    @Override
+    public List<Person> retrieveAllPartnerReservationManagers() {
+        
+       Query query = em.createQuery("SELECT p from Person p WHERE p.role = :role");
+       query.setParameter("role", PersonRoleType.PARTNER_RESERVATION_MANAGER);
+       List<Person> partnerRMs = query.getResultList();
+//       if (partnerRMs.isEmpty()) throw new EmptyListException("List of partner reservation managers is empty.\n");
+        for (Person p : partnerRMs) {
+            p.getFlightReservations().size();
+        }
+        
+       return partnerRMs;
+    }
     
 }

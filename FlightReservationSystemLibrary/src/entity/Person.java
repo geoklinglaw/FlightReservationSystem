@@ -11,6 +11,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import util.enumeration.PersonRoleType;
 
@@ -29,7 +31,15 @@ public class Person implements Serializable {
     private String firstName;
     @Column(nullable = false, length = 30)
     private String lastName;
+    @Column(nullable = false, length = 50)
+    private String email;
+    @Column(nullable = false)
+    private String contactNum;
+    @Column(nullable = false, length = 100)
+    private String address;
+    @Column(nullable = false, length = 30)
     private String username;
+    @Column(nullable = false, length = 30)
     private String password;
     @Column(nullable = false)
     private PersonRoleType role;
@@ -41,17 +51,27 @@ public class Person implements Serializable {
     public Person() {
     }
 
-    public Person(String firstName, String lastName, int role) {
+    //for visitor registration
+    public Person(String firstName, String lastName, String email, String contactNum, int role) {
         this.firstName = firstName;
         this.lastName = lastName;
+        this.email = email;
+        this.contactNum = contactNum;
         this.role = PersonRoleType.fromValue(role);
-        this.username = null;
-        this.password = null;
     }
     
-    public Person(String firstName, String lastName, String username, String password, int role) {
+
+    public Person(String firstName, String lastName, String email, String contactNum, String address, int role) {
         this.firstName = firstName;
         this.lastName = lastName;
+        this.email = email;
+        this.contactNum = contactNum;
+        this.address = address;
+        this.role = PersonRoleType.fromValue(role);
+    }
+    
+    //for customer log in
+    public Person(String username, String password, int role) {
         this.username = username;
         this.password = password;
         this.role = PersonRoleType.fromValue(role);
