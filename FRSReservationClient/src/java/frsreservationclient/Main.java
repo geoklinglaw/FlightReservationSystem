@@ -10,6 +10,7 @@ import entity.Person;
 import java.util.Scanner;
 import javax.ejb.EJB;
 import javax.ejb.EJBTransactionRolledbackException;
+import util.enumeration.PersonRoleType;
 
 /**
  *
@@ -111,7 +112,16 @@ public class Main {
                 return;
             }
             
-            Person newCust = new Person(firstName, lastName, email, contactNum, address, 1);
+//            Person newCust = new Person(firstName, lastName, email, contactNum, address, 1);
+            Person newCust = new Person();
+            
+            newCust.setFirstName(firstName);
+            newCust.setLastName(lastName);
+            newCust.setEmail(email);
+            newCust.setContactNum(contactNum);
+            newCust.setAddress(address);
+            newCust.setRole(PersonRoleType.CUSTOMER);
+         
             Long custId = personSessionBean.createNewPerson(newCust);
             System.out.println("You have been successfully registered as a Merlion Airlines customer!\n");
             
