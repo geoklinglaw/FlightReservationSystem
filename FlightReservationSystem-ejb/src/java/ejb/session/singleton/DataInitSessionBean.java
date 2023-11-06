@@ -64,8 +64,8 @@ public class DataInitSessionBean implements DataInitSessionBeanLocal {
         
         if(em.find(Person.class, 1L) == null) {
             
-            Person visitor1 = new Person("Erin", "Chan", "erinchan@gmail.com", "987654321", 0);
-            Person visitor2 = new Person("Mary", "Lee", "marylee@gmail.com", "123456789", 0);
+            Person visitor1 = new Person("Erin", "Chan", "erinchan@gmail.com", "987654321", "sengkang", 0);
+            Person visitor2 = new Person("Mary", "Lee", "marylee@gmail.com", "123456789", "woodlands", 0);
             Person customer1 = new Person("John", "Lee", "customer1", "12345", 1);
             Person customer2 = new Person("Aries", "Chua", "customer2", "54321", 1);
             Person partnerEmp1 = new Person("Nick", "Tan", "partnerEmp1", "444", 2);
@@ -83,6 +83,12 @@ public class DataInitSessionBean implements DataInitSessionBeanLocal {
             System.out.println("Created all Persons: Visitor, Customer, Partners"); 
             
         }
+        
+//        List<Person> visitorsList = personSessionBean.retrieveAllVisitors();
+//        for (Person v : visitorsList) {
+//            em.remove(v);
+//        }
+        
         
         System.out.println("== Printing out Visitors");
         List<Person> visitors = personSessionBean.retrieveAllVisitors();

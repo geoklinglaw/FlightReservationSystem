@@ -11,8 +11,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import util.enumeration.PersonRoleType;
 
@@ -31,15 +29,15 @@ public class Person implements Serializable {
     private String firstName;
     @Column(nullable = false, length = 30)
     private String lastName;
-    @Column(nullable = false, length = 50)
+    @Column(nullable = true, length = 50)
     private String email;
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String contactNum;
-    @Column(nullable = false, length = 100)
+    @Column(nullable = true, length = 100)
     private String address;
-    @Column(nullable = false, length = 30)
+    @Column(nullable = true, length = 30)
     private String username;
-    @Column(nullable = false, length = 30)
+    @Column(nullable = true, length = 30)
     private String password;
     @Column(nullable = false)
     private PersonRoleType role;
@@ -51,16 +49,17 @@ public class Person implements Serializable {
     public Person() {
     }
 
-    //for visitor registration
-    public Person(String firstName, String lastName, String email, String contactNum, int role) {
+    
+    //for customer log in
+    public Person(String firstName, String lastName, String username, String password, int role) {
         this.firstName = firstName;
         this.lastName = lastName;
-        this.email = email;
-        this.contactNum = contactNum;
+        this.username = username;
+        this.password = password;
         this.role = PersonRoleType.fromValue(role);
     }
     
-
+    //for visitor registration
     public Person(String firstName, String lastName, String email, String contactNum, String address, int role) {
         this.firstName = firstName;
         this.lastName = lastName;
@@ -69,12 +68,17 @@ public class Person implements Serializable {
         this.address = address;
         this.role = PersonRoleType.fromValue(role);
     }
-    
-    //for customer log in
-    public Person(String username, String password, int role) {
+
+    public Person(String firstName, String lastName, String email, String contactNum, String address, String username, String password, PersonRoleType role, List<FlightReservation> flightReservations) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.contactNum = contactNum;
+        this.address = address;
         this.username = username;
         this.password = password;
-        this.role = PersonRoleType.fromValue(role);
+        this.role = role;
+        this.flightReservations = flightReservations;
     }
 
     public Long getId() {
@@ -192,6 +196,48 @@ public class Person implements Serializable {
      */
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    /**
+     * @return the email
+     */
+    public String getEmail() {
+        return email;
+    }
+
+    /**
+     * @param email the email to set
+     */
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    /**
+     * @return the contactNum
+     */
+    public String getContactNum() {
+        return contactNum;
+    }
+
+    /**
+     * @param contactNum the contactNum to set
+     */
+    public void setContactNum(String contactNum) {
+        this.contactNum = contactNum;
+    }
+
+    /**
+     * @return the address
+     */
+    public String getAddress() {
+        return address;
+    }
+
+    /**
+     * @param address the address to set
+     */
+    public void setAddress(String address) {
+        this.address = address;
     }
     
 }
