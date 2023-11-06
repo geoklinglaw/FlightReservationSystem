@@ -112,7 +112,20 @@ public class Main {
                 return;
             }
             
-//            Person newCust = new Person(firstName, lastName, email, contactNum, address, 1);
+            System.out.print("> Create Username: ");
+            String username = sc.nextLine();
+            if (username.equals("q")) {
+                cancelRegistration(sc);
+                return;
+            }
+            
+            System.out.print("> Create Password: ");
+            String password = sc.nextLine();
+            if (password.equals("q")) {
+                cancelRegistration(sc);
+                return;
+            }
+            
             Person newCust = new Person();
             
             newCust.setFirstName(firstName);
@@ -120,6 +133,8 @@ public class Main {
             newCust.setEmail(email);
             newCust.setContactNum(contactNum);
             newCust.setAddress(address);
+            newCust.setUsername(username);
+            newCust.setPassword(password);
             newCust.setRole(PersonRoleType.CUSTOMER);
          
             Long custId = personSessionBean.createNewPerson(newCust);
@@ -153,8 +168,8 @@ public class Main {
         String password = sc.nextLine().trim();
 
         try {
-            if (personSessionBean.checkPersonExists(username)) {
-                Person currPerson = personSessionBean.retrievePersonByUsername(username);
+            if (username.length() > 0 && password.length() > 0) {
+                Person currPerson = personSessionBean.login(username, password);
                 System.out.println("Welcome " + currPerson.getFirstName() + ", you're logged in!\n");
 
                 doMenuFeatures(sc, currPerson.getId());
@@ -171,15 +186,18 @@ public class Main {
     }
         
     private static void doMenuFeatures(Scanner sc, Long customerId) {
-            System.out.println("==== Menu ====");
+        Integer response = 0;
+        Person person = personSessionBean.retrievePersonById(customerId);
+        while (true) {
+            System.out.println("==== Menu Interface ====");
+            System.out.println("You are logged in as " + person.getFirstName() + " " + person.getLastName()+ " \n");
             System.out.println("> 1. Search for Flights");
             System.out.println("> 2. Reserve Flights");
             System.out.println("> 3. View My Flight Reservation Details");
             System.out.println("> 4. View All My Flight Reservations");
             System.out.println("> 5. Logout");
             System.out.print("> ");
-            Integer response = 0;
-            sc.nextLine();
+            response = sc.nextInt();
             
             switch(response) {
                 case 1: 
@@ -211,6 +229,8 @@ public class Main {
                    doMenuFeatures(sc, customerId);
                    break; 
             }
+        }
+           
     }
     
     private static void doSearchFlights() {
