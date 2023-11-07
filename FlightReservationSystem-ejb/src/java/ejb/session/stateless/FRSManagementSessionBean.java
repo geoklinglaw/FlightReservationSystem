@@ -14,7 +14,6 @@ import entity.FlightSchedule;
 import entity.Seat;
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -156,33 +155,6 @@ public class FRSManagementSessionBean implements FRSManagementSessionBeanRemote,
     public List<FlightRoute> viewAllFlightRoutes() {
         List<FlightRoute> flightRoute = flightRouteSessionBeanLocal.viewAllFlightRoute();
         return flightRoute;
-    }
-    
-    @Override
-    public ArrayList<Airport> deleteFlightRoute(String originCode, String destCode) {
-        Airport originAirport = airportEntitySessionBeanLocal.retrieveAirportByCode(originCode);
-        Airport destinationAirport = airportEntitySessionBeanLocal.retrieveAirportByCode(destCode);
-        
-        FlightRoute intendedRoute = null;
-        for (FlightRoute originRoute: originAirport.getFlightRoute()) {
-            for (FlightRoute destRoute: destinationAirport.getFlightRoute()) {
-                if (originRoute.getId().equals(destRoute.getId())) {
-                    intendedRoute = originRoute;
-                    break;
-                } 
-            }
-            if (intendedRoute != null) {
-                break; // Stop searching if we found the route
-            }
-        }
-        
-        intendedRoute.setAirportList(new ArrayList<Airport>());
-        originAirport.getFlightRoute().remove(intendedRoute);
-        destinationAirport.getFlightRoute().remove(intendedRoute);
-        flightRouteSessionBeanLocal.deleteFlightRoute(intendedRoute);
-        
-        return new ArrayList<Airport>(Arrays.asList(originAirport, destinationAirport));
-
     }
 
 

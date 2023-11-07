@@ -10,8 +10,6 @@ import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
-import javax.persistence.TypedQuery;
 
 /**
  *
@@ -40,17 +38,6 @@ public class AirportEntitySessionBean implements AirportEntitySessionBeanRemote,
         return airportList;
       
     }
-    
-    public Airport retrieveAirportByCode(String code) {
-        Query query = em.createNamedQuery("retrieveAirportByCode", Airport.class);
-        query.setParameter("airportCode", code);
-        Airport airport = (Airport) query.getSingleResult();
-        airport.getFlightRoute().size();
-        
-        return airport;
-        
-    }
-        
 
 
 }
