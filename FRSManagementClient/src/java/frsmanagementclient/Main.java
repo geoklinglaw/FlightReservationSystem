@@ -80,6 +80,14 @@ public class Main {
             {
                 Employee currEmp = employeeSessionBean.login(username, password);
                 System.out.println("Welcome " + currEmp.getEmployeeName() + ", you're logged in!\n");
+                System.out.println("LOGGED IN CONGRATS");
+                System.out.println("LOGGED IN CONGRATS");
+                System.out.println("LOGGED IN CONGRATS");
+                System.out.println("LOGGED IN CONGRATS");
+
+                
+                                                
+
                 performTasks();
                 
             } else 
