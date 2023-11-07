@@ -95,20 +95,42 @@ public class PersonSessionBean implements PersonSessionBeanRemote, PersonSession
     }
     
     @Override
-    public Person login(String username, String password) {
+    public Person login(String username, String password) throws InvalidLoginCredentialException {
         
-        Query query = em.createQuery("SELECT p FROM Person p WHERE p.username = :inUsername");
+        try {
+            Query query = em.createQuery("SELECT p FROM Person p WHERE p.username = :inUsername");
             query.setParameter("inUsername", username);
             Person person = (Person)query.getSingleResult();
-
-            if(person.getPassword().equals(password))
-            {
-                return person;
-            }
-            else
-            {
-                return null;
-            }
+          
+          if (person.getPassword().equals(password)) 
+          {
+              person.getFlightReservations().size();
+              return person;
+          } 
+          else 
+          {
+              throw new InvalidLoginCredentialException("Invalid username or password.");
+          }
+        } 
+        catch (NoResultException ex) 
+        {
+            throw new InvalidLoginCredentialException("Invalid username or password.");
+        }
+        
+        
+        
+//        Query query = em.createQuery("SELECT p FROM Person p WHERE p.username = :inUsername");
+//            query.setParameter("inUsername", username);
+//            Person person = (Person)query.getSingleResult();
+//
+//            if(person.getPassword().equals(password))
+//            {
+//                return person;
+//            }
+//            else
+//            {
+//                return null;
+//            }
 
 //        try
 //        {

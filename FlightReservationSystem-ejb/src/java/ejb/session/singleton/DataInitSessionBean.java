@@ -62,32 +62,46 @@ public class DataInitSessionBean implements DataInitSessionBeanLocal {
     public void postConstruct() {
         System.out.println("==== Inside Post Construct Method ====");
         
+        if(em.find(Employee.class, 1L) == null) {
+            
+            Employee emp = new Employee("emp1", "sysAdmin", "password", 4);
+            employeeSessionBean.createNewEmployee(emp);
+            emp = new Employee("emp2", "fleetManager", "password", 0);
+            employeeSessionBean.createNewEmployee(emp);
+            emp = new Employee("emp3", "routeManager", "password", 1);
+            employeeSessionBean.createNewEmployee(emp);
+            emp = new Employee("emp4", "schedManager", "password", 2);
+            employeeSessionBean.createNewEmployee(emp);
+            emp = new Employee("emp5", "salesManager", "password", 3);
+            employeeSessionBean.createNewEmployee(emp);
+            
+             System.out.println("Created all Employees"); 
+        }
+        
         if(em.find(Person.class, 1L) == null) {
             
-            Person visitor1 = new Person("Erin", "Chan", "erinchan@gmail.com", "987654321", "sengkang", 0);
-            Person visitor2 = new Person("Mary", "Lee", "marylee@gmail.com", "123456789", "woodlands", 0);
-            Person customer1 = new Person("John", "Lee", "customer1", "12345", 1);
-            Person customer2 = new Person("Aries", "Chua", "customer2", "54321", 1);
-            Person partnerEmp1 = new Person("Nick", "Tan", "partnerEmp1", "444", 2);
-            Person partnerEmp2 = new Person("Belle", "Tan", "partnerEmp2", "555", 2);
-            Person partnerRM1 = new Person("Candice", "Ang", "partnerRM1", "777", 3);
+            Person person = new Person("Erin", "Chan", "erinchan@gmail.com", "987654321", "sengkang", "erinchan", "password", 0);
+            personSessionBean.createNewPerson(person);
             
-            personSessionBean.createNewPerson(visitor1);
-            personSessionBean.createNewPerson(visitor2);
-            personSessionBean.createNewPerson(customer1);
-            personSessionBean.createNewPerson(customer2);
-            personSessionBean.createNewPerson(partnerEmp1);
-            personSessionBean.createNewPerson(partnerEmp2);
-            personSessionBean.createNewPerson(partnerRM1);
+//            Person visitor1 = new Person("Erin", "Chan", "erinchan@gmail.com", "987654321", "sengkang", "erinchan", "password", 0);
+//            Person visitor2 = new Person("Mary", "Lee", "marylee@gmail.com", "123456789", "woodlands", "marylee", "password", 0);
+//            Person customer1 = new Person("John", "Lee", "customer1", "12345", 1);
+//            Person customer2 = new Person("Aries", "Chua", "customer2", "54321", 1);
+//            Person partnerEmp1 = new Person("Nick", "Tan", "partnerEmp1", "444", 2);
+//            Person partnerEmp2 = new Person("Belle", "Tan", "partnerEmp2", "555", 2);
+//            Person partnerRM1 = new Person("Candice", "Ang", "partnerRM1", "777", 3);
+//            
+//            personSessionBean.createNewPerson(visitor1);
+//            personSessionBean.createNewPerson(visitor2);
+//            personSessionBean.createNewPerson(customer1);
+//            personSessionBean.createNewPerson(customer2);
+//            personSessionBean.createNewPerson(partnerEmp1);
+//            personSessionBean.createNewPerson(partnerEmp2);
+//            personSessionBean.createNewPerson(partnerRM1);
             
             System.out.println("Created all Persons: Visitor, Customer, Partners"); 
             
         }
-        
-//        List<Person> visitorsList = personSessionBean.retrieveAllVisitors();
-//        for (Person v : visitorsList) {
-//            em.remove(v);
-//        }
         
         
         System.out.println("== Printing out Visitors");

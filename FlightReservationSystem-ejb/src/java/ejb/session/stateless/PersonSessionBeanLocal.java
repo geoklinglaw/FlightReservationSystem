@@ -29,8 +29,7 @@ public interface PersonSessionBeanLocal {
     
     public Person retrievePersonByUsername(String username) throws PersonNotFoundException;
 
-//    public Person login(String username, String password) throws InvalidLoginCredentialException;
-    public Person login(String username, String password);
+    public Person login(String username, String password) throws InvalidLoginCredentialException;
     
     public List<Person> retrieveAllVisitors();
 

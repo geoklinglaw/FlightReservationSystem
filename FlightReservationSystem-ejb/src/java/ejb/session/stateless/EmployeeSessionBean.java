@@ -28,36 +28,41 @@ public class EmployeeSessionBean implements EmployeeSessionBeanRemote, EmployeeS
     public EmployeeSessionBean() {
     }
 
-    
     @Override
-    public Long createNewEmployee(Employee newEmployee, EmployeePosition position) throws EmployeeUsernameExistException, UnknownPersistenceException {
-       try
-        {   
-            newEmployee.setPosition(position);
-            em.persist(newEmployee);
-            em.flush();
+    public Long createNewEmployee(Employee newEmployee) {
+        em.persist(newEmployee);
+        em.flush();
 
-            return newEmployee.getId();
-        } 
-        catch (PersistenceException ex) {
-            if(ex.getCause() != null && ex.getCause().getClass().getName().equals("org.eclipse.persistence.exceptions.DatabaseException"))
-            {
-                if(ex.getCause().getCause() != null && ex.getCause().getCause().getClass().getName().equals("java.sql.SQLIntegrityConstraintViolationException"))
-                {
-                    throw new EmployeeUsernameExistException();
-                }
-                else
-                {
-                    throw new UnknownPersistenceException(ex.getMessage());
-                }
-            }
-            else
-            {
-                throw new UnknownPersistenceException(ex.getMessage());
-            }
-        }
-    } 
-    
+        return newEmployee.getId();
+    }
+//    @Override
+//    public Long createNewEmployee(Employee newEmployee) throws EmployeeUsernameExistException, UnknownPersistenceException {
+//       try
+//        {   
+//            em.persist(newEmployee);
+//            em.flush();
+//
+//            return newEmployee.getId();
+//        } 
+//        catch (PersistenceException ex) {
+//            if(ex.getCause() != null && ex.getCause().getClass().getName().equals("org.eclipse.persistence.exceptions.DatabaseException"))
+//            {
+//                if(ex.getCause().getCause() != null && ex.getCause().getCause().getClass().getName().equals("java.sql.SQLIntegrityConstraintViolationException"))
+//                {
+//                    throw new EmployeeUsernameExistException();
+//                }
+//                else
+//                {
+//                    throw new UnknownPersistenceException(ex.getMessage());
+//                }
+//            }
+//            else
+//            {
+//                throw new UnknownPersistenceException(ex.getMessage());
+//            }
+//        }
+//    } 
+//    
     @Override
     public Employee retrieveEmployeeById(Long employeeId) throws EmployeeNotFoundException {
         

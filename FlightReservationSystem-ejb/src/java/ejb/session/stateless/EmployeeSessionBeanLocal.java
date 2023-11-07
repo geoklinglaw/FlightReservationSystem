@@ -21,7 +21,8 @@ import util.exception.UnknownPersistenceException;
 @Local
 public interface EmployeeSessionBeanLocal {
     
-    public Long createNewEmployee(Employee newEmployee, EmployeePosition position) throws EmployeeUsernameExistException, UnknownPersistenceException;
+//    public Long createNewEmployee(Employee newEmployee) throws EmployeeUsernameExistException, UnknownPersistenceException;
+    public Long createNewEmployee(Employee newEmployee);
     
     public Employee retrieveEmployeeById(Long employeeId) throws EmployeeNotFoundException;
     
