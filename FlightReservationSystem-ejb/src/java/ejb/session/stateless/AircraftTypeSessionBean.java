@@ -45,6 +45,6 @@ public class AircraftTypeSessionBean implements AircraftTypeSessionBeanRemote, A
         
         return (AircraftType) query.getSingleResult();
     }
-        
+  
 
 }

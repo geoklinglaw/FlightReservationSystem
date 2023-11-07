@@ -4,7 +4,7 @@
  */
 package ejb.session.stateless;
 
-import entity.AircraftConfiguration;
+import entity.FlightRoute;
 import java.util.List;
 import javax.ejb.Local;
 
@@ -13,10 +13,13 @@ import javax.ejb.Local;
  * @author apple
  */
 @Local
-public interface AircraftConfigurationSessionBeanLocal {
+public interface FlightRouteSessionBeanLocal {
     
-    public Long createNewAircraftConfiguration(AircraftConfiguration aircraftConfig);
+    public void createNewFlightRoute(FlightRoute flightRoute);
     
-    public List<AircraftConfiguration> viewAllAircraftConfiguration();
+    public List<FlightRoute> viewAllFlightRoute();
+    
+    public void deleteFlightRoute(FlightRoute route);
+    
     
 }

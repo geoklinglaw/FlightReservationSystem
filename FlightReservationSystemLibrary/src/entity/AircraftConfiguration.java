@@ -27,6 +27,13 @@ import util.enumeration.AircraftName;
  * @author apple
  */
 @Entity
+@NamedQueries({
+    @NamedQuery(
+        name = "viewAllAircraftConfigurations",
+        query = "SELECT acc FROM AircraftConfiguration acc"
+    )
+
+})
 public class AircraftConfiguration implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -36,7 +43,7 @@ public class AircraftConfiguration implements Serializable {
     @Column(nullable = false)
     private String name;
     
-    @ManyToMany (mappedBy = "aircraftConfig")
+    @OneToMany (mappedBy = "aircraftConfig")
     private List<CabinClass> cabinClassList;
     
     @ManyToOne (optional = false)

@@ -4,8 +4,7 @@
  */
 package ejb.session.stateless;
 
-import entity.Airport;
-import java.util.List;
+import entity.CabinClass;
 import javax.ejb.Remote;
 
 /**
@@ -13,14 +12,8 @@ import javax.ejb.Remote;
  * @author apple
  */
 @Remote
-public interface AirportEntitySessionBeanRemote {
+public interface CabinClassSessionBeanRemote {
     
-    public Long createNewAirport(Airport airport);
-    
-    public Airport retrieveAirport(Long id);
-    
-    public List<Airport> retrieveAllAirports();
-    
-    public Airport retrieveAirportByCode(String code);
+    public void createNewCabinClass(CabinClass cc);
     
 }

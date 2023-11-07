@@ -38,9 +38,7 @@ public class CabinClass implements Serializable {
     @Column(nullable = false)
     private BigDecimal numRows;
     @Column(nullable = false)
-    private BigDecimal numAbreastSide;
-    @Column(nullable = false)
-    private BigDecimal numAbreastCenter;
+    private BigDecimal numSeatAbreast; 
     @Column(nullable = false)
     private BigDecimal numAvailableSeats;
     @Column(nullable = false)
@@ -51,8 +49,8 @@ public class CabinClass implements Serializable {
     @ManyToOne 
     private FlightSchedule flightSchedule;
     
-    @ManyToMany 
-    private List<AircraftConfiguration> aircraftConfig;
+    @ManyToOne
+    private AircraftConfiguration aircraftConfig;
     
     @OneToMany (mappedBy = "cabinClass")
     private List<Seat> seatList;
@@ -63,18 +61,17 @@ public class CabinClass implements Serializable {
     public CabinClass() {
     }
 
-    public CabinClass(int type, BigDecimal seatingCapacity, BigDecimal numAisles, BigDecimal numRows, BigDecimal numAbreastSide, BigDecimal numAbreastCenter, BigDecimal numAvailableSeats, BigDecimal numReservedSeats, BigDecimal numBalanceSeats) {
+    public CabinClass(int type, BigDecimal seatingCapacity, BigDecimal numAisles, BigDecimal numRows, BigDecimal numSeatAbreast, BigDecimal numAvailableSeats, BigDecimal numReservedSeats, BigDecimal numBalanceSeats) {
         this.type = CabinClassType.fromValue(type);
         this.seatingCapacity = seatingCapacity;
         this.numAisles = numAisles;
         this.numRows = numRows;
-        this.numAbreastSide = numAbreastSide;
-        this.numAbreastCenter = numAbreastCenter;
+        this.numSeatAbreast = numSeatAbreast;
         this.numAvailableSeats = numAvailableSeats;
-        this.numBalanceSeats = numBalanceSeats;
         this.numReservedSeats = numReservedSeats;
+        this.numBalanceSeats = numBalanceSeats;
     }
-    
+
 
     public Long getId() {
         return id;
@@ -165,33 +162,7 @@ public class CabinClass implements Serializable {
         this.numRows = numRows;
     }
 
-    /**
-     * @return the numAbreastSide
-     */
-    public BigDecimal getNumAbreastSide() {
-        return numAbreastSide;
-    }
 
-    /**
-     * @param numAbreastSide the numAbreastSide to set
-     */
-    public void setNumAbreastSide(BigDecimal numAbreastSide) {
-        this.numAbreastSide = numAbreastSide;
-    }
-
-    /**
-     * @return the numAbreastCenter
-     */
-    public BigDecimal getNumAbreastCenter() {
-        return numAbreastCenter;
-    }
-
-    /**
-     * @param numAbreastCenter the numAbreastCenter to set
-     */
-    public void setNumAbreastCenter(BigDecimal numAbreastCenter) {
-        this.numAbreastCenter = numAbreastCenter;
-    }
 
     /**
      * @return the numAvailableSeats
@@ -252,14 +223,14 @@ public class CabinClass implements Serializable {
     /**
      * @return the aircraftConfig
      */
-    public List<AircraftConfiguration> getAircraftConfig() {
+    public AircraftConfiguration getAircraftConfig() {
         return aircraftConfig;
     }
 
     /**
      * @param aircraftConfig the aircraftConfig to set
      */
-    public void setAircraftConfig(List<AircraftConfiguration> aircraftConfig) {
+    public void setAircraftConfig(AircraftConfiguration aircraftConfig) {
         this.aircraftConfig = aircraftConfig;
     }
 
@@ -289,6 +260,20 @@ public class CabinClass implements Serializable {
      */
     public void setFareList(List<Fare> fareList) {
         this.fareList = fareList;
+    }
+
+    /**
+     * @return the numSeatAbreast
+     */
+    public BigDecimal getNumSeatAbreast() {
+        return numSeatAbreast;
+    }
+
+    /**
+     * @param numSeatAbreast the numSeatAbreast to set
+     */
+    public void setNumSeatAbreast(BigDecimal numSeatAbreast) {
+        this.numSeatAbreast = numSeatAbreast;
     }
     
 }

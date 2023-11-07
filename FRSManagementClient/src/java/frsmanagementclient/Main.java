@@ -103,7 +103,7 @@ public class Main {
         Integer response = 0;
         
         while(true) {
-            System.out.println("\n\nEnter your role (will be auto next time) \n");
+            System.out.println("\n\nEnter your role (will be auto next time)");
             System.out.println("1: Fleet Manager");
             System.out.println("2: Route Planner");
             System.out.println("3: Schedule Manager");
@@ -123,7 +123,8 @@ public class Main {
                     
                 }
                 else if (response == 2) {
-                    performRoutePlannerTasks();
+                    RoutePlannerTask routeManagerTasks = new RoutePlannerTask(FRSManagementSessionBeanRemote);
+                    routeManagerTasks.getTasks();
                 }
                 else if (response == 3) {
                     performScheduleManagerTasks();
@@ -145,9 +146,6 @@ public class Main {
     }
     
 
-    private static void performRoutePlannerTasks() {
-        
-    }
     
     private static void performScheduleManagerTasks() {
         
