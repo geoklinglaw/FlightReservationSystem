@@ -59,7 +59,7 @@ public class Main {
     }
     
     private static void doLogin() {
-        System.out.println("Logged in!");
+        System.out.println("LOGGED IN RIGHT NOW!");
         performTasks();
         
     }
