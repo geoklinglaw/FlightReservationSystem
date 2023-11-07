@@ -30,7 +30,7 @@ public class Main {
         Integer response = 0;
         
         while(true) {
-            System.out.println("*** Welcome to Merlin Airlines Management System ***\n");
+            System.out.println("*** Welcome to Merlion Airlines Management System ***\n");
             System.out.println("1: Login");
             System.out.println("2: Exit\n");
             response = 0;
