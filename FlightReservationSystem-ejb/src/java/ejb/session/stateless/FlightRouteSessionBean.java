@@ -35,10 +35,6 @@ public class FlightRouteSessionBean implements FlightRouteSessionBeanRemote, Fli
         
         return flightRoutes;
     }
-    
-    public void deleteFlightRoute(FlightRoute route) {
-        em.remove(route);
-    }
 
 
 }
