@@ -60,12 +60,14 @@ public class Person implements Serializable {
     }
     
     //for visitor registration
-    public Person(String firstName, String lastName, String email, String contactNum, String address, int role) {
+    public Person(String firstName, String lastName, String email, String contactNum, String address, String username, String password, int role) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.contactNum = contactNum;
         this.address = address;
+        this.username = username;
+        this.password = password;
         this.role = PersonRoleType.fromValue(role);
     }
 
