@@ -4,9 +4,12 @@
  */
 package frsmanagementclient;
 
+import ejb.session.stateless.EmployeeSessionBeanRemote;
 import ejb.session.stateless.FRSManagementSessionBeanRemote;
+import entity.Employee;
 import java.util.Scanner;
 import javax.ejb.EJB;
+import util.exception.InvalidLoginCredentialException;
 
 /**
  *
@@ -14,8 +17,13 @@ import javax.ejb.EJB;
  */
 public class Main {
 
+    @EJB
+    private static EmployeeSessionBeanRemote employeeSessionBean;
+
     @EJB(name = "FRSManagementSessionBeanRemote")
     private static FRSManagementSessionBeanRemote FRSManagementSessionBeanRemote;
+    
+    
 
     /**
      * @param args the command line arguments
@@ -59,10 +67,36 @@ public class Main {
     }
     
     private static void doLogin() {
-        System.out.println("Logged in!");
-        performTasks();
-        
+        Scanner sc = new Scanner(System.in);
+        System.out.println("==== Employee Login Interface ====");
+        System.out.println("Enter login details:");
+        System.out.print("> Enter Username: ");
+        String username = sc.nextLine().trim();
+        System.out.print("> Enter Password: ");
+        String password = sc.nextLine().trim();
+        try 
+        {
+            if (username.length() > 0 && password.length() > 0)
+            {
+                Employee currEmp = employeeSessionBean.login(username, password);
+                System.out.println("Welcome " + currEmp.getEmployeeName() + ", you're logged in!\n");
+                performTasks();
+                
+            } else 
+            {
+                System.out.println("No matching account found or wrong login details. Please try again.\n");
+                doLogin();
+            } 
+            
+        } catch (InvalidLoginCredentialException ex) {
+                System.out.println("Oh no... An error has occurred.\n");
+                runApp();
+            }
+                    
     }
+        
+        
+ 
     
     private static void performTasks() {
         Scanner scanner = new Scanner(System.in);
@@ -74,6 +108,7 @@ public class Main {
             System.out.println("2: Route Planner");
             System.out.println("3: Schedule Manager");
             System.out.println("4: Sales Manager");
+            System.out.println("5: Logout");
 
             response = 0;
             
@@ -95,6 +130,10 @@ public class Main {
                 }
                 else if (response == 4) {
                     performSalesManagerTasks();
+                }
+                else if (response == 5) {
+                    System.out.println("You have logged out.\n");
+                    runApp();
                 }
                 else {
                     System.out.println("Invalid option, please try again!\n");                
