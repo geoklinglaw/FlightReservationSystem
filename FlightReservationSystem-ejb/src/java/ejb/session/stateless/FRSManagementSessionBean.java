@@ -21,6 +21,7 @@ import javafx.util.Pair;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import util.enumeration.CabinClassType;
+import util.enumeration.FlightStatus;
 
 /**
  *
@@ -236,6 +237,17 @@ public class FRSManagementSessionBean implements FRSManagementSessionBeanRemote,
         }
         
         return managedFlight;
+    }
+    
+    public void deleteFlight(String flightNum) {
+        Flight managedFlight = flightSessionBeanLocal.retrieveFlightByNumber(flightNum);
+        
+        if (managedFlight.getFlightSchedulePlan() == null) {
+            flightSessionBeanLocal.deleteFlight(managedFlight);
+            
+        } else {
+            managedFlight.setStatus(FlightStatus.DISABLED);
+        }
     }
 
     

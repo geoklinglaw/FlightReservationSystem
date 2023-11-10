@@ -61,9 +61,13 @@ public class ScheduleManagerTask {
                 else if (response == 3) {
                     viewFlightDetails(scanner);
                 }
-                else if (response == 4) {
+                else if (response == 4) { 
                     updateFlight(scanner);
-                } else {
+                } 
+                else if (response == 5) {
+                    deleteFlight(scanner);
+                } 
+                else {
                     System.out.println("Invalid option, please try again!\n");                
                 }
             }
@@ -188,5 +192,15 @@ public class ScheduleManagerTask {
         FlightRoute flightRoute = updatedFlight.getFlightRoute();
         flightDetails += "Flight Route: " + flightRoute.getAirportList().get(0).getCountry() + "-->" + flightRoute.getAirportList().get(1).getCountry();
         System.out.println(flightDetails);
+    }
+    
+    private void deleteFlight(Scanner sc) {
+        System.out.println("\n\n*** Deleting Flight *** \n");
+        System.out.print("Enter Flight Number: \n> ");
+        sc.nextLine();
+        String flightNumber = sc.nextLine().trim();
+
+        FRSManagementSessionBeanRemote.deleteFlight(flightNumber);
+        System.out.println("Successfully deleted flight " + flightNumber + "!");
     }
 }

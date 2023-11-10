@@ -43,6 +43,8 @@ public interface FRSManagementSessionBeanLocal {
     public List<Flight> viewAllFlight();
     
     public Flight updateFlight(String flightNum, int routeId, int configId);
+    
+    public void deleteFlight(String flightNum);
 
 
 }

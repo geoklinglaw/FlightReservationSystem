@@ -23,4 +23,6 @@ public interface FlightSessionBeanLocal {
     
     public Flight retrieveFlightByNumber(String flightNum);
     
+    public void deleteFlight(Flight flight);
+    
 }

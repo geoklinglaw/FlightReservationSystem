@@ -22,6 +22,8 @@ public interface FlightSessionBeanRemote {
     public Flight retrieveFlightById(Long id);
 
     public Flight retrieveFlightByNumber(String flightNum);
+    
+    public void deleteFlight(Flight flight);
 
     
 }

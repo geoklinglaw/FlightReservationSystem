@@ -49,4 +49,8 @@ public class FlightSessionBean implements FlightSessionBeanRemote, FlightSession
 
         return flight;
     }
+    
+    public void deleteFlight(Flight flight) {
+        em.remove(flight);
+    }
 }
