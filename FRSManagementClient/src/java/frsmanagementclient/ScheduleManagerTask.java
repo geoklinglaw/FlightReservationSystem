@@ -61,7 +61,9 @@ public class ScheduleManagerTask {
                 else if (response == 3) {
                     viewFlightDetails(scanner);
                 }
-                else {
+                else if (response == 4) {
+                    updateFlight(scanner);
+                } else {
                     System.out.println("Invalid option, please try again!\n");                
                 }
             }
@@ -110,7 +112,7 @@ public class ScheduleManagerTask {
         System.out.println("\n\n*** Creating Flights *** \n");
         List<Flight> flights = FRSManagementSessionBeanRemote.viewAllFlight();
 
-        String flightText = "List of FLight:\n";
+        String flightText = "List of Flights:\n";
         int index = 1;
         for (Flight flight: flights) {
             flightText += index + ": " + flight.getFlightNumber() + " (" + flight.getAircraftConfig().getName() + ")\n";
@@ -131,6 +133,59 @@ public class ScheduleManagerTask {
         flightDetails += "Flight Number: " + flight.getFlightNumber() + "\n";
         flightDetails += "Aircraft Configuration: " + flight.getAircraftConfig().getName() + "\n";
         FlightRoute flightRoute = flight.getFlightRoute();
+        flightDetails += "Flight Route: " + flightRoute.getAirportList().get(0).getCountry() + "-->" + flightRoute.getAirportList().get(1).getCountry();
+        System.out.println(flightDetails);
+    }
+    
+    
+    private void updateFlight(Scanner sc) {
+        System.out.println("\n\n*** Updating Flight *** \n");
+        System.out.print("Select the fields that you want to update (enter '0' if there are no changes)! ");
+        List<Flight> flights = FRSManagementSessionBeanRemote.viewAllFlight();
+        String flightText = "\nList of Flight:\n";
+        int idx = 1;
+        for (Flight flight: flights) {
+            flightText += idx + ": " + flight.getFlightNumber() + " (" + flight.getAircraftConfig().getName() + ")\n";
+            idx += 1;
+        }
+        System.out.print(flightText);
+        System.out.print("\nEnter Flight Number to be changed:\n> ");
+        sc.nextLine();
+        String flightNum = sc.nextLine().trim();
+
+   
+        Pair<List<FlightRoute>, List<AircraftConfiguration>> pair = FRSManagementSessionBeanRemote.enquireFlightRequirements();
+        List<FlightRoute> routeList = pair.getKey();
+        List<AircraftConfiguration> acConfiglist = pair.getValue();
+
+        String routeText = "\nList of Flight Routes: \n";
+        int index = 1;
+        for (FlightRoute route: routeList) {
+            routeText += index + ": " + route.getAirportList().get(0).getCountry() + " --> " + route.getAirportList().get(1).getCountry() +"\n";
+            index += 1;
+        }
+        System.out.print(routeText);
+        System.out.print("\nEnter Flight Route ID: \n> ");
+        int routeId = sc.nextInt();
+
+        
+        String acConfigText = "List of Aircraft Configuration:";
+        for (AircraftConfiguration config: acConfiglist) {
+            acConfigText += "\n(" + config.getId() + ") " + config.getName() + ": ";
+            for (CabinClass cc: config.getCabinClassList()) {
+                acConfigText += cc.getType() + ", ";
+            }
+        }
+        System.out.print(acConfigText);
+        System.out.print("\nEnter Aircraft Configuration ID: \n> ");
+        int configId = sc.nextInt();
+        
+        Flight updatedFlight = FRSManagementSessionBeanRemote.updateFlight(flightNum, routeId, configId);
+        
+        String flightDetails = "-- Updated Flight Details -- \n";
+        flightDetails += "Flight Number: " + updatedFlight.getFlightNumber() + "\n";
+        flightDetails += "Aircraft Configuration: " + updatedFlight.getAircraftConfig().getName() + "\n";
+        FlightRoute flightRoute = updatedFlight.getFlightRoute();
         flightDetails += "Flight Route: " + flightRoute.getAirportList().get(0).getCountry() + "-->" + flightRoute.getAirportList().get(1).getCountry();
         System.out.println(flightDetails);
     }

@@ -34,4 +34,19 @@ public class FlightSessionBean implements FlightSessionBeanRemote, FlightSession
         }
         return flightList;
     }
+    
+    public Flight retrieveFlightById(Long id) {
+        Flight flight = em.find(Flight.class, id);
+        int size1 = flight.getFlightRoute().getAirportList().size();
+
+        return flight;
+    }
+    
+            
+    public Flight retrieveFlightByNumber(String flightNum) {
+        Flight flight = (Flight) em.createNamedQuery("selectFlight").setParameter("inNum", flightNum).getSingleResult();
+        int size1 = flight.getFlightRoute().getAirportList().size();
+
+        return flight;
+    }
 }

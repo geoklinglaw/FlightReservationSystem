@@ -41,5 +41,8 @@ public interface FRSManagementSessionBeanRemote {
     public void createFlight(String flightNum, Long routeId, Long configId);
 
     public List<Flight> viewAllFlight();
+    
+    public Flight updateFlight(String flightNum, int routeId, int configId);
+
 
 }

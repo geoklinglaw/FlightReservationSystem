@@ -29,6 +29,10 @@ import util.enumeration.FlightType;
     @NamedQuery(
         name = "viewAllFlight",
         query = "SELECT f FROM Flight f ORDER BY f.flightNumber"
+    ),
+    @NamedQuery(
+        name = "selectFlight",
+        query = "SELECT f FROM Flight f WHERE f.flightNumber = :inNum"
     )
 
 })

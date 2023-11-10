@@ -46,8 +46,6 @@ public class FlightRouteSessionBean implements FlightRouteSessionBeanRemote, Fli
         return route;
     }
 
-    public void persist(Object object) {
-        em.persist(object);
-    }
+
 
 }

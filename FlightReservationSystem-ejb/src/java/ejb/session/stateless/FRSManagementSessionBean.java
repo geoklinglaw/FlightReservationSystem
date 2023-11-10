@@ -218,4 +218,25 @@ public class FRSManagementSessionBean implements FRSManagementSessionBeanRemote,
     }
     
     
+    public Flight updateFlight(String flightNum, int routeId, int configId) {
+        
+        Flight managedFlight = flightSessionBeanLocal.retrieveFlightByNumber(flightNum);
+        
+        if (routeId != 0) {
+            Long routeID = new Long(routeId);
+            FlightRoute route = flightRouteSessionBeanLocal.retrieveFlightRouteById(routeID);
+            managedFlight.setFlightRoute(route);
+            managedFlight.getFlightRoute().getAirportList().size();
+        }
+        
+        if (configId != 0) {
+            Long configID = new Long(configId);
+            AircraftConfiguration config = aircraftConfigurationSessionBean.retrieveAircraftConfigurationById(configID);
+            managedFlight.setAircraftConfig(config);
+        }
+        
+        return managedFlight;
+    }
+
+    
 }

@@ -18,6 +18,10 @@ public interface FlightSessionBeanRemote {
     public void createNewFlight(Flight flight);
     
     public List<Flight> viewAllFlight();
+    
+    public Flight retrieveFlightById(Long id);
+
+    public Flight retrieveFlightByNumber(String flightNum);
 
     
 }

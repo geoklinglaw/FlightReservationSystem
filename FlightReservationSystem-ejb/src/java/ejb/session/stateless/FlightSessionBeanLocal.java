@@ -19,4 +19,8 @@ public interface FlightSessionBeanLocal {
     
     public List<Flight> viewAllFlight();
     
+    public Flight retrieveFlightById(Long id);
+    
+    public Flight retrieveFlightByNumber(String flightNum);
+    
 }
