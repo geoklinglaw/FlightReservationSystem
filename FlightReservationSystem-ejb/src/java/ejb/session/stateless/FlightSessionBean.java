@@ -5,6 +5,8 @@
 package ejb.session.stateless;
 
 import entity.Flight;
+import entity.FlightRoute;
+import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -22,5 +24,14 @@ public class FlightSessionBean implements FlightSessionBeanRemote, FlightSession
     @Override
     public void createNewFlight(Flight flight) {
         em.persist(flight);
+    }
+    
+    public List<Flight> viewAllFlight() {
+        List<Flight> flightList = em.createNamedQuery("viewAllFlight").getResultList();
+        for (Flight flight: flightList) {
+            FlightRoute route = flight.getFlightRoute();
+            int size1 = route.getAirportList().size();
+        }
+        return flightList;
     }
 }

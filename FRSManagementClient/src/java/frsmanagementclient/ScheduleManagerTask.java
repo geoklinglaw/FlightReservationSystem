@@ -8,6 +8,7 @@ import ejb.session.stateless.FRSManagementSessionBeanRemote;
 import entity.AircraftConfiguration;
 import entity.Airport;
 import entity.CabinClass;
+import entity.Flight;
 import entity.FlightRoute;
 import java.util.List;
 import java.util.Scanner;
@@ -55,8 +56,10 @@ public class ScheduleManagerTask {
                     createFlight(scanner);
                 }
                 else if (response == 2) {
+                    viewAllFlight();
                 }
                 else if (response == 3) {
+                    viewFlightDetails(scanner);
                 }
                 else {
                     System.out.println("Invalid option, please try again!\n");                
@@ -101,8 +104,34 @@ public class ScheduleManagerTask {
         
         FRSManagementSessionBeanRemote.createFlight(flightNum, routeId, config);
         System.out.print("Successfully created Flight " + flightNum);
+    }
+    
+    private List<Flight> viewAllFlight() {
+        System.out.println("\n\n*** Creating Flights *** \n");
+        List<Flight> flights = FRSManagementSessionBeanRemote.viewAllFlight();
 
+        String flightText = "List of FLight:\n";
+        int index = 1;
+        for (Flight flight: flights) {
+            flightText += index + ": " + flight.getFlightNumber() + " (" + flight.getAircraftConfig().getName() + ")\n";
+            index += 1;
+        }
         
+        System.out.print(flightText);
+        return flights;
+    }
+    
+    private void viewFlightDetails(Scanner sc) {
+        List<Flight> flightList = viewAllFlight();
+        System.out.print("Select which flight details you would like to know:\n> ");
+        int response = sc.nextInt();
+        Flight flight = flightList.get(response - 1);
         
+        String flightDetails = "-- Flight Details -- \n";
+        flightDetails += "Flight Number: " + flight.getFlightNumber() + "\n";
+        flightDetails += "Aircraft Configuration: " + flight.getAircraftConfig().getName() + "\n";
+        FlightRoute flightRoute = flight.getFlightRoute();
+        flightDetails += "Flight Route: " + flightRoute.getAirportList().get(0).getCountry() + "-->" + flightRoute.getAirportList().get(1).getCountry();
+        System.out.println(flightDetails);
     }
 }

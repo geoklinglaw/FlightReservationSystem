@@ -204,7 +204,7 @@ public class FRSManagementSessionBean implements FRSManagementSessionBeanRemote,
         AircraftConfiguration config = aircraftConfigurationSessionBean.retrieveAircraftConfigurationById(configId);
         FlightRoute route = flightRouteSessionBeanLocal.retrieveFlightRouteById(routeId);
         Flight flight = new Flight(flightNum, 1);
-        flight.setFightRoute(route);
+        flight.setFlightRoute(route);
         flight.setAircraftConfig(config);
         
         flightSessionBeanLocal.createNewFlight(flight);
@@ -212,6 +212,10 @@ public class FRSManagementSessionBean implements FRSManagementSessionBeanRemote,
 
     }
 
+    public List<Flight> viewAllFlight() {
+        List<Flight> flights= flightSessionBeanLocal.viewAllFlight();
+        return flights;
+    }
     
     
 }

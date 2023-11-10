@@ -7,6 +7,7 @@ package ejb.session.stateless;
 import entity.AircraftConfiguration;
 import entity.Airport;
 import entity.CabinClass;
+import entity.Flight;
 import entity.FlightRoute;
 import entity.Seat;
 import java.util.ArrayList;
@@ -39,6 +40,6 @@ public interface FRSManagementSessionBeanRemote {
     
     public void createFlight(String flightNum, Long routeId, Long configId);
 
-
+    public List<Flight> viewAllFlight();
 
 }

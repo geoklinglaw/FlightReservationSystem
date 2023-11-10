@@ -106,7 +106,6 @@ public class RoutePlannerTask {
         }
         System.out.print(routeText);
         
-        
     }
     
     private void deleteFlightRoute(Scanner sc) {
