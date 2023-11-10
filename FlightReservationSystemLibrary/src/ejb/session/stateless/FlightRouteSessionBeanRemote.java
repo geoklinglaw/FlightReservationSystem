@@ -19,5 +19,7 @@ public interface FlightRouteSessionBeanRemote {
     
     public List<FlightRoute> viewAllFlightRoute();
     
+    public FlightRoute retrieveFlightRouteById(Long id);
+    
     
 }

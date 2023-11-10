@@ -20,4 +20,7 @@ public interface FlightRouteSessionBeanLocal {
     public List<FlightRoute> viewAllFlightRoute();
     
     public void deleteFlightRoute(FlightRoute route);
+    
+    public FlightRoute retrieveFlightRouteById(Long id);
+    
 }

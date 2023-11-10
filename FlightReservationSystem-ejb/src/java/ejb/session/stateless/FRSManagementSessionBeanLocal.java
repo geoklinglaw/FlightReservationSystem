@@ -11,6 +11,7 @@ import entity.FlightRoute;
 import entity.Seat;
 import java.util.ArrayList;
 import java.util.List;
+import javafx.util.Pair;
 import javax.ejb.Local;
 
 /**
@@ -33,6 +34,12 @@ public interface FRSManagementSessionBeanLocal {
     public List<FlightRoute> viewAllFlightRoutes();
     
     public ArrayList<Airport> deleteFlightRoute(String originCode, String destCode);
+    
+    public Pair<List<FlightRoute>, List<AircraftConfiguration>> enquireFlightRequirements();
+    
+    public void createFlight(String flightNum, Long routeId, Long configId);
+
+
 
 
 }

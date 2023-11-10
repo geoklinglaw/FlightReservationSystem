@@ -9,6 +9,7 @@ import entity.AircraftType;
 import entity.Airport;
 import entity.CabinClass;
 import entity.Fare;
+import entity.Flight;
 import entity.FlightRoute;
 import entity.FlightSchedule;
 import entity.Seat;
@@ -16,6 +17,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import javafx.util.Pair;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import util.enumeration.CabinClassType;
@@ -30,6 +32,9 @@ public class FRSManagementSessionBean implements FRSManagementSessionBeanRemote,
     @EJB(name = "FlightRouteSessionBeanLocal")
     private FlightRouteSessionBeanLocal flightRouteSessionBeanLocal;
 
+    @EJB(name = "FlightSessionBeanLocal")
+    private FlightSessionBeanLocal flightSessionBeanLocal;
+    
     @EJB(name = "AirportEntitySessionBeanLocal")
     private AirportEntitySessionBeanLocal airportEntitySessionBeanLocal;
 
@@ -44,6 +49,14 @@ public class FRSManagementSessionBean implements FRSManagementSessionBeanRemote,
 
     @EJB
     private AircraftConfigurationSessionBeanLocal aircraftConfigurationSessionBean;
+    
+    
+    public Pair<List<FlightRoute>, List<AircraftConfiguration>> enquireFlightRequirements() {
+        List<AircraftConfiguration> aircraftList = viewAllAircraftConfiguration();
+        List<FlightRoute> routeList = viewAllFlightRoutes();
+        Pair<List<FlightRoute>, List<AircraftConfiguration>> pair = new Pair<>(routeList, aircraftList);
+        return pair;   
+    }
     
     @Override
     public void createAircraftConfiguration(int aircraftType, List<Integer> ccList) {
@@ -185,4 +198,20 @@ public class FRSManagementSessionBean implements FRSManagementSessionBeanRemote,
         return new ArrayList<Airport>(Arrays.asList(originAirport, destinationAirport));
 
     }
+    
+    
+    public void createFlight(String flightNum, Long routeId, Long configId) {
+        AircraftConfiguration config = aircraftConfigurationSessionBean.retrieveAircraftConfigurationById(configId);
+        FlightRoute route = flightRouteSessionBeanLocal.retrieveFlightRouteById(routeId);
+        Flight flight = new Flight(flightNum, 1);
+        flight.setFightRoute(route);
+        flight.setAircraftConfig(config);
+        
+        flightSessionBeanLocal.createNewFlight(flight);
+        
+
+    }
+
+    
+    
 }

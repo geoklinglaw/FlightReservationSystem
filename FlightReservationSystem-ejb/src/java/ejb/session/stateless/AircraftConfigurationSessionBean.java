@@ -37,5 +37,10 @@ public class AircraftConfigurationSessionBean implements AircraftConfigurationSe
         return aircraftConfig;
     }
     
+    public AircraftConfiguration retrieveAircraftConfigurationById(Long id) {
+        AircraftConfiguration config = em.find(AircraftConfiguration.class, id);
+        
+        return config;
+    }
 
 }

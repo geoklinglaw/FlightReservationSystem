@@ -19,4 +19,6 @@ public interface AircraftConfigurationSessionBeanLocal {
     
     public List<AircraftConfiguration> viewAllAircraftConfiguration();
     
+    public AircraftConfiguration retrieveAircraftConfigurationById(Long id);
+    
 }

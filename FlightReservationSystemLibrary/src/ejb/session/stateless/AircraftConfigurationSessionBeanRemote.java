@@ -19,4 +19,7 @@ public interface AircraftConfigurationSessionBeanRemote {
     
     public List<AircraftConfiguration> viewAllAircraftConfiguration();
     
+    public AircraftConfiguration retrieveAircraftConfigurationById(Long id);
+
+    
 }

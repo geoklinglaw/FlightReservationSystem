@@ -41,7 +41,7 @@ public class Flight implements Serializable {
     private FlightRoute flightRoute;
     
     @ManyToOne 
-    @JoinColumn (nullable=false)
+    @JoinColumn (nullable=true)
     private FlightSchedulePlan flightSchedulePlan;
     
 
@@ -53,9 +53,6 @@ public class Flight implements Serializable {
         this.status = FlightStatus.fromValue(status);
         
     }
-    
-    
-    
     
 
     public Long getId() {

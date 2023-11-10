@@ -4,7 +4,10 @@
  */
 package ejb.session.stateless;
 
+import entity.Flight;
 import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 
 /**
  *
@@ -13,6 +16,11 @@ import javax.ejb.Stateless;
 @Stateless
 public class FlightSessionBean implements FlightSessionBeanRemote, FlightSessionBeanLocal {
 
-    // Add business logic below. (Right-click in editor and choose
-    // "Insert Code > Add Business Method")
+    @PersistenceContext(unitName = "FlightReservationSystem-ejbPU")
+    private EntityManager em;
+
+    @Override
+    public void createNewFlight(Flight flight) {
+        em.persist(flight);
+    }
 }
