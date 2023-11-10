@@ -21,4 +21,7 @@ public interface AirportEntitySessionBeanRemote {
     
     public List<Airport> retrieveAllAirports();
     
+    public Airport retrieveAirportByCode(String code);
+    
+    
 }

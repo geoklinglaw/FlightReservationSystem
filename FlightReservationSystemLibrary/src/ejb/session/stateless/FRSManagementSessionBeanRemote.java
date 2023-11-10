@@ -9,6 +9,7 @@ import entity.Airport;
 import entity.CabinClass;
 import entity.FlightRoute;
 import entity.Seat;
+import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.Remote;
 
@@ -30,5 +31,8 @@ public interface FRSManagementSessionBeanRemote {
     public void createFlightRoute(Long originId, Long destId);
     
     public List<FlightRoute> viewAllFlightRoutes();
+    
+    public ArrayList<Airport> deleteFlightRoute(String originCode, String destCode);
+
 
 }
