@@ -153,7 +153,7 @@ public class ScheduleManagerTask {
         flightDetails += "Flight Number: " + flight.getFlightNumber() + "\n";
         flightDetails += "Aircraft Configuration: " + flight.getAircraftConfig().getName() + "\n";
         FlightRoute flightRoute = flight.getFlightRoute();
-        flightDetails += "Flight Route: " + flightRoute.getAirportList().get(0).getCountry() + "--> " + flightRoute.getAirportList().get(1).getCountry();
+        flightDetails += "Flight Route: " + flightRoute.getAirportList().get(0).getCountry() + " --> " + flightRoute.getAirportList().get(1).getCountry();
         System.out.println(flightDetails);
     }
     
@@ -206,7 +206,7 @@ public class ScheduleManagerTask {
         flightDetails += "Flight Number: " + updatedFlight.getFlightNumber() + "\n";
         flightDetails += "Aircraft Configuration: " + updatedFlight.getAircraftConfig().getName() + "\n";
         FlightRoute flightRoute = updatedFlight.getFlightRoute();
-        flightDetails += "Flight Route: " + flightRoute.getAirportList().get(0).getCountry() + "--> " + flightRoute.getAirportList().get(1).getCountry();
+        flightDetails += "Flight Route: " + flightRoute.getAirportList().get(0).getCountry() + " --> " + flightRoute.getAirportList().get(1).getCountry();
         System.out.println(flightDetails);
     }
     
@@ -316,6 +316,7 @@ public class ScheduleManagerTask {
         fsList.add(flightSch);
         singleFsp.setFlightSchedule(fsList);
         flightSch.setFlightSchedulePlan(singleFsp);
+        flight.setFlightSchedulePlan(singleFsp);
 
         
         updateDatabaseOnFSPFS(flightSch, singleFsp);
@@ -348,7 +349,7 @@ public class ScheduleManagerTask {
         flightDetails += "Flight Number: " + flight.getFlightNumber() + "\n";
         flightDetails += "Aircraft Configuration: " + flight.getAircraftConfig().getName() + "\n";
         FlightRoute flightRoute = flight.getFlightRoute();
-        flightDetails += "Flight Route: " + flightRoute.getAirportList().get(0).getCountry() + "--> " + flightRoute.getAirportList().get(1).getCountry();
+        flightDetails += "Flight Route: " + flightRoute.getAirportList().get(0).getCountry() + " --> " + flightRoute.getAirportList().get(1).getCountry();
         System.out.println(flightDetails);
         
         return flight;
