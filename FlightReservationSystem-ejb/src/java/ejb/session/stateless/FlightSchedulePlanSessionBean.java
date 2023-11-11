@@ -4,7 +4,8 @@
  */
 package ejb.session.stateless;
 
-import entity.Fare;
+import entity.FlightSchedule;
+import entity.FlightSchedulePlan;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -14,21 +15,18 @@ import javax.persistence.PersistenceContext;
  * @author apple
  */
 @Stateless
-public class FareEntitySessionBean implements FareEntitySessionBeanRemote, FareEntitySessionBeanLocal {
+public class FlightSchedulePlanSessionBean implements FlightSchedulePlanSessionBeanRemote, FlightSchedulePlanSessionBeanLocal {
 
     @PersistenceContext(unitName = "FlightReservationSystem-ejbPU")
     private EntityManager em;
 
-    public Long createNewFare(Fare fare) {
-        em.persist(fare);
-        em.flush();
-        
-        return fare.getId();
+    @Override
+    public void createNewFlightSchedulePlan(FlightSchedulePlan fsp) {
+        em.persist(fsp);
     }
-
-    public Fare retrieveFareById(Long id) {
-        Fare fare = em.find(Fare.class, id);
-        
-        return fare;
+   
+    @Override
+    public void createNewFlightSchedule(FlightSchedule fs) {
+        em.persist(fs);
     }
 }

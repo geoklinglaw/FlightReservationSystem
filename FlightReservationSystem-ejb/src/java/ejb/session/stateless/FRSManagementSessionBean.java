@@ -12,6 +12,7 @@ import entity.Fare;
 import entity.Flight;
 import entity.FlightRoute;
 import entity.FlightSchedule;
+import entity.FlightSchedulePlan;
 import entity.Seat;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -30,6 +31,9 @@ import util.enumeration.FlightStatus;
 @Stateless
 public class FRSManagementSessionBean implements FRSManagementSessionBeanRemote, FRSManagementSessionBeanLocal {
 
+    @EJB(name = "FareEntitySessionBeanLocal")
+    private FareEntitySessionBeanLocal fareEntitySessionBeanLocal;
+
     @EJB(name = "FlightRouteSessionBeanLocal")
     private FlightRouteSessionBeanLocal flightRouteSessionBeanLocal;
 
@@ -47,6 +51,10 @@ public class FRSManagementSessionBean implements FRSManagementSessionBeanRemote,
 
     @EJB(name = "AircraftTypeSessionBeanLocal")
     private AircraftTypeSessionBeanLocal aircraftTypeSessionBeanLocal;
+
+    @EJB(name = "FlightSchedulePlanSessionBeanLocal")
+    private FlightSchedulePlanSessionBeanLocal flightSchedulePlanSessionBeanLocal;
+
 
     @EJB
     private AircraftConfigurationSessionBeanLocal aircraftConfigurationSessionBean;
@@ -248,6 +256,25 @@ public class FRSManagementSessionBean implements FRSManagementSessionBeanRemote,
         } else {
             managedFlight.setStatus(FlightStatus.DISABLED);
         }
+    }
+    
+    public Flight viewSpecificFlight(String flightNum) {
+        Flight flight = flightSessionBeanLocal.retrieveFlightByNumber(flightNum);
+        int size = flight.getAircraftConfig().getCabinClassList().size();
+        return flight;
+    }
+    
+    public void createFareforEachCabinClass(Long ccId, Fare fare) {
+        Long fareId = fareEntitySessionBeanLocal.createNewFare(fare);
+        Fare managedFare = fareEntitySessionBeanLocal.retrieveFareById(fareId);
+        CabinClass cc = cabinClassSessionBeanLocal.retrieveCabinClassById(ccId);
+        cc.getFareList().add(managedFare);
+        managedFare.setCabinClass(cc);
+    }
+    
+    public void createFlightScheduleAndPlan(FlightSchedule fs, FlightSchedulePlan fsp) {
+        flightSchedulePlanSessionBeanLocal.createNewFlightSchedule(fs);
+        flightSchedulePlanSessionBeanLocal.createNewFlightSchedulePlan(fsp);
     }
 
     

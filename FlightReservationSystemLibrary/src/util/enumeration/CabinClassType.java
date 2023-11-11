@@ -9,7 +9,7 @@ package util.enumeration;
  * @author apple
  */
 public enum CabinClassType {
-    FIRST(0),
+    FIRST_CLASS(0),
     BUSINESS(1),
     PREMIUM_ECONOMY(2),
     ECONOMY(3);

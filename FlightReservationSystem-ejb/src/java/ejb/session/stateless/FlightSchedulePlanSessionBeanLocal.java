@@ -4,7 +4,8 @@
  */
 package ejb.session.stateless;
 
-import entity.CabinClass;
+import entity.FlightSchedule;
+import entity.FlightSchedulePlan;
 import javax.ejb.Local;
 
 /**
@@ -12,10 +13,10 @@ import javax.ejb.Local;
  * @author apple
  */
 @Local
-public interface CabinClassSessionBeanLocal {
+public interface FlightSchedulePlanSessionBeanLocal {
     
-    public void createNewCabinClass(CabinClass cc);
+    public void createNewFlightSchedulePlan(FlightSchedulePlan fsp);
     
-    public CabinClass retrieveCabinClassById(Long id);
+    public void createNewFlightSchedule(FlightSchedule fs);
     
 }

@@ -7,8 +7,11 @@ package ejb.session.stateless;
 import entity.AircraftConfiguration;
 import entity.Airport;
 import entity.CabinClass;
+import entity.Fare;
 import entity.Flight;
 import entity.FlightRoute;
+import entity.FlightSchedule;
+import entity.FlightSchedulePlan;
 import entity.Seat;
 import java.util.ArrayList;
 import java.util.List;
@@ -45,6 +48,12 @@ public interface FRSManagementSessionBeanLocal {
     public Flight updateFlight(String flightNum, int routeId, int configId);
     
     public void deleteFlight(String flightNum);
+    
+    public Flight viewSpecificFlight(String flightNum);
+    
+    public void createFareforEachCabinClass(Long ccId, Fare fare);
+    
+    public void createFlightScheduleAndPlan(FlightSchedule fs, FlightSchedulePlan fsp);
 
 
 }

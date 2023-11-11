@@ -90,11 +90,6 @@ public class FleetManagerTask {
             cabinClassSelection.add(cc);
         }
         
-        for (int i = 0; i < cabinClassSelection.size(); i++) {
-            System.out.println(cabinClassSelection.get(i));
-        }
-        
-
         FRSManagementSessionBeanRemote.createAircraftConfiguration(type, cabinClassSelection);
         
         String msg;

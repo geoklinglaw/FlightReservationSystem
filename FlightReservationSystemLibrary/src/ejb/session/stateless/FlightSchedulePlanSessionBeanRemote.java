@@ -4,7 +4,8 @@
  */
 package ejb.session.stateless;
 
-import entity.Fare;
+import entity.FlightSchedule;
+import entity.FlightSchedulePlan;
 import javax.ejb.Remote;
 
 /**
@@ -12,11 +13,12 @@ import javax.ejb.Remote;
  * @author apple
  */
 @Remote
-public interface FareEntitySessionBeanRemote {
+public interface FlightSchedulePlanSessionBeanRemote {
     
-    public Long createNewFare(Fare fare);
+    public void createNewFlightSchedulePlan(FlightSchedulePlan fsp);
     
-    public Fare retrieveFareById(Long id);
+    public void createNewFlightSchedule(FlightSchedule fs);
+
 
     
 }

@@ -17,7 +17,8 @@ import javax.persistence.InheritanceType;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
-import util.enumeration.FlightScheduleType;
+import util.enumeration.FlightScheduleStatus;
+
 
 /**
  *
@@ -32,7 +33,7 @@ public class FlightSchedulePlan implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(nullable = false)
-    private FlightScheduleType type;
+    private FlightScheduleStatus type;
     
     @OneToMany (mappedBy = "flightSchedulePlan")
     private List<FlightSchedule> flightSchedule;
@@ -44,7 +45,7 @@ public class FlightSchedulePlan implements Serializable {
     }
 
     public FlightSchedulePlan(int type, Flight flight) {
-        this.type = FlightScheduleType.fromValue(type);
+        this.type = FlightScheduleStatus.fromValue(type);
         this.flightSchedule = new ArrayList<FlightSchedule>();
         this.flight = flight;
     }
@@ -87,14 +88,14 @@ public class FlightSchedulePlan implements Serializable {
     /**
      * @return the type
      */
-    public FlightScheduleType getType() {
+    public FlightScheduleStatus getType() {
         return type;
     }
 
     /**
      * @param type the type to set
      */
-    public void setType(FlightScheduleType type) {
+    public void setType(FlightScheduleStatus type) {
         this.type = type;
     }
 
