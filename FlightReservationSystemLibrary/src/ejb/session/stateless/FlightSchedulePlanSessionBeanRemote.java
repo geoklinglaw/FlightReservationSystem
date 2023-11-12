@@ -6,6 +6,7 @@ package ejb.session.stateless;
 
 import entity.FlightSchedule;
 import entity.FlightSchedulePlan;
+import java.util.List;
 import javax.ejb.Remote;
 
 /**
@@ -18,6 +19,9 @@ public interface FlightSchedulePlanSessionBeanRemote {
     public void createNewFlightSchedulePlan(FlightSchedulePlan fsp);
     
     public void createNewFlightSchedule(FlightSchedule fs);
+    
+    public List<FlightSchedulePlan> viewAllFlightSchedulePlan();
+
 
 
     

@@ -15,6 +15,8 @@ import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import util.enumeration.FlightScheduleStatus;
@@ -25,6 +27,12 @@ import util.enumeration.FlightScheduleStatus;
  * @author apple
  */
 @Entity
+@NamedQueries({
+    @NamedQuery(
+        name = "viewAllFlightSchedulePlan",
+        query = "SELECT fsp FROM FlightSchedulePlan fsp JOIN fsp.flight f ORDER BY f.flightNumber"
+    )
+})
 @Inheritance(strategy = InheritanceType.JOINED)
 public class FlightSchedulePlan implements Serializable {
 

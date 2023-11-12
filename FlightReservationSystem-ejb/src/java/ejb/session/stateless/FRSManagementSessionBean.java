@@ -226,6 +226,10 @@ public class FRSManagementSessionBean implements FRSManagementSessionBeanRemote,
         return flights;
     }
     
+    public List<FlightSchedulePlan> viewAllFlightSchedulePlan() {
+        List<FlightSchedulePlan> fspList = flightSchedulePlanSessionBeanLocal.viewAllFlightSchedulePlan();
+        return fspList;
+    }
     
     public Flight updateFlight(String flightNum, int routeId, int configId) {
         

@@ -6,6 +6,7 @@ package ejb.session.stateless;
 
 import entity.FlightSchedule;
 import entity.FlightSchedulePlan;
+import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -28,5 +29,13 @@ public class FlightSchedulePlanSessionBean implements FlightSchedulePlanSessionB
     @Override
     public void createNewFlightSchedule(FlightSchedule fs) {
         em.persist(fs);
+    }
+    
+    public List<FlightSchedulePlan> viewAllFlightSchedulePlan() {
+        List<FlightSchedulePlan> fspList = em.createNamedQuery("viewAllFlightSchedulePlan").getResultList();
+        for (FlightSchedulePlan fsp: fspList) {
+            int size = fsp.getFlightSchedule().size();
+        }
+        return fspList;
     }
 }

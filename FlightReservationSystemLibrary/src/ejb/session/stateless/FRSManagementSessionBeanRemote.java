@@ -55,6 +55,7 @@ public interface FRSManagementSessionBeanRemote {
 
     public void createFlightScheduleAndPlan(List<FlightSchedule> fsList, FlightSchedulePlan fsp, Flight flight);
 
+    public List<FlightSchedulePlan> viewAllFlightSchedulePlan();
 
 
 

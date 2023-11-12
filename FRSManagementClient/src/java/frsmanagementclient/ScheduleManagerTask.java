@@ -15,8 +15,10 @@ import entity.FlightSchedule;
 import entity.FlightSchedulePlan;
 import entity.MultiplePlan;
 import entity.RecurrentPlan;
+import entity.RecurrentWeeklyPlan;
 import entity.SinglePlan;
 import java.math.BigDecimal;
+import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -24,6 +26,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -88,8 +91,10 @@ public class ScheduleManagerTask {
                 } 
                 else if (response == 6) {
                     createFlightSchedulePlan(scanner);
-                }
-                else {
+                } 
+                else if (response == 7) {
+                    viewFlightSchedulePlan();
+                } else {
                     System.out.println("Invalid option, please try again!\n");                
                 }
             }
@@ -233,7 +238,7 @@ public class ScheduleManagerTask {
         String schTypeText = "1: Single schedule\n";
         schTypeText += "2: Multiple schedule\n";
         schTypeText += "3: Recurrent schedule every n day\n";
-        schTypeText += "3: Recurrent schedule weekly\n";
+        schTypeText += "4: Recurrent schedule weekly\n";
         schTypeText += "> ";
         System.out.print(schTypeText);
         
@@ -258,28 +263,17 @@ public class ScheduleManagerTask {
                     
                 case 3:
                     Flight rNFlight = handlingFSPCreation(flightNum, sc);
-                    createRecurrentFSP(sc, rNFlight, rNFlight.getAircraftConfig().getCabinClassList());
+                    createRecurrentNFSP(sc, rNFlight, rNFlight.getAircraftConfig().getCabinClassList());
                     System.out.println("Success!");  
+                    break;
                     
                 case 4:
+                    Flight rWFlight = handlingFSPCreation(flightNum, sc);
+                    createRecurrentWeeklyFSP(sc, rWFlight, rWFlight.getAircraftConfig().getCabinClassList());
+                    System.out.println("Success!");  
+                    break;
         }
         
-        
-
-
-        
-//        String acConfigText = "";
-//        for (AircraftConfiguration config: acConfiglist) {
-//            acConfigText += "\n(" + config.getId() + ") " + config.getName() + ": ";
-//            for (CabinClass cc: config.getCabinClassList()) {
-//                acConfigText += cc.getType() + ", ";
-//            }
-//        }
-//        System.out.print("Enter Aircraft Configuration ID: \n> ");
-//        Long config = new Long(sc.nextInt());
-//        
-//        FRSManagementSessionBeanRemote.createFlight(flightNum, routeId, config);
-//        System.out.print("Successfully created Flight " + flightNum);
     }
     
     private Flight handlingFSPCreation(String flightNum, Scanner sc) {
@@ -305,15 +299,15 @@ public class ScheduleManagerTask {
     
     private void createSingleFSP(Scanner sc, Flight flight, List<CabinClass> ccList) {
         System.out.print("FOR SINGLE SCHEDULE --- ");
-        System.out.print("\nEnter date of flight (yyyy-MM-dd) > ");
+        System.out.print("Enter date of flight (yyyy-MM-dd) > ");
         String singleDate = sc.nextLine().trim();
-        System.out.print("\nEnter time of flight (HH:mm:ss) > ");
+        System.out.print("Enter time of flight (HH:mm:ss) > ");
         String singleTime = sc.nextLine().trim();
         String dateTimeInput= singleDate + " " + singleTime;
         Date date = formatDate(dateTimeInput);
-        System.out.print("\nEnter flight duration in terms of HOURS > ");
+        System.out.print("Enter flight duration in terms of HOURS > ");
         int hours = Integer.parseInt(sc.nextLine());
-        System.out.print("\nEnter flight duration in terms of MINUTES > ");
+        System.out.print("Enter flight duration in terms of MINUTES > ");
         int minutes = Integer.parseInt(sc.nextLine());
         int totalMinutes = (hours * 60) + minutes;
         long seconds = totalMinutes * 60;
@@ -383,7 +377,7 @@ public class ScheduleManagerTask {
     }
     
 
-    private void createRecurrentFSP(Scanner sc, Flight flight, List<CabinClass> ccList) {
+    private void createRecurrentNFSP(Scanner sc, Flight flight, List<CabinClass> ccList) {
         System.out.print("FOR RECURRENT N SCHEDULE --- ");
         System.out.print("\nEnter frequency > ");
         int freq = sc.nextInt();
@@ -443,6 +437,67 @@ public class ScheduleManagerTask {
         updateDatabaseOnFSPFS(fsList, recNFsp, flight);
     }
     
+    private void createRecurrentWeeklyFSP(Scanner sc, Flight flight, List<CabinClass> ccList) {
+        System.out.print("FOR RECURRENT WEEKLY SCHEDULE --- ");
+        System.out.print("\nEnter dayOfWeek (1=Monday, 7=Sunday) > ");
+        int dayOfWeekInt = sc.nextInt();
+        sc.nextLine();
+
+        DayOfWeek dayOfWeek = DayOfWeek.of(dayOfWeekInt);
+        System.out.print("Enter start date of schedule (yyyy-MM-dd) > ");
+        String startDateStr = sc.nextLine().trim();
+        LocalDate startDate = LocalDate.parse(startDateStr, dateFormatter).with(TemporalAdjusters.next(dayOfWeek));
+        System.out.print("Enter time of flight (HH:mm:ss) > ");
+        String startTimeStr = sc.nextLine().trim();
+        LocalTime startTime = LocalTime.parse(startTimeStr, timeFormatter);
+        
+        System.out.print("Enter end date of schedule (yyyy-MM-dd) > ");
+        String endDateStr = sc.nextLine().trim();
+        LocalDate endDate = LocalDate.parse(endDateStr, dateFormatter);
+        String endTimeStr = "23:59:00";
+        String endDateTimeInput= endDateStr + " " + endTimeStr;
+        Date endFormattedDate = formatDate(endDateTimeInput);
+        
+        System.out.print("Enter flight duration in terms of HOURS > ");
+        int hours = Integer.parseInt(sc.nextLine());
+        System.out.print("Enter flight duration in terms of MINUTES > ");
+        int minutes = Integer.parseInt(sc.nextLine());
+        int totalMinutes = (hours * 60) + minutes;
+        long seconds = totalMinutes * 60;
+        Duration duration = Duration.ofSeconds(seconds);
+        
+        RecurrentWeeklyPlan recWFsp = new RecurrentWeeklyPlan();
+        recWFsp.setType(FlightScheduleStatus.ACTIVE);
+        recWFsp.setFlight(flight);
+        recWFsp.setEndDate(endFormattedDate);
+        
+        List<FlightSchedule> fsList = new ArrayList<FlightSchedule>();
+            
+        int index = 1;
+        System.out.println("\n\nFlight Routes created: ");
+        for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plusWeeks(1)) {
+            LocalDateTime dateTime = LocalDateTime.of(date, startTime);
+            Date formattedDate = Date.from(dateTime.atZone(ZoneId.systemDefault()).toInstant());
+            System.out.println("DateTime: " + dateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+            index += 1;
+
+            FlightSchedule flightSch = new FlightSchedule();
+            flightSch.setCabinClass(ccList);
+            flightSch.setDepartureTime(formattedDate);
+            flightSch.setFlightDuration(duration);
+            Date arrTime = computeArrivalTime(formattedDate,duration);
+            flightSch.setArrivalTime(arrTime);
+            flightSch.setFlightDuration(duration);
+            
+            fsList.add(flightSch);
+            flightSch.setFlightSchedulePlan(recWFsp);
+        }
+        
+        recWFsp.setFlightSchedule(fsList);
+        recWFsp.setDayOfWeek(new BigDecimal(dayOfWeekInt));
+        updateDatabaseOnFSPFS(fsList, recWFsp, flight);
+    }
+    
     
     private Date formatDate(String dateTimeInput) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -483,5 +538,27 @@ public class ScheduleManagerTask {
     
     private void updateDatabaseOnFSPFS(List<FlightSchedule> fsList, FlightSchedulePlan fsp, Flight flight) {
         FRSManagementSessionBeanRemote.createFlightScheduleAndPlan(fsList, fsp, flight);
+    }
+    
+    private void viewFlightSchedulePlan() {
+        System.out.println("\n\n*** View All Flight Schedule Plan *** \n");
+        List<FlightSchedulePlan> fspList = FRSManagementSessionBeanRemote.viewAllFlightSchedulePlan();
+
+        String fspText = "List of Flight Schedule Plans:\n";
+        int index = 1;
+        for (FlightSchedulePlan fsp: fspList) {
+            if (fsp instanceof SinglePlan) {
+                fspText += index + ": Single Plan" + " (" + fsp.getFlight().getFlightNumber() + ")\n";
+            } else if (fsp instanceof MultiplePlan) {
+                fspText += index + ": Multiple Plan" + " (" + fsp.getFlight().getFlightNumber() + ")\n";
+            } else if (fsp instanceof MultiplePlan) {
+                fspText += index + ": Recurrent N Plan" + " (" + fsp.getFlight().getFlightNumber() + ")\n";
+            } else {
+                fspText += index + ": Reccurent Weekly Plan" + " (" + fsp.getFlight().getFlightNumber() + ")\n";
+            }
+            index += 1;
+        }
+        
+        System.out.print(fspText);
     }
 }

@@ -25,16 +25,16 @@ public class RecurrentWeeklyPlan extends FlightSchedulePlan implements Serializa
     @Column(nullable = false)
     private Date endDate;
     @Column(nullable = false)
-    private BigDecimal frequency;
+    private BigDecimal dayOfWeek;
     
     public RecurrentWeeklyPlan() {
     }
 
     
-    public RecurrentWeeklyPlan(int type, Flight flight, Date endDate, BigDecimal frequency) {
+    public RecurrentWeeklyPlan(int type, Flight flight, Date endDate, BigDecimal dayOfWeek) {
         super(type, flight);
         this.endDate = endDate;
-        this.frequency = frequency;
+        this.dayOfWeek = dayOfWeek;
     }
 
 
@@ -55,15 +55,15 @@ public class RecurrentWeeklyPlan extends FlightSchedulePlan implements Serializa
     /**
      * @return the frequency
      */
-    public BigDecimal getFrequency() {
-        return frequency;
+    public BigDecimal getDayOfWeek() {
+        return dayOfWeek;
     }
 
     /**
      * @param frequency the frequency to set
      */
-    public void setFrequency(BigDecimal frequency) {
-        this.frequency = frequency;
+    public void setDayOfWeek(BigDecimal frequency) {
+        this.dayOfWeek = frequency;
     }
     
 }
