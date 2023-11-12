@@ -4,7 +4,8 @@
  */
 package ejb.session.stateless;
 
-import entity.AircraftConfiguration;
+import entity.FlightSchedule;
+import entity.FlightSchedulePlan;
 import java.util.List;
 import javax.ejb.Local;
 
@@ -13,12 +14,12 @@ import javax.ejb.Local;
  * @author apple
  */
 @Local
-public interface AircraftConfigurationSessionBeanLocal {
+public interface FlightSchedulePlanSessionBeanLocal {
     
-    public Long createNewAircraftConfiguration(AircraftConfiguration aircraftConfig);
+    public void createNewFlightSchedulePlan(FlightSchedulePlan fsp);
     
-    public List<AircraftConfiguration> viewAllAircraftConfiguration();
+    public void createNewFlightSchedule(FlightSchedule fs);
     
-    public AircraftConfiguration retrieveAircraftConfigurationById(Long id);
+    public List<FlightSchedulePlan> viewAllFlightSchedulePlan();
     
 }

@@ -17,7 +17,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
-import util.enumeration.FlightScheduleType;
+import util.enumeration.FlightScheduleStatus;
+
 
 /**
  *
@@ -31,11 +32,9 @@ public class FlightSchedule implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(nullable = false)
-    private FlightScheduleType type;
-    @Column(nullable = false)
     private Date departureTime;
     @Column(nullable = false)
-    private Duration flightDuration;
+    private double flightDuration;
     @Column(nullable = false)
     private Date arrivalTime;
     
@@ -46,15 +45,13 @@ public class FlightSchedule implements Serializable {
     @OneToMany (mappedBy = "flightSchedule")
     private List<CabinClass> cabinClass;
     
-    @OneToMany
-//    @JoinColumn(nullable = false)
+    @OneToMany (mappedBy= "flightSchedule")
     private List<FlightBooking> flightBookings;
 
     public FlightSchedule() {
     }
 
-    public FlightSchedule(int type, FlightSchedulePlan flightSchedulePlan, List<CabinClass> cabinClassList) {
-        this.type = FlightScheduleType.fromValue(type);
+    public FlightSchedule(FlightSchedulePlan flightSchedulePlan, List<CabinClass> cabinClassList) {
         this.flightSchedulePlan = flightSchedulePlan;
         this.cabinClass = cabinClassList;
     }
@@ -91,16 +88,94 @@ public class FlightSchedule implements Serializable {
     public String toString() {
         return "entity.FlightSchedule[ id=" + id + " ]";
     }
-    
-    public FlightScheduleType getType() {
-        return type;
+
+    /**
+     * @return the departureTime
+     */
+    public Date getDepartureTime() {
+        return departureTime;
     }
 
     /**
-     * @param type the type to set
+     * @param departureTime the departureTime to set
      */
-    public void setType(FlightScheduleType type) {
-        this.type = type;
+    public void setDepartureTime(Date departureTime) {
+        this.departureTime = departureTime;
     }
+
+    /**
+     * @return the flightDuration
+     */
+    public double getFlightDuration() {
+        return flightDuration;
+    }
+
+    /**
+     * @param flightDuration the flightDuration to set
+     */
+    public void setFlightDuration(Duration duration) {
+        long totalMinutes = duration.toMinutes();
+        double hours = totalMinutes / 60;
+        double remainingMinutes = totalMinutes % 60;
+        this.flightDuration = hours + remainingMinutes / 60.0;
+    }
+
+
+    /**
+     * @return the arrivalTime
+     */
+    public Date getArrivalTime() {
+        return arrivalTime;
+    }
+
+    /**
+     * @param arrivalTime the arrivalTime to set
+     */
+    public void setArrivalTime(Date arrivalTime) {
+        this.arrivalTime = arrivalTime;
+    }
+
+    /**
+     * @return the flightSchedulePlan
+     */
+    public FlightSchedulePlan getFlightSchedulePlan() {
+        return flightSchedulePlan;
+    }
+
+    /**
+     * @param flightSchedulePlan the flightSchedulePlan to set
+     */
+    public void setFlightSchedulePlan(FlightSchedulePlan flightSchedulePlan) {
+        this.flightSchedulePlan = flightSchedulePlan;
+    }
+
+    /**
+     * @return the cabinClass
+     */
+    public List<CabinClass> getCabinClass() {
+        return cabinClass;
+    }
+
+    /**
+     * @param cabinClass the cabinClass to set
+     */
+    public void setCabinClass(List<CabinClass> cabinClass) {
+        this.cabinClass = cabinClass;
+    }
+
+    /**
+     * @return the flightBookings
+     */
+    public List<FlightBooking> getFlightBookings() {
+        return flightBookings;
+    }
+
+    /**
+     * @param flightBookings the flightBookings to set
+     */
+    public void setFlightBookings(List<FlightBooking> flightBookings) {
+        this.flightBookings = flightBookings;
+    }
+   
     
 }

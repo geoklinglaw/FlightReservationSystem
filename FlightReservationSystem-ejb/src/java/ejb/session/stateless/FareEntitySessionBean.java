@@ -26,5 +26,9 @@ public class FareEntitySessionBean implements FareEntitySessionBeanRemote, FareE
         return fare.getId();
     }
 
-
+    public Fare retrieveFareById(Long id) {
+        Fare fare = em.find(Fare.class, id);
+        
+        return fare;
+    }
 }

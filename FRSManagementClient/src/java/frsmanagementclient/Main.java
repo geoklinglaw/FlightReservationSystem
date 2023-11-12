@@ -59,7 +59,7 @@ public class Main {
     }
     
     private static void doLogin() {
-        System.out.println("Logged in!");
+        System.out.println("LOGGED IN RIGHT NOW!");
         performTasks();
         
     }
@@ -69,7 +69,7 @@ public class Main {
         Integer response = 0;
         
         while(true) {
-            System.out.println("\n\nEnter your role (will be auto next time)");
+            System.out.println("\n\nEnter your role (will be auto next time) \n");
             System.out.println("1: Fleet Manager");
             System.out.println("2: Route Planner");
             System.out.println("3: Schedule Manager");
@@ -92,7 +92,9 @@ public class Main {
                     routeManagerTasks.getTasks();
                 }
                 else if (response == 3) {
-                    performScheduleManagerTasks();
+                    ScheduleManagerTask scheduleManagerTasks = new ScheduleManagerTask(FRSManagementSessionBeanRemote);
+                    scheduleManagerTasks.getTasks();
+
                 }
                 else if (response == 4) {
                     performSalesManagerTasks();
@@ -108,9 +110,6 @@ public class Main {
     
 
     
-    private static void performScheduleManagerTasks() {
-        
-    }
     
     private static void performSalesManagerTasks() {
         

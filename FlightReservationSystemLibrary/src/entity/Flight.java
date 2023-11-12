@@ -15,6 +15,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import util.enumeration.FlightStatus;
 import util.enumeration.FlightType;
 
@@ -23,6 +25,17 @@ import util.enumeration.FlightType;
  * @author apple
  */
 @Entity
+@NamedQueries({
+    @NamedQuery(
+        name = "viewAllFlight",
+        query = "SELECT f FROM Flight f ORDER BY f.flightNumber"
+    ),
+    @NamedQuery(
+        name = "selectFlight",
+        query = "SELECT f FROM Flight f WHERE f.flightNumber = :inNum"
+    )
+
+})
 public class Flight implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -41,7 +54,7 @@ public class Flight implements Serializable {
     private FlightRoute flightRoute;
     
     @ManyToOne 
-    @JoinColumn (nullable=false)
+    @JoinColumn (nullable=true)
     private FlightSchedulePlan flightSchedulePlan;
     
 
@@ -53,9 +66,6 @@ public class Flight implements Serializable {
         this.status = FlightStatus.fromValue(status);
         
     }
-    
-    
-    
     
 
     public Long getId() {
@@ -136,14 +146,14 @@ public class Flight implements Serializable {
     /**
      * @return the fightRoute
      */
-    public FlightRoute getFightRoute() {
+    public FlightRoute getFlightRoute() {
         return flightRoute;
     }
 
     /**
      * @param fightRoute the fightRoute to set
      */
-    public void setFightRoute(FlightRoute fightRoute) {
+    public void setFlightRoute(FlightRoute fightRoute) {
         this.flightRoute = fightRoute;
     }
 

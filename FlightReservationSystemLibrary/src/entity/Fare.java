@@ -80,14 +80,14 @@ public class Fare implements Serializable {
      * @return the fareID
      */
     public String getFareID() {
-        return fareBasisCode;
+        return getFareBasisCode();
     }
 
     /**
      * @param fareID the fareID to set
      */
     public void setFareID(String fareID) {
-        this.fareBasisCode = fareID;
+        this.setFareBasisCode(fareID);
     }
 
     /**
@@ -116,6 +116,20 @@ public class Fare implements Serializable {
      */
     public void setCabinClass(CabinClass cabinClass) {
         this.cabinClass = cabinClass;
+    }
+
+    /**
+     * @return the fareBasisCode
+     */
+    public String getFareBasisCode() {
+        return fareBasisCode;
+    }
+
+    /**
+     * @param fareBasisCode the fareBasisCode to set
+     */
+    public void setFareBasisCode(String fareBasisCode) {
+        this.fareBasisCode = fareBasisCode;
     }
     
 }

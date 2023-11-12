@@ -23,4 +23,5 @@ public interface AirportEntitySessionBeanRemote {
     
     public Airport retrieveAirportByCode(String code);
     
+    
 }

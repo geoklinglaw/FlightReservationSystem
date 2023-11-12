@@ -106,7 +106,6 @@ public class RoutePlannerTask {
         }
         System.out.print(routeText);
         
-        
     }
     
     private void deleteFlightRoute(Scanner sc) {
@@ -116,12 +115,8 @@ public class RoutePlannerTask {
         String origin = sc.nextLine().trim();
         System.out.print("Enter IATA code of DESTINATION location: \n> ");
         String destination = sc.nextLine().trim();
-        
+
         List<Airport> airportList = FRSManagementSessionBeanRemote.deleteFlightRoute(origin, destination);
         System.out.println("Successfully deleted flight route: " + airportList.get(0).getCountry() + " --> " + airportList.get(1).getCountry());
-        
-        
-        
-        
     }
 }

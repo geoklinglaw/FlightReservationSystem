@@ -16,4 +16,7 @@ public interface FareEntitySessionBeanRemote {
     
     public Long createNewFare(Fare fare);
     
+    public Fare retrieveFareById(Long id);
+
+    
 }

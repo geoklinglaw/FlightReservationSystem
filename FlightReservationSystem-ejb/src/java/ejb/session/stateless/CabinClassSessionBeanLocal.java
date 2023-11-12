@@ -16,4 +16,6 @@ public interface CabinClassSessionBeanLocal {
     
     public void createNewCabinClass(CabinClass cc);
     
+    public CabinClass retrieveCabinClassById(Long id);
+    
 }

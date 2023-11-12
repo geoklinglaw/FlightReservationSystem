@@ -4,7 +4,8 @@
  */
 package ejb.session.stateless;
 
-import entity.FlightRoute;
+import entity.FlightSchedule;
+import entity.FlightSchedulePlan;
 import java.util.List;
 import javax.ejb.Remote;
 
@@ -13,13 +14,15 @@ import javax.ejb.Remote;
  * @author apple
  */
 @Remote
-public interface FlightRouteSessionBeanRemote {
+public interface FlightSchedulePlanSessionBeanRemote {
     
-    public void createNewFlightRoute(FlightRoute flightRoute);
+    public void createNewFlightSchedulePlan(FlightSchedulePlan fsp);
     
-    public List<FlightRoute> viewAllFlightRoute();
+    public void createNewFlightSchedule(FlightSchedule fs);
     
-    public FlightRoute retrieveFlightRouteById(Long id);
-    
+    public List<FlightSchedulePlan> viewAllFlightSchedulePlan();
+
+
+
     
 }

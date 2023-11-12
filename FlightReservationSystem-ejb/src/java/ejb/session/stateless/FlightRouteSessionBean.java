@@ -35,10 +35,17 @@ public class FlightRouteSessionBean implements FlightRouteSessionBeanRemote, Fli
         
         return flightRoutes;
     }
-    
+
     public void deleteFlightRoute(FlightRoute route) {
         em.remove(route);
     }
+    
+    public FlightRoute retrieveFlightRouteById(Long id) {
+        FlightRoute route = em.find(FlightRoute.class, id);
+        
+        return route;
+    }
+
 
 
 }

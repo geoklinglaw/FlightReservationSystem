@@ -24,6 +24,12 @@ public class CabinClassSessionBean implements CabinClassSessionBeanRemote, Cabin
     public void createNewCabinClass(CabinClass cc) {
         em.persist(cc);
     }
+    
+    public CabinClass retrieveCabinClassById(Long id) {
+        CabinClass cc = em.find(CabinClass.class, id);
+        
+        return cc;
+    }
 
     
 }

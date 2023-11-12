@@ -9,16 +9,20 @@ import entity.AircraftType;
 import entity.Airport;
 import entity.CabinClass;
 import entity.Fare;
+import entity.Flight;
 import entity.FlightRoute;
 import entity.FlightSchedule;
+import entity.FlightSchedulePlan;
 import entity.Seat;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import javafx.util.Pair;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import util.enumeration.CabinClassType;
+import util.enumeration.FlightStatus;
 
 /**
  *
@@ -27,9 +31,15 @@ import util.enumeration.CabinClassType;
 @Stateless
 public class FRSManagementSessionBean implements FRSManagementSessionBeanRemote, FRSManagementSessionBeanLocal {
 
+    @EJB(name = "FareEntitySessionBeanLocal")
+    private FareEntitySessionBeanLocal fareEntitySessionBeanLocal;
+
     @EJB(name = "FlightRouteSessionBeanLocal")
     private FlightRouteSessionBeanLocal flightRouteSessionBeanLocal;
 
+    @EJB(name = "FlightSessionBeanLocal")
+    private FlightSessionBeanLocal flightSessionBeanLocal;
+    
     @EJB(name = "AirportEntitySessionBeanLocal")
     private AirportEntitySessionBeanLocal airportEntitySessionBeanLocal;
 
@@ -42,8 +52,20 @@ public class FRSManagementSessionBean implements FRSManagementSessionBeanRemote,
     @EJB(name = "AircraftTypeSessionBeanLocal")
     private AircraftTypeSessionBeanLocal aircraftTypeSessionBeanLocal;
 
+    @EJB(name = "FlightSchedulePlanSessionBeanLocal")
+    private FlightSchedulePlanSessionBeanLocal flightSchedulePlanSessionBeanLocal;
+
+
     @EJB
     private AircraftConfigurationSessionBeanLocal aircraftConfigurationSessionBean;
+    
+    
+    public Pair<List<FlightRoute>, List<AircraftConfiguration>> enquireFlightRequirements() {
+        List<AircraftConfiguration> aircraftList = viewAllAircraftConfiguration();
+        List<FlightRoute> routeList = viewAllFlightRoutes();
+        Pair<List<FlightRoute>, List<AircraftConfiguration>> pair = new Pair<>(routeList, aircraftList);
+        return pair;   
+    }
     
     @Override
     public void createAircraftConfiguration(int aircraftType, List<Integer> ccList) {
@@ -157,12 +179,13 @@ public class FRSManagementSessionBean implements FRSManagementSessionBeanRemote,
         List<FlightRoute> flightRoute = flightRouteSessionBeanLocal.viewAllFlightRoute();
         return flightRoute;
     }
-    
+
+
     @Override
     public ArrayList<Airport> deleteFlightRoute(String originCode, String destCode) {
         Airport originAirport = airportEntitySessionBeanLocal.retrieveAirportByCode(originCode);
         Airport destinationAirport = airportEntitySessionBeanLocal.retrieveAirportByCode(destCode);
-        
+
         FlightRoute intendedRoute = null;
         for (FlightRoute originRoute: originAirport.getFlightRoute()) {
             for (FlightRoute destRoute: destinationAirport.getFlightRoute()) {
@@ -175,16 +198,95 @@ public class FRSManagementSessionBean implements FRSManagementSessionBeanRemote,
                 break; // Stop searching if we found the route
             }
         }
-        
+
         intendedRoute.setAirportList(new ArrayList<Airport>());
         originAirport.getFlightRoute().remove(intendedRoute);
         destinationAirport.getFlightRoute().remove(intendedRoute);
         flightRouteSessionBeanLocal.deleteFlightRoute(intendedRoute);
-        
+
         return new ArrayList<Airport>(Arrays.asList(originAirport, destinationAirport));
 
     }
+    
+    
+    public void createFlight(String flightNum, Long routeId, Long configId) {
+        AircraftConfiguration config = aircraftConfigurationSessionBean.retrieveAircraftConfigurationById(configId);
+        FlightRoute route = flightRouteSessionBeanLocal.retrieveFlightRouteById(routeId);
+        Flight flight = new Flight(flightNum, 1);
+        flight.setFlightRoute(route);
+        flight.setAircraftConfig(config);
+        
+        flightSessionBeanLocal.createNewFlight(flight);
+        
 
+    }
 
+    public List<Flight> viewAllFlight() {
+        List<Flight> flights= flightSessionBeanLocal.viewAllFlight();
+        return flights;
+    }
+    
+    public List<FlightSchedulePlan> viewAllFlightSchedulePlan() {
+        List<FlightSchedulePlan> fspList = flightSchedulePlanSessionBeanLocal.viewAllFlightSchedulePlan();
+        return fspList;
+    }
+    
+    public Flight updateFlight(String flightNum, int routeId, int configId) {
+        
+        Flight managedFlight = flightSessionBeanLocal.retrieveFlightByNumber(flightNum);
+        
+        if (routeId != 0) {
+            Long routeID = new Long(routeId);
+            FlightRoute route = flightRouteSessionBeanLocal.retrieveFlightRouteById(routeID);
+            managedFlight.setFlightRoute(route);
+            managedFlight.getFlightRoute().getAirportList().size();
+        }
+        
+        if (configId != 0) {
+            Long configID = new Long(configId);
+            AircraftConfiguration config = aircraftConfigurationSessionBean.retrieveAircraftConfigurationById(configID);
+            managedFlight.setAircraftConfig(config);
+        }
+        
+        return managedFlight;
+    }
+    
+    public void deleteFlight(String flightNum) {
+        Flight managedFlight = flightSessionBeanLocal.retrieveFlightByNumber(flightNum);
+        
+        if (managedFlight.getFlightSchedulePlan() == null) {
+            flightSessionBeanLocal.deleteFlight(managedFlight);
+            
+        } else {
+            managedFlight.setStatus(FlightStatus.DISABLED);
+        }
+    }
+    
+    public Flight viewSpecificFlight(String flightNum) {
+        Flight flight = flightSessionBeanLocal.retrieveFlightByNumber(flightNum);
+        int size = flight.getAircraftConfig().getCabinClassList().size();
+        return flight;
+    }
+    
+    public void createFareforEachCabinClass(Long ccId, Fare fare) {
+        Long fareId = fareEntitySessionBeanLocal.createNewFare(fare);
+        Fare managedFare = fareEntitySessionBeanLocal.retrieveFareById(fareId);
+        CabinClass cc = cabinClassSessionBeanLocal.retrieveCabinClassById(ccId);
+        cc.getFareList().add(managedFare);
+        managedFare.setCabinClass(cc);
+    }
+    
+    public void createFlightScheduleAndPlan(List<FlightSchedule> fsList, FlightSchedulePlan fsp, Flight flight) {
+        for (FlightSchedule fs: fsList) {
+            flightSchedulePlanSessionBeanLocal.createNewFlightSchedule(fs);
+            
+        }
+        
+        Flight managedFlight = flightSessionBeanLocal.retrieveFlightById(flight.getId());
+        managedFlight.setFlightSchedulePlan(fsp);
+        
+        flightSchedulePlanSessionBeanLocal.createNewFlightSchedulePlan(fsp);
+    }
 
+    
 }
