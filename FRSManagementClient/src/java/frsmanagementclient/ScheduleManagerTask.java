@@ -14,11 +14,14 @@ import entity.FlightRoute;
 import entity.FlightSchedule;
 import entity.FlightSchedulePlan;
 import entity.MultiplePlan;
+import entity.RecurrentPlan;
 import entity.SinglePlan;
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -35,7 +38,9 @@ import util.enumeration.FlightScheduleStatus;
 public class ScheduleManagerTask {
     
     private FRSManagementSessionBeanRemote FRSManagementSessionBeanRemote;
-
+    DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+    
     public ScheduleManagerTask(FRSManagementSessionBeanRemote FRSManagementSessionBeanRemote) {
         this.FRSManagementSessionBeanRemote = FRSManagementSessionBeanRemote;
     }
@@ -252,6 +257,9 @@ public class ScheduleManagerTask {
                     break;
                     
                 case 3:
+                    Flight rNFlight = handlingFSPCreation(flightNum, sc);
+                    createRecurrentFSP(sc, rNFlight, rNFlight.getAircraftConfig().getCabinClassList());
+                    System.out.println("Success!");  
                     
                 case 4:
         }
@@ -373,6 +381,68 @@ public class ScheduleManagerTask {
         multipleFsp.setFlightSchedule(fsList);
         updateDatabaseOnFSPFS(fsList, multipleFsp, flight);
     }
+    
+
+    private void createRecurrentFSP(Scanner sc, Flight flight, List<CabinClass> ccList) {
+        System.out.print("FOR RECURRENT N SCHEDULE --- ");
+        System.out.print("\nEnter frequency > ");
+        int freq = sc.nextInt();
+        sc.nextLine();
+
+        System.out.print("Enter start date of schedule (yyyy-MM-dd) > ");
+        String startDateStr = sc.nextLine().trim();
+        LocalDate startDate = LocalDate.parse(startDateStr, dateFormatter);
+        System.out.print("Enter time of flight (HH:mm:ss) > ");
+        String startTimeStr = sc.nextLine().trim();
+        LocalTime startTime = LocalTime.parse(startTimeStr, timeFormatter);
+        
+        System.out.print("Enter end date of schedule (yyyy-MM-dd) > ");
+        String endDateStr = sc.nextLine().trim();
+        LocalDate endDate = LocalDate.parse(endDateStr, dateFormatter);
+        String endTimeStr = "23:59:00";
+        String endDateTimeInput= endDateStr + " " + endTimeStr;
+        Date endFormattedDate = formatDate(endDateTimeInput);
+        
+        System.out.print("Enter flight duration in terms of HOURS > ");
+        int hours = Integer.parseInt(sc.nextLine());
+        System.out.print("Enter flight duration in terms of MINUTES > ");
+        int minutes = Integer.parseInt(sc.nextLine());
+        int totalMinutes = (hours * 60) + minutes;
+        long seconds = totalMinutes * 60;
+        Duration duration = Duration.ofSeconds(seconds);
+        
+        RecurrentPlan recNFsp = new RecurrentPlan();
+        recNFsp.setType(FlightScheduleStatus.ACTIVE);
+        recNFsp.setFlight(flight);
+        recNFsp.setFrequency(new BigDecimal(freq));
+        recNFsp.setEndDate(endFormattedDate);
+        
+        List<FlightSchedule> fsList = new ArrayList<FlightSchedule>();
+            
+        int index = 1;
+        System.out.println("\n\nFlight Routes created: ");
+        for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plusDays(freq)) {
+            LocalDateTime dateTime = LocalDateTime.of(date, startTime);
+            Date formattedDate = Date.from(dateTime.atZone(ZoneId.systemDefault()).toInstant());
+            System.out.println(index + ": "+ dateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+            index += 1;
+
+            FlightSchedule flightSch = new FlightSchedule();
+            flightSch.setCabinClass(ccList);
+            flightSch.setDepartureTime(formattedDate);
+            flightSch.setFlightDuration(duration);
+            Date arrTime = computeArrivalTime(formattedDate,duration);
+            flightSch.setArrivalTime(arrTime);
+            flightSch.setFlightDuration(duration);
+            
+            fsList.add(flightSch);
+            flightSch.setFlightSchedulePlan(recNFsp);
+        }
+        
+        recNFsp.setFlightSchedule(fsList);
+        updateDatabaseOnFSPFS(fsList, recNFsp, flight);
+    }
+    
     
     private Date formatDate(String dateTimeInput) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");

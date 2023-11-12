@@ -34,7 +34,7 @@ public class FlightSchedule implements Serializable {
     @Column(nullable = false)
     private Date departureTime;
     @Column(nullable = false)
-    private Duration flightDuration;
+    private double flightDuration;
     @Column(nullable = false)
     private Date arrivalTime;
     
@@ -106,16 +106,20 @@ public class FlightSchedule implements Serializable {
     /**
      * @return the flightDuration
      */
-    public Duration getFlightDuration() {
+    public double getFlightDuration() {
         return flightDuration;
     }
 
     /**
      * @param flightDuration the flightDuration to set
      */
-    public void setFlightDuration(Duration flightDuration) {
-        this.flightDuration = flightDuration;
+    public void setFlightDuration(Duration duration) {
+        long totalMinutes = duration.toMinutes();
+        double hours = totalMinutes / 60;
+        double remainingMinutes = totalMinutes % 60;
+        this.flightDuration = hours + remainingMinutes / 60.0;
     }
+
 
     /**
      * @return the arrivalTime
