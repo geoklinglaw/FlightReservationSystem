@@ -53,7 +53,6 @@ public interface FRSManagementSessionBeanLocal {
     
     public void createFareforEachCabinClass(Long ccId, Fare fare);
     
-    public void createFlightScheduleAndPlan(FlightSchedule fs, FlightSchedulePlan fsp);
-
+    public void createFlightScheduleAndPlan(List<FlightSchedule> fsList, FlightSchedulePlan fsp, Flight flight);
 
 }

@@ -13,6 +13,7 @@ import entity.Flight;
 import entity.FlightRoute;
 import entity.FlightSchedule;
 import entity.FlightSchedulePlan;
+import entity.MultiplePlan;
 import entity.SinglePlan;
 import java.math.BigDecimal;
 import java.time.Duration;
@@ -239,27 +240,16 @@ public class ScheduleManagerTask {
 
         switch (type) {
                 case 1:
-                    Flight flight = viewFlightDetailsCabinClasses(flightNum);
-                    String ccText = "\nInput fare for each cabin class:";
-                    System.out.println("reached here");
-                    
-
-                    for (CabinClass cc: flight.getAircraftConfig().getCabinClassList()) {
-                        ccText += "\n" + cc.getId() + ": " + cc.getType() + "\n";
-                        ccText += "Enter fare (0.00)> ";
-                        System.out.print(ccText);
-                        ccText = "";
-                        
-                        String fareAmt = sc.nextLine().trim();
-                        BigDecimal fare = new BigDecimal(fareAmt);
-                        createFareforEachCabinClass(flight, cc, fare);
-                    }
-                    System.out.println(ccText);
-
-                    createSingleFSP(sc, flight, flight.getAircraftConfig().getCabinClassList());
+                    Flight sFlight = handlingFSPCreation(flightNum, sc);
+                    createSingleFSP(sc, sFlight, sFlight.getAircraftConfig().getCabinClassList());
                     System.out.println("Success!");
-                
+                    break;
+                    
                 case 2:
+                    Flight mFlight = handlingFSPCreation(flightNum, sc);
+                    createMultipleFSP(sc, mFlight, mFlight.getAircraftConfig().getCabinClassList());
+                    System.out.println("Success!");
+                    break;
                     
                 case 3:
                     
@@ -282,6 +272,27 @@ public class ScheduleManagerTask {
 //        
 //        FRSManagementSessionBeanRemote.createFlight(flightNum, routeId, config);
 //        System.out.print("Successfully created Flight " + flightNum);
+    }
+    
+    private Flight handlingFSPCreation(String flightNum, Scanner sc) {
+        Flight flight = viewFlightDetailsCabinClasses(flightNum);
+        String ccText = "\nInput fare for each cabin class:";
+        System.out.println("reached here");
+
+
+        for (CabinClass cc: flight.getAircraftConfig().getCabinClassList()) {
+            ccText += "\n" + cc.getId() + ": " + cc.getType() + "\n";
+            ccText += "Enter fare (0.00)> ";
+            System.out.print(ccText);
+            ccText = "";
+
+            String fareAmt = sc.nextLine().trim();
+            BigDecimal fare = new BigDecimal(fareAmt);
+            createFareforEachCabinClass(flight, cc, fare);
+        }
+        System.out.println(ccText);
+        
+        return flight;
     }
     
     private void createSingleFSP(Scanner sc, Flight flight, List<CabinClass> ccList) {
@@ -316,14 +327,52 @@ public class ScheduleManagerTask {
         fsList.add(flightSch);
         singleFsp.setFlightSchedule(fsList);
         flightSch.setFlightSchedulePlan(singleFsp);
-        flight.setFlightSchedulePlan(singleFsp);
 
-        
-        updateDatabaseOnFSPFS(flightSch, singleFsp);
-
+        updateDatabaseOnFSPFS(fsList, singleFsp, flight);
     }
     
+    private void createMultipleFSP(Scanner sc, Flight flight, List<CabinClass> ccList) {
+        System.out.print("FOR MULTIPLE SCHEDULE --- ");
+        System.out.print("\nEnter the number of flight schedules you want to create > ");
+        int num = sc.nextInt();
+        sc.nextLine();
+        List<FlightSchedule> fsList = new ArrayList<FlightSchedule>();
+        FlightSchedulePlan multipleFsp = new MultiplePlan();
+        multipleFsp.setType(FlightScheduleStatus.ACTIVE);
+        multipleFsp.setFlight(flight);
+        
+        for (int i = 0; i < num; i ++) {
+            if (i > 0) {
+                System.out.println(); // Add a new line only between schedule entries
+            }
+            System.out.print("Enter date of flight (yyyy-MM-dd) > ");
+            String singleDate = sc.nextLine().trim();
+            System.out.print("Enter time of flight (HH:mm:ss) > ");
+            String singleTime = sc.nextLine().trim();
+            String dateTimeInput= singleDate + " " + singleTime;
+            Date date = formatDate(dateTimeInput);
+            System.out.print("Enter flight duration in terms of HOURS > ");
+            int hours = Integer.parseInt(sc.nextLine());
+            System.out.print("Enter flight duration in terms of MINUTES > ");
+            int minutes = Integer.parseInt(sc.nextLine());
+            int totalMinutes = (hours * 60) + minutes;
+            long seconds = totalMinutes * 60;
+            Duration duration = Duration.ofSeconds(seconds);
 
+            FlightSchedule flightSch = new FlightSchedule();
+            flightSch.setCabinClass(ccList);
+            flightSch.setDepartureTime(date);
+            flightSch.setFlightDuration(duration);
+            Date arrTime = computeArrivalTime(date,duration);
+            flightSch.setArrivalTime(arrTime);
+            flightSch.setFlightDuration(duration);
+            fsList.add(flightSch);
+            flightSch.setFlightSchedulePlan(multipleFsp);
+        }
+
+        multipleFsp.setFlightSchedule(fsList);
+        updateDatabaseOnFSPFS(fsList, multipleFsp, flight);
+    }
     
     private Date formatDate(String dateTimeInput) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -362,7 +411,7 @@ public class ScheduleManagerTask {
         FRSManagementSessionBeanRemote.createFareforEachCabinClass(cc.getId(), fare);
     }
     
-    private void updateDatabaseOnFSPFS(FlightSchedule fs, FlightSchedulePlan fsp) {
-        FRSManagementSessionBeanRemote.createFlightScheduleAndPlan(fs, fsp);
+    private void updateDatabaseOnFSPFS(List<FlightSchedule> fsList, FlightSchedulePlan fsp, Flight flight) {
+        FRSManagementSessionBeanRemote.createFlightScheduleAndPlan(fsList, fsp, flight);
     }
 }

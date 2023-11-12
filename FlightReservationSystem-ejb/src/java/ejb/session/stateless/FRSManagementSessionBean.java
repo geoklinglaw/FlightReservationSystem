@@ -272,8 +272,15 @@ public class FRSManagementSessionBean implements FRSManagementSessionBeanRemote,
         managedFare.setCabinClass(cc);
     }
     
-    public void createFlightScheduleAndPlan(FlightSchedule fs, FlightSchedulePlan fsp) {
-        flightSchedulePlanSessionBeanLocal.createNewFlightSchedule(fs);
+    public void createFlightScheduleAndPlan(List<FlightSchedule> fsList, FlightSchedulePlan fsp, Flight flight) {
+        for (FlightSchedule fs: fsList) {
+            flightSchedulePlanSessionBeanLocal.createNewFlightSchedule(fs);
+            
+        }
+        
+        Flight managedFlight = flightSessionBeanLocal.retrieveFlightById(flight.getId());
+        managedFlight.setFlightSchedulePlan(fsp);
+        
         flightSchedulePlanSessionBeanLocal.createNewFlightSchedulePlan(fsp);
     }
 
