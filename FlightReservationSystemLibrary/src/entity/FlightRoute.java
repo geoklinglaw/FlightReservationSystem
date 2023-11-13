@@ -26,7 +26,7 @@ import util.enumeration.FlightRouteStatus;
 @NamedQueries({
     @NamedQuery(
         name = "viewAllFlightRoutes",
-        query = "SELECT fr FROM FlightRoute fr"
+        query = "SELECT fr FROM FlightRoute"
     )
 
 })
