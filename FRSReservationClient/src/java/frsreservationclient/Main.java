@@ -35,10 +35,10 @@ public class Main {
         while(true) {
             System.out.println("*** Welcome to Merlion Airlines Reservation System ***\n");
             System.out.println("Select an action:");
-            System.out.println("> 1. Login");
-            System.out.println("> 2. Register as Customer");
-            System.out.println("> 3: Search for flights");
-            System.out.println("> 4. Exit");
+            System.out.println("1. Login");
+            System.out.println("2. Register as Customer");
+            System.out.println("3: Search for flights");
+            System.out.println("4. Exit");
             
             
             
@@ -77,49 +77,49 @@ public class Main {
             System.out.println("==== Registration Interface ====");
             System.out.println("Enter your details. To cancel registration at anytime, press 'q'.");
             
-            System.out.print("> First Name: ");
+            System.out.print("First Name: ");
             String firstName = sc.nextLine();
             if (firstName.equals("q")) {
                 cancelRegistration(sc);
                 return;          
             }
             
-            System.out.print("> Last Name: ");
+            System.out.print("Last Name: ");
             String lastName = sc.nextLine();
             if (lastName.equals("q")) {
                 cancelRegistration(sc);
                 return;
             }
             
-            System.out.print("> Email: ");
+            System.out.print("Email: ");
             String email = sc.nextLine();
             if (email.equals("q")) {
                 cancelRegistration(sc);
                 return;
             }
             
-            System.out.print("> Contact Number: ");
+            System.out.print("Contact Number: ");
             String contactNum = sc.nextLine();
             if (contactNum.equals("q")) {
                 cancelRegistration(sc);
                 return;
             }
             
-            System.out.print("> Address: ");
+            System.out.print("Address: ");
             String address = sc.nextLine();
             if (address.equals("q")) {
                 cancelRegistration(sc);
                 return;
             }
             
-            System.out.print("> Create Username: ");
+            System.out.print("Create Username: ");
             String username = sc.nextLine();
             if (username.equals("q")) {
                 cancelRegistration(sc);
                 return;
             }
             
-            System.out.print("> Create Password: ");
+            System.out.print("Create Password: ");
             String password = sc.nextLine();
             if (password.equals("q")) {
                 cancelRegistration(sc);
@@ -162,9 +162,9 @@ public class Main {
         Scanner sc = new Scanner(System.in);
         System.out.println("==== Login Interface ====");
         System.out.println("Enter login details:");
-        System.out.print("> Enter Username: ");
+        System.out.print("Enter Username: ");
         String username = sc.nextLine().trim();
-        System.out.print("> Enter Password: ");
+        System.out.print("Enter Password: ");
         String password = sc.nextLine().trim();
 
         try {
@@ -191,11 +191,11 @@ public class Main {
         while (true) {
             System.out.println("==== Menu Interface ====");
             System.out.println("You are logged in as " + person.getFirstName() + " " + person.getLastName()+ " \n");
-            System.out.println("> 1. Search for Flights");
-            System.out.println("> 2. Reserve Flights");
-            System.out.println("> 3. View My Flight Reservation Details");
-            System.out.println("> 4. View All My Flight Reservations");
-            System.out.println("> 5. Logout");
+            System.out.println("1. Search for Flights");
+            System.out.println("2. Reserve Flights");
+            System.out.println("3. View My Flight Reservation Details");
+            System.out.println("4. View All My Flight Reservations");
+            System.out.println("5. Logout");
             System.out.print("> ");
             response = sc.nextInt();
             

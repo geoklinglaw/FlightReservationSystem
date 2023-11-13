@@ -777,9 +777,9 @@ exists or setup the property manually. For example like this:
         <ant antfile="${project.FlightReservationSystemLibrary}/build.xml" inheritall="false" target="jar">
             <property name="deploy.on.save" value="false"/>
         </ant>
-        <ant antfile="${project.PointOfSaleSystemV41Library}/build.xml" inheritall="false" target="jar">
+<!--        <ant antfile="${project.PointOfSaleSystemV41Library}/build.xml" inheritall="false" target="jar">
             <property name="deploy.on.save" value="false"/>
-        </ant>
+        </ant>-->
     </target>
     <target depends="init, -deps-module-jar, -deps-ear-jar" name="deps-jar"/>
     <target depends="init,deps-jar" name="-pre-pre-compile">
@@ -810,7 +810,7 @@ exists or setup the property manually. For example like this:
     <target depends="compile" name="library-inclusion-in-manifest">
         <copyfiles files="${libs.jakartaee-api-8.0.classpath}" todir="${dist.ear.dir}/lib"/>
         <copyfiles files="${reference.FlightReservationSystemLibrary.jar}" todir="${dist.ear.dir}/lib"/>
-        <copyfiles files="${reference.PointOfSaleSystemV41Library.jar}" todir="${dist.ear.dir}/lib"/>
+        <!--<copyfiles files="${reference.PointOfSaleSystemV41Library.jar}" todir="${dist.ear.dir}/lib"/>-->
         <manifest file="${build.ear.classes.dir}/META-INF/MANIFEST.MF" mode="update"/>
     </target>
     <target name="-copy-meta-inf">
