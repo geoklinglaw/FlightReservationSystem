@@ -48,6 +48,9 @@ public class FlightSchedulePlan implements Serializable {
     
     @ManyToOne
     private Flight flight;
+    
+    @OneToOne
+    private Fare fare;
 
     public FlightSchedulePlan() {
     }

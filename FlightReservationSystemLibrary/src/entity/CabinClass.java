@@ -16,6 +16,7 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import util.enumeration.CabinClassType;
 
 /**
@@ -55,8 +56,8 @@ public class CabinClass implements Serializable {
     @OneToMany (mappedBy = "cabinClass")
     private List<Seat> seatList;
     
-    @OneToMany (mappedBy = "cabinClass") 
-    private List<Fare> fareList;
+    @OneToMany (mappedBy= "cabinClass") 
+    private List<Fare> fare;
     
     public CabinClass() {
     }
@@ -251,16 +252,7 @@ public class CabinClass implements Serializable {
     /**
      * @return the fareList
      */
-    public List<Fare> getFareList() {
-        return fareList;
-    }
 
-    /**
-     * @param fareList the fareList to set
-     */
-    public void setFareList(List<Fare> fareList) {
-        this.fareList = fareList;
-    }
 
     /**
      * @return the numSeatAbreast
@@ -275,5 +267,23 @@ public class CabinClass implements Serializable {
     public void setNumSeatAbreast(BigDecimal numSeatAbreast) {
         this.numSeatAbreast = numSeatAbreast;
     }
-    
+
+    /**
+     * @return the fare
+     */
+    public List<Fare> getFare() {
+        return fare;
+    }
+
+    /**
+     * @param fare the fare to set
+     */
+    public void setFare(List<Fare> fare) {
+        this.fare = fare;
+    }
+
+    /**
+     * @return the fare
+     */
+
 }

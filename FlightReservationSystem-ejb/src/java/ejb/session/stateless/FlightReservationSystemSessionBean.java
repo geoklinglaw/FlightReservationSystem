@@ -39,16 +39,22 @@ public class FlightReservationSystemSessionBean implements FlightReservationSyst
     private FareEntitySessionBeanLocal fareEntitySessionBean;
     
     
-    public List<FlightSchedule> searchFlights(Date startDate, CabinClassType ccType, String originCode, String destCode) {
-        List<FlightSchedule> fs0 = searchFlights0(startDate, ccType, originCode, destCode, 0);
-        return fs0;
+    public List<List<FlightSchedule>> searchFlightsOneWay(Date startDate, CabinClassType ccType, String originCode, String destCode) {
+        List<List<FlightSchedule>> combinedList = new ArrayList<List<FlightSchedule>>();
+        List<FlightSchedule> fs0 = searchFlightsByDays(startDate, ccType, originCode, destCode, 0); // exact day
+        combinedList.add(fs0);
+        List<FlightSchedule> fs1 = searchFlightsByDays(startDate, ccType, originCode, destCode, 1); // one day before
+        combinedList.add(fs1);
+        List<FlightSchedule> fs2 = searchFlightsByDays(startDate, ccType, originCode, destCode, 2); // two day before
+        combinedList.add(fs2);
+
+
+
+        return combinedList;
     }
     
-    public List<FlightSchedule> searchFlights0(Date startDate, CabinClassType ccType, String originCode, String destCode, int daysBefore) {
-//        Airport originAirport = airportEntitySessionBeanLocal.retrieveAirportByCode(originCode);
-//        Airport destinationAirport = airportEntitySessionBeanLocal.retrieveAirportByCode(destCode);
- 
-        
+    public List<FlightSchedule> searchFlightsByDays(Date startDate, CabinClassType ccType, String originCode, String destCode, int daysBefore) {
+
         List <FlightRoute> routes = flightRouteSessionBeanLocal.viewAllFlightRoute();
         List <FlightRoute> selectedRoutes = new ArrayList<FlightRoute>();
         List <Flight> flightListWithFSP = new ArrayList<Flight>();
@@ -72,31 +78,19 @@ public class FlightReservationSystemSessionBean implements FlightReservationSyst
         
         List<FlightSchedule> resultSchedules = new ArrayList<>();
         
-        for (Flight flight: flightListWithFSP) {
-            Query query = em.createQuery("SELECT fs FROM FlightSchedule fs WHERE fs.flight = :flight AND fs.departureTime BETWEEN :rangeStartDate AND :startDate");
-            query.setParameter("flight", flight);
+        for (Flight flight : flightListWithFSP) {
+            Query query = em.createQuery("SELECT fs FROM FlightSchedule fs WHERE fs.flightSchedulePlan.flight.id = :flightId AND fs.departureTime BETWEEN :rangeStartDate AND :endDate");
+            query.setParameter("flightId", flight.getId());
             query.setParameter("rangeStartDate", rangeStartDate);
-            query.setParameter("startDate", startDate);
-            resultSchedules.addAll(query.getResultList());
+            query.setParameter("endDate", startDate);
+            List<FlightSchedule> fsList = (List<FlightSchedule>) query.getResultList();
+            for (FlightSchedule fs: fsList) {
+                int size = fs.getCabinClass().size();
+            }
+            
+            resultSchedules.addAll(fsList);
         }
-        
-//        
-//        
-//
-//        
-//        
-//        
-//        
-//        Calendar calendar = Calendar.getInstance();
-//        calendar.setTime(startDate);
-//        calendar.add(Calendar.DAY_OF_MONTH, -daysBefore);
-//        Date rangeStartDate = calendar.getTime();
-//
-//        Query query = em.createQuery("SELECT fs FROM FlightSchedule fs WHERE fs.departureTime BETWEEN :rangeStartDate AND :startDate");
-//        query.setParameter("rangeStartDate", rangeStartDate);
-//        query.setParameter("startDate", startDate);
-//
-//        return query.getResultList();
+
         return resultSchedules;
     }
 

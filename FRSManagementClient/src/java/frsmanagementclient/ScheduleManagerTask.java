@@ -435,6 +435,10 @@ public class ScheduleManagerTask {
             
             fsList.add(flightSch);
             flightSch.setFlightSchedulePlan(recNFsp);
+            for (CabinClass cc: flightSch.getCabinClass()) {
+                System.out.println(cc.getType());
+  
+            }
         }
         
         recNFsp.setFlightSchedule(fsList);
@@ -544,7 +548,7 @@ public class ScheduleManagerTask {
         FRSManagementSessionBeanRemote.createFlightScheduleAndPlan(fsList, fsp, flight);
     }
     
-    private void viewFlightSchedulePlan() {
+    private List<FlightSchedulePlan> viewFlightSchedulePlan() {
         System.out.println("\n\n*** View All Flight Schedule Plan *** \n");
         List<FlightSchedulePlan> fspList = FRSManagementSessionBeanRemote.viewAllFlightSchedulePlan();
 
@@ -564,5 +568,37 @@ public class ScheduleManagerTask {
         }
         
         System.out.print(fspText);
+        return fspList;
+    }
+    
+    private void viewFlightSchedulePlanDetails(Scanner sc) {
+        List<FlightSchedulePlan> fspList = viewFlightSchedulePlan();
+        System.out.print("Select which flight schedule plan details you would like to know:\n> ");
+        int response = sc.nextInt();
+        FlightSchedulePlan fsp = fspList.get(response - 1);
+
+        String fspDetails = "-- Flight Schedule Plan Details -- \n";
+        fspDetails += "Flight Number: " + fsp.getFlight().getFlightNumber() + "\n";
+        if (fsp instanceof SinglePlan) {
+            fspDetails += "Plan Type: Single Plan \n";
+        } else if (fsp instanceof MultiplePlan) {
+            fspDetails += "Plan Type: Multiple Plan \n";
+        } else if (fsp instanceof MultiplePlan) {
+            fspDetails += "Plan Type: Recurrent N Plan \n";
+        } else {
+            fspDetails += "Plan Type: Recurrent Weekly Plan \n";
+        }
+
+        fspDetails += "| List of flight schedules | \n";
+        int index = 1;
+        List<FlightSchedule> sortedFS = fsp.getFlightSchedule();
+        sortedFS.sort((fs1, fs2) -> fs1.getDepartureTime().compareTo(fs2.getDepartureTime()));
+
+        for (FlightSchedule fs: sortedFS) {
+            fspDetails += index + ": " + fs.getDepartureTime() + " --> " + fs.getArrivalTime() + "\n";
+            index += 1;
+        }
+
+        System.out.println(fspDetails);
     }
 }

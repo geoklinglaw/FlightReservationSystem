@@ -17,9 +17,8 @@ import util.enumeration.CabinClassType;
 @Remote
 public interface FlightReservationSystemSessionBeanRemote {
     
-    public List<FlightSchedule> searchFlights(Date startDate, CabinClassType ccType, String originCode, String destCode);
+    public List<List<FlightSchedule>> searchFlightsOneWay(Date startDate, CabinClassType ccType, String originCode, String destCode);
 
-    
-    public List<FlightSchedule> searchFlights0(Date startDate, CabinClassType ccType, String originCode, String destCode, int daysBefore);
+    public List<FlightSchedule> searchFlightsByDays(Date startDate, CabinClassType ccType, String originCode, String destCode, int daysBefore);
 
 }

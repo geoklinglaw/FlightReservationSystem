@@ -272,7 +272,7 @@ public class FRSManagementSessionBean implements FRSManagementSessionBeanRemote,
         Long fareId = fareEntitySessionBeanLocal.createNewFare(fare);
         Fare managedFare = fareEntitySessionBeanLocal.retrieveFareById(fareId);
         CabinClass cc = cabinClassSessionBeanLocal.retrieveCabinClassById(ccId);
-        cc.getFareList().add(managedFare);
+        cc.getFare().add(fare);
         managedFare.setCabinClass(cc);
     }
     

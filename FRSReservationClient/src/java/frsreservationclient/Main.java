@@ -6,6 +6,7 @@ package frsreservationclient;
 
 import ejb.session.stateless.FRSManagementSessionBeanRemote;
 import ejb.session.stateless.FlightReservationSystemSessionBeanRemote;
+import entity.CabinClass;
 import entity.FlightSchedule;
 import entity.Person;
 import java.text.ParseException;
@@ -70,7 +71,7 @@ public class Main {
     }
 
     private static void doMenuFeatures(Scanner sc) {
-        System.out.println("==== Menu ====");
+        System.out.println("\n==== Menu ====");
         Integer response = 0;
 //        Person person = personSessionBean.retrievePersonById(customerId);
         while (true) {
@@ -147,14 +148,29 @@ public class Main {
         CabinClassType cabinType = CabinClassType.fromValue(ccType - 1);
         
         if (startDate != null) {
-            List <FlightSchedule> fsList = flightReservationSystemSessionBeanRemote.searchFlights(startDate, cabinType, originCode, destCode);
+            List<List <FlightSchedule>> listofFSList = flightReservationSystemSessionBeanRemote.searchFlightsOneWay(startDate, cabinType, originCode, destCode);
             
             String fsText = "";
-            for (FlightSchedule fs: fsList) { 
-                fsText += fs.getFlightSchedulePlan().getFlight().getFlightNumber() + ": " + fs.getDepartureTime() + " --> " + fs.getArrivalTime();
-                
+            int index = 0;
+            for (List <FlightSchedule> fsList: listofFSList) { 
+                System.out.print("== " + index + " NUMBER OF DAYS BEFORE REQUESTED DATE ==");
+                if (fsList.size() == 0) {
+                    System.out.print("no flights found.");
+                } else {
+                    for (FlightSchedule fs: fsList) {
+//                        for (CabinClass cc: fs.getCabinClass()) {
+//                            if (cc.getType().equals(cabinType)) {
+                                System.out.println(fs.getFlightSchedulePlan().getFlight().getFlightNumber() + ": " + fs.getDepartureTime() + " --> " + fs.getArrivalTime());
+                                for (CabinClass cc: fs.getCabinClass()) {
+                                   System.out.print(cc.getType());
+                                }
+
+//                            }
+//                        }
+                    }
+                }
+                index += 1;
             }
-            System.out.print(fsText);
 
         }
         

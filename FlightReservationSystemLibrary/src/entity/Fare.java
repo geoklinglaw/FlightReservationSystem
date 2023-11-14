@@ -12,6 +12,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 
 /**
  *
@@ -31,6 +32,9 @@ public class Fare implements Serializable {
     
     @ManyToOne 
     private CabinClass cabinClass;
+    
+    @OneToOne(mappedBy = "fare")
+    private FlightSchedulePlan flightSchedulePlan;
     
 
     public Fare() {
