@@ -4,7 +4,11 @@
  */
 package ejb.session.stateless;
 
+import entity.FlightSchedule;
+import java.util.Date;
+import java.util.List;
 import javax.ejb.Remote;
+import util.enumeration.CabinClassType;
 
 /**
  *
@@ -13,4 +17,9 @@ import javax.ejb.Remote;
 @Remote
 public interface FlightReservationSystemSessionBeanRemote {
     
+    public List<FlightSchedule> searchFlights(Date startDate, CabinClassType ccType, String originCode, String destCode);
+
+    
+    public List<FlightSchedule> searchFlights0(Date startDate, CabinClassType ccType, String originCode, String destCode, int daysBefore);
+
 }

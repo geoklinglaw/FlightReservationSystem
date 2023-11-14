@@ -94,7 +94,11 @@ public class ScheduleManagerTask {
                 } 
                 else if (response == 7) {
                     viewFlightSchedulePlan();
-                } else {
+                }                
+                else if (response == 8){
+                    viewFlightSchedulePlanDetails(scanner);
+                } 
+                else {
                     System.out.println("Invalid option, please try again!\n");                
                 }
             }

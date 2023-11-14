@@ -287,6 +287,6 @@ public class FRSManagementSessionBean implements FRSManagementSessionBeanRemote,
         
         flightSchedulePlanSessionBeanLocal.createNewFlightSchedulePlan(fsp);
     }
-
+   
     
 }
