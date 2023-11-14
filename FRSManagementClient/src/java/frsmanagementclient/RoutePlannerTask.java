@@ -57,7 +57,14 @@ public class RoutePlannerTask {
     }
     
     private void createFlightRoute(Scanner sc) {
+        sc.nextLine();
         System.out.println("\n\n*** Creating Flight Route *** \n");
+        int num = 1;
+        System.out.println("Enter 'Y' if you would like to create a complementary flight route > ");
+        if (sc.nextLine().equals("Y")) {
+            num = 2;
+        }
+        
         System.out.println("List of Airports:");
         
         List<Airport> airportList =  FRSManagementSessionBeanRemote.viewAllAirports();
@@ -91,7 +98,12 @@ public class RoutePlannerTask {
             }
         }
         
-        FRSManagementSessionBeanRemote.createFlightRoute(originID, destID); 
+        FRSManagementSessionBeanRemote.createFlightRoute(originID, destID);
+        
+        if (num == 2) {
+            FRSManagementSessionBeanRemote.createFlightRoute(destID, originID); 
+        }
+        
     }
     
     private void viewAllFlightRoutes() {

@@ -79,13 +79,19 @@ public class FlightReservationSystemSessionBean implements FlightReservationSyst
         List<FlightSchedule> resultSchedules = new ArrayList<>();
         
         for (Flight flight : flightListWithFSP) {
+            System.out.println(flight.getFlightNumber() + " " + flight.getFlightRoute().getId());
             Query query = em.createQuery("SELECT fs FROM FlightSchedule fs WHERE fs.flightSchedulePlan.flight.id = :flightId AND fs.departureTime BETWEEN :rangeStartDate AND :endDate");
             query.setParameter("flightId", flight.getId());
             query.setParameter("rangeStartDate", rangeStartDate);
             query.setParameter("endDate", startDate);
             List<FlightSchedule> fsList = (List<FlightSchedule>) query.getResultList();
+            
             for (FlightSchedule fs: fsList) {
+                
                 int size = fs.getCabinClass().size();
+                System.out.println(fs.getId() + "  " + size);
+                int size1 = fs.getFlightSchedulePlan().getFare().size();
+
             }
             
             resultSchedules.addAll(fsList);
@@ -93,10 +99,4 @@ public class FlightReservationSystemSessionBean implements FlightReservationSyst
 
         return resultSchedules;
     }
-
-
-
-
-
-
 }

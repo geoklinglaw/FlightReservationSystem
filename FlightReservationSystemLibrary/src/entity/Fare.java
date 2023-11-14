@@ -33,7 +33,7 @@ public class Fare implements Serializable {
     @ManyToOne 
     private CabinClass cabinClass;
     
-    @OneToOne(mappedBy = "fare")
+    @ManyToOne
     private FlightSchedulePlan flightSchedulePlan;
     
 
@@ -134,6 +134,20 @@ public class Fare implements Serializable {
      */
     public void setFareBasisCode(String fareBasisCode) {
         this.fareBasisCode = fareBasisCode;
+    }
+
+    /**
+     * @return the flightSchedulePlan
+     */
+    public FlightSchedulePlan getFlightSchedulePlan() {
+        return flightSchedulePlan;
+    }
+
+    /**
+     * @param flightSchedulePlan the flightSchedulePlan to set
+     */
+    public void setFlightSchedulePlan(FlightSchedulePlan flightSchedulePlan) {
+        this.flightSchedulePlan = flightSchedulePlan;
     }
     
 }

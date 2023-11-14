@@ -115,10 +115,9 @@ public class ScheduleManagerTask {
         List<AircraftConfiguration> acConfiglist = pair.getValue();
         
         String routeText = "";
-        int index = 1;
+
         for (FlightRoute route: routeList) {
-            routeText += index + ": " + route.getAirportList().get(0).getCountry() + " --> " + route.getAirportList().get(1).getCountry() +"\n";
-            index += 1;
+            routeText += route.getId() + ": " + route.getAirportList().get(0).getCountry() + " --> " + route.getAirportList().get(1).getCountry() +"\n";
         }
         System.out.print(routeText);
 
@@ -236,7 +235,14 @@ public class ScheduleManagerTask {
     }
     
     private void createFlightSchedulePlan(Scanner sc) {
+//        sc.nextLine();
         System.out.println("\n\n*** Creating Flight Schedule Plan *** \n");
+//        System.out.println("Enter 'Y' if you would like to create a complementary flight schedule plan:");
+//        int num = 1;
+//        if (sc.nextLine().equals("Y")) {
+//            num = 2;
+//        }
+
         System.out.println("Select your preferred schedule type:");
         
         String schTypeText = "1: Single schedule\n";
@@ -251,39 +257,53 @@ public class ScheduleManagerTask {
         System.out.print("\nEnter Flight Number > ");
         String flightNum = sc.nextLine().trim();
         
+        
 
         switch (type) {
                 case 1:
-                    Flight sFlight = handlingFSPCreation(flightNum, sc);
-                    createSingleFSP(sc, sFlight, sFlight.getAircraftConfig().getCabinClassList());
+                    Pair<Flight, List<Fare>> pair1 = handlingFSPCreation(flightNum, sc);
+                    Flight sFlight = pair1.getKey();
+                    List<Fare> fare1 = pair1.getValue();
+                    for (CabinClass cc: sFlight.getAircraftConfig().getCabinClassList()) {
+                        System.out.println("printing cc... " + cc.getType());
+                    }
+                    createSingleFSP(sc, sFlight, sFlight.getAircraftConfig().getCabinClassList(), fare1);
                     System.out.println("Success!");
                     break;
                     
                 case 2:
-                    Flight mFlight = handlingFSPCreation(flightNum, sc);
-                    createMultipleFSP(sc, mFlight, mFlight.getAircraftConfig().getCabinClassList());
+                    Pair<Flight, List<Fare>> pair2 = handlingFSPCreation(flightNum, sc);
+                    Flight mFlight = pair2.getKey();
+                    List<Fare> fare2 = pair2.getValue();
+                    createMultipleFSP(sc, mFlight, mFlight.getAircraftConfig().getCabinClassList(), fare2);
                     System.out.println("Success!");
                     break;
                     
                 case 3:
-                    Flight rNFlight = handlingFSPCreation(flightNum, sc);
-                    createRecurrentNFSP(sc, rNFlight, rNFlight.getAircraftConfig().getCabinClassList());
+                    Pair<Flight, List<Fare>> pair3 = handlingFSPCreation(flightNum, sc);
+                    Flight rNFlight = pair3.getKey();
+                    List<Fare> fare3 = pair3.getValue();
+                    createRecurrentNFSP(sc, rNFlight, rNFlight.getAircraftConfig().getCabinClassList(), fare3);
                     System.out.println("Success!");  
                     break;
                     
                 case 4:
-                    Flight rWFlight = handlingFSPCreation(flightNum, sc);
-                    createRecurrentWeeklyFSP(sc, rWFlight, rWFlight.getAircraftConfig().getCabinClassList());
+                    Pair<Flight, List<Fare>> pair4 = handlingFSPCreation(flightNum, sc);
+                    Flight rWFlight = pair4.getKey();
+                    List<Fare> fare4 = pair4.getValue();
+                    createRecurrentWeeklyFSP(sc, rWFlight, rWFlight.getAircraftConfig().getCabinClassList(), fare4);
                     System.out.println("Success!");  
                     break;
         }
         
     }
     
-    private Flight handlingFSPCreation(String flightNum, Scanner sc) {
+    private Pair<Flight, List<Fare>> handlingFSPCreation(String flightNum, Scanner sc) {
         Flight flight = viewFlightDetailsCabinClasses(flightNum);
         String ccText = "\nInput fare for each cabin class:";
         System.out.println("reached here");
+        List<Fare> fareList = new ArrayList<Fare>();
+
 
 
         for (CabinClass cc: flight.getAircraftConfig().getCabinClassList()) {
@@ -293,15 +313,20 @@ public class ScheduleManagerTask {
             ccText = "";
 
             String fareAmt = sc.nextLine().trim();
-            BigDecimal fare = new BigDecimal(fareAmt);
-            createFareforEachCabinClass(flight, cc, fare);
+            BigDecimal fareAmount = new BigDecimal(fareAmt);
+//            Fare createdFare = createFareforEachCabinClass(flight, cc, fare);
+            Fare fare = new Fare();
+            fare.setFareAmount(fareAmount);
+            fare.setFareBasisCode(flight.getFlightNumber()+cc.getType());
+            fareList.add(fare);
+            
         }
         System.out.println(ccText);
         
-        return flight;
+        return new Pair<>(flight, fareList);
     }
     
-    private void createSingleFSP(Scanner sc, Flight flight, List<CabinClass> ccList) {
+    private void createSingleFSP(Scanner sc, Flight flight, List<CabinClass> ccList, List<Fare> fare) {
         System.out.print("FOR SINGLE SCHEDULE --- ");
         System.out.print("Enter date of flight (yyyy-MM-dd) > ");
         String singleDate = sc.nextLine().trim();
@@ -333,11 +358,21 @@ public class ScheduleManagerTask {
         fsList.add(flightSch);
         singleFsp.setFlightSchedule(fsList);
         flightSch.setFlightSchedulePlan(singleFsp);
+        singleFsp.setFare(fare);
+        
+        for (int i = 0; i < fare.size(); i++) {
+            fare.get(i).setFlightSchedulePlan(singleFsp);
+            fare.get(i).setCabinClass(ccList.get(i));
+        }
+        
+        updateDatabaseOnFSPFS(fsList, singleFsp, flight, fare);
+        for (int i = 0; i < ccList.size(); i++) {
+            createFareforEachCabinClass(flight, ccList.get(i), fare.get(i));
+        }
 
-        updateDatabaseOnFSPFS(fsList, singleFsp, flight);
     }
     
-    private void createMultipleFSP(Scanner sc, Flight flight, List<CabinClass> ccList) {
+    private void createMultipleFSP(Scanner sc, Flight flight, List<CabinClass> ccList, List<Fare> fare) {
         System.out.print("FOR MULTIPLE SCHEDULE --- ");
         System.out.print("\nEnter the number of flight schedules you want to create > ");
         int num = sc.nextInt();
@@ -377,11 +412,24 @@ public class ScheduleManagerTask {
         }
 
         multipleFsp.setFlightSchedule(fsList);
-        updateDatabaseOnFSPFS(fsList, multipleFsp, flight);
+        multipleFsp.setFare(fare);
+        
+        for (int i = 0; i < fare.size(); i++) {
+            fare.get(i).setFlightSchedulePlan(multipleFsp);
+            fare.get(i).setCabinClass(ccList.get(i));
+        }
+        
+        updateDatabaseOnFSPFS(fsList, multipleFsp, flight, fare);
+        
+        
+        for (int i = 0; i < ccList.size(); i++) {
+            createFareforEachCabinClass(flight, ccList.get(i), fare.get(i));
+        }
+
     }
     
 
-    private void createRecurrentNFSP(Scanner sc, Flight flight, List<CabinClass> ccList) {
+    private void createRecurrentNFSP(Scanner sc, Flight flight, List<CabinClass> ccList, List<Fare> fare) {
         System.out.print("FOR RECURRENT N SCHEDULE --- ");
         System.out.print("\nEnter frequency > ");
         int freq = sc.nextInt();
@@ -426,7 +474,11 @@ public class ScheduleManagerTask {
             index += 1;
 
             FlightSchedule flightSch = new FlightSchedule();
+            for (CabinClass cc: ccList) { // REMEMBER TO DO FOR OTHERS!!!!!!!
+                System.out.println(cc.getId());
+            }
             flightSch.setCabinClass(ccList);
+            System.out.println("FIRST INDEX: " + flightSch.getCabinClass().get(0).getId());
             flightSch.setDepartureTime(formattedDate);
             flightSch.setFlightDuration(duration);
             Date arrTime = computeArrivalTime(formattedDate,duration);
@@ -440,12 +492,22 @@ public class ScheduleManagerTask {
   
             }
         }
+
+        for (int i = 0; i < fare.size(); i++) {
+            fare.get(i).setFlightSchedulePlan(recNFsp);
+            fare.get(i).setCabinClass(ccList.get(i));
+        }
         
         recNFsp.setFlightSchedule(fsList);
-        updateDatabaseOnFSPFS(fsList, recNFsp, flight);
+        recNFsp.setFare(fare);
+        updateDatabaseOnFSPFS(fsList, recNFsp, flight, fare);
+        for (int i = 0; i < ccList.size(); i++) {
+            createFareforEachCabinClass(flight, ccList.get(i), fare.get(i));
+        }
+
     }
     
-    private void createRecurrentWeeklyFSP(Scanner sc, Flight flight, List<CabinClass> ccList) {
+    private void createRecurrentWeeklyFSP(Scanner sc, Flight flight, List<CabinClass> ccList, List<Fare> fare) {
         System.out.print("FOR RECURRENT WEEKLY SCHEDULE --- ");
         System.out.print("\nEnter dayOfWeek (1=Monday, 7=Sunday) > ");
         int dayOfWeekInt = sc.nextInt();
@@ -501,9 +563,21 @@ public class ScheduleManagerTask {
             flightSch.setFlightSchedulePlan(recWFsp);
         }
         
+        
+        for (int i = 0; i < fare.size(); i++) {
+            fare.get(i).setFlightSchedulePlan(recWFsp);
+            fare.get(i).setCabinClass(ccList.get(i));
+        }
+        
         recWFsp.setFlightSchedule(fsList);
+        recWFsp.setFare(fare);
         recWFsp.setDayOfWeek(new BigDecimal(dayOfWeekInt));
-        updateDatabaseOnFSPFS(fsList, recWFsp, flight);
+        updateDatabaseOnFSPFS(fsList, recWFsp, flight, fare);
+        
+        for (int i = 0; i < ccList.size(); i++) {
+            createFareforEachCabinClass(flight, ccList.get(i), fare.get(i));
+        }
+
     }
     
     
@@ -537,15 +611,13 @@ public class ScheduleManagerTask {
         return flight;
     }
     
-    private void createFareforEachCabinClass(Flight flight, CabinClass cc, BigDecimal fareAmount) {
-        Fare fare = new Fare();
-        fare.setFareAmount(fareAmount);
-        fare.setFareBasisCode(flight.getFlightNumber()+cc.getType());
-        FRSManagementSessionBeanRemote.createFareforEachCabinClass(cc.getId(), fare);
+    private Fare createFareforEachCabinClass(Flight flight, CabinClass cc, Fare fare) {
+        FRSManagementSessionBeanRemote.createFareforEachCabinClass(cc.getId(), fare.getFareBasisCode());
+        return fare;
     }
     
-    private void updateDatabaseOnFSPFS(List<FlightSchedule> fsList, FlightSchedulePlan fsp, Flight flight) {
-        FRSManagementSessionBeanRemote.createFlightScheduleAndPlan(fsList, fsp, flight);
+    private void updateDatabaseOnFSPFS(List<FlightSchedule> fsList, FlightSchedulePlan fsp, Flight flight, List<Fare> fare) {
+        FRSManagementSessionBeanRemote.createFlightScheduleAndPlan(fsList, fsp, flight, fare);
     }
     
     private List<FlightSchedulePlan> viewFlightSchedulePlan() {

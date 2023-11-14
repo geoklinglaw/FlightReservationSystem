@@ -7,6 +7,7 @@ package entity;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -49,8 +50,8 @@ public class FlightSchedulePlan implements Serializable {
     @ManyToOne
     private Flight flight;
     
-    @OneToOne
-    private Fare fare;
+    @OneToMany(mappedBy = "flightSchedulePlan", cascade = CascadeType.ALL)
+    private List<Fare> fare;
 
     public FlightSchedulePlan() {
     }
@@ -136,6 +137,20 @@ public class FlightSchedulePlan implements Serializable {
      */
     public void setFlightSchedule(List<FlightSchedule> flightSchedule) {
         this.flightSchedule = flightSchedule;
+    }
+
+    /**
+     * @return the fare
+     */
+    public List<Fare> getFare() {
+        return fare;
+    }
+
+    /**
+     * @param fare the fare to set
+     */
+    public void setFare(List<Fare> fare) {
+        this.fare = fare;
     }
 
 

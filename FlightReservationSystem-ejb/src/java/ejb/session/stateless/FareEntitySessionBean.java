@@ -8,6 +8,7 @@ import entity.Fare;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 
 /**
  *
@@ -19,15 +20,18 @@ public class FareEntitySessionBean implements FareEntitySessionBeanRemote, FareE
     @PersistenceContext(unitName = "FlightReservationSystem-ejbPU")
     private EntityManager em;
 
-    public Long createNewFare(Fare fare) {
+    public void createNewFare(Fare fare) {
         em.persist(fare);
-        em.flush();
-        
-        return fare.getId();
     }
 
     public Fare retrieveFareById(Long id) {
         Fare fare = em.find(Fare.class, id);
+        
+        return fare;
+    }
+    
+    public Fare retrieveFareByFBC(String fbc) {
+        Fare fare = (Fare) em.createQuery("SELECT f FROM Fare f WHERE f.fareBasisCode = :fareCode").setParameter("fareCode", fbc).getSingleResult();
         
         return fare;
     }

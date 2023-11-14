@@ -268,15 +268,20 @@ public class FRSManagementSessionBean implements FRSManagementSessionBeanRemote,
         return flight;
     }
     
-    public void createFareforEachCabinClass(Long ccId, Fare fare) {
-        Long fareId = fareEntitySessionBeanLocal.createNewFare(fare);
-        Fare managedFare = fareEntitySessionBeanLocal.retrieveFareById(fareId);
+    public void createFareforEachCabinClass(Long ccId, String fareBasisCode) {
+        Fare managedFare = fareEntitySessionBeanLocal.retrieveFareByFBC(fareBasisCode);
         CabinClass cc = cabinClassSessionBeanLocal.retrieveCabinClassById(ccId);
-        cc.getFare().add(fare);
+        cc.getFare().add(managedFare);
         managedFare.setCabinClass(cc);
     }
     
-    public void createFlightScheduleAndPlan(List<FlightSchedule> fsList, FlightSchedulePlan fsp, Flight flight) {
+
+    
+    public void createFlightScheduleAndPlan(List<FlightSchedule> fsList, FlightSchedulePlan fsp, Flight flight, List<Fare> fareList) {
+        for (Fare f: fareList) {
+            fareEntitySessionBeanLocal.createNewFare(f);
+        }
+        
         for (FlightSchedule fs: fsList) {
             flightSchedulePlanSessionBeanLocal.createNewFlightSchedule(fs);
             

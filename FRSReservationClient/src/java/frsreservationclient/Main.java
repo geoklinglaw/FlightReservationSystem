@@ -9,6 +9,7 @@ import ejb.session.stateless.FlightReservationSystemSessionBeanRemote;
 import entity.CabinClass;
 import entity.FlightSchedule;
 import entity.Person;
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -71,11 +72,10 @@ public class Main {
     }
 
     private static void doMenuFeatures(Scanner sc) {
-        System.out.println("\n==== Menu ====");
         Integer response = 0;
 //        Person person = personSessionBean.retrievePersonById(customerId);
         while (true) {
-            System.out.println("==== Menu Interface ====");
+            System.out.println("\n==== Menu Interface ====");
 //            System.out.println("You are logged in as " + person.getFirstName() + " " + person.getLastName()+ " \n");
             System.out.println("> 1. Search for Flights");
             System.out.println("> 2. Reserve Flights");
@@ -146,36 +146,68 @@ public class Main {
         System.out.print("Select your preference for cabin class > ");
         int ccType = sc.nextInt();
         CabinClassType cabinType = CabinClassType.fromValue(ccType - 1);
-        
-        if (startDate != null) {
-            List<List <FlightSchedule>> listofFSList = flightReservationSystemSessionBeanRemote.searchFlightsOneWay(startDate, cabinType, originCode, destCode);
-            
-            String fsText = "";
-            int index = 0;
-            for (List <FlightSchedule> fsList: listofFSList) { 
-                System.out.print("== " + index + " NUMBER OF DAYS BEFORE REQUESTED DATE ==");
-                if (fsList.size() == 0) {
-                    System.out.print("no flights found.");
-                } else {
-                    for (FlightSchedule fs: fsList) {
-//                        for (CabinClass cc: fs.getCabinClass()) {
-//                            if (cc.getType().equals(cabinType)) {
-                                System.out.println(fs.getFlightSchedulePlan().getFlight().getFlightNumber() + ": " + fs.getDepartureTime() + " --> " + fs.getArrivalTime());
-                                for (CabinClass cc: fs.getCabinClass()) {
-                                   System.out.print(cc.getType());
-                                }
 
-//                            }
-//                        }
+        if (startDate != null) {
+            List<List<FlightSchedule>> listofFSList = flightReservationSystemSessionBeanRemote.searchFlightsOneWay(startDate, cabinType, originCode, destCode);
+
+            for (int index = 0; index < listofFSList.size(); index++) {
+                List<FlightSchedule> fsList = listofFSList.get(index);
+                System.out.printf("\n\n                               == %d DAY(S) BEFORE REQUESTED DATE ==\n", index);
+                if (fsList.isEmpty()) {
+                    System.out.println("No flights found.");
+                } else {
+                    // Print table header
+                    System.out.printf("%-12s %-20s %-12s %-25s %-25s %-15s\n", "Flight", "Cabin Class", "Fare", "Departure", "Arrival", "Duration");
+                    System.out.println(fsList.size());
+
+
+                    for (FlightSchedule fs : fsList) {
+                        for (int i = 0; i < fs.getCabinClass().size(); i++) {
+                            String flightNumber = fs.getFlightSchedulePlan().getFlight().getFlightNumber();
+                            BigDecimal fareAmount = fs.getFlightSchedulePlan().getFare().get(i).getFareAmount();
+                            String departureTime = new SimpleDateFormat("EEE, MMM dd, yyyy, hh:mm a").format(fs.getDepartureTime());
+                            String arrivalTime = new SimpleDateFormat("EEE, MMM dd, yyyy, hh:mm a").format(fs.getArrivalTime());
+                            double durationInHours = fs.getFlightDuration();
+                            int hours = (int) durationInHours;
+                            int minutes = (int) ((durationInHours - hours) * 60);
+
+                            System.out.printf("%-10s %-15s $%-9.2f %-20s %-20s %d hrs %d mins\n", flightNumber, fs.getCabinClass().get(i).getType(), fareAmount, departureTime, arrivalTime, hours, minutes);
+
+                        }
                     }
                 }
-                index += 1;
             }
-
         }
-        
-        
+//        if (startDate != null) {
+//            List<List <FlightSchedule>> listofFSList = flightReservationSystemSessionBeanRemote.searchFlightsOneWay(startDate, cabinType, originCode, destCode);
+//            
+//            String fsText = "";
+//            int index = 0;
+//            for (List <FlightSchedule> fsList: listofFSList) { 
+//                System.out.println("\n\n== " + index + " NUMBER OF DAYS BEFORE REQUESTED DATE ==");
+//                if (fsList.size() == 0) {
+//                    System.out.println("no flights found.");
+//                } else {
+//                    for (FlightSchedule fs: fsList) {
+//                        for (int i = 0; i < fs.getCabinClass().size(); i++) {
+//                            if (fs.getCabinClass().get(i).getType().equals(cabinType)) {
+//                                System.out.println(fs.getFlightSchedulePlan().getFlight().getFlightNumber() + ": (" + cabinType + " $" + fs.getFlightSchedulePlan().getFare().get(i).getFareAmount() + ") " + fs.getDepartureTime() + " --> " + fs.getArrivalTime());
+//                               
+//                            }
+//                        }
+//                    }
+//                }
+//                index += 1;
+//                System.out.print("");
+//            }
+//                
+//        }
+
     }
+        
+        
+  }
+
         
     
         
@@ -268,4 +300,4 @@ public class Main {
 //    
 
 
-}
+

@@ -14,9 +14,12 @@ import javax.ejb.Remote;
 @Remote
 public interface FareEntitySessionBeanRemote {
     
-    public Long createNewFare(Fare fare);
-    
+    public void createNewFare(Fare fare);
+
     public Fare retrieveFareById(Long id);
+    
+    public Fare retrieveFareByFBC(String fbc);
+
 
     
 }
