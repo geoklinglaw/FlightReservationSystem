@@ -37,15 +37,17 @@ public class FlightRouteSessionBean implements FlightRouteSessionBeanRemote, Fli
     @Override
     public List<FlightRoute> viewAllFlightRoute() {
         List<FlightRoute> flightRoutes = em.createNamedQuery("viewAllFlightRoutes").getResultList();
+        
+        List<FlightRoute> sortedFlightRoutes = flightRoutes;
 
         // Sort the entire list based on the country of the origin airport
-        flightRoutes.sort(Comparator.comparing(route -> route.getAirportList().get(0).getCountry()));
+        sortedFlightRoutes.sort(Comparator.comparing(route -> route.getAirportList().get(0).getCountry()));
 
         List<FlightRoute> sortedRoutes = new ArrayList<>();
         Set<Long> processedRoutes = new HashSet<>(); // Set to track processed routes
 
         // Process each route to find and pair with its return route
-        for (FlightRoute directRoute : flightRoutes) {
+        for (FlightRoute directRoute : sortedFlightRoutes) {
             if (processedRoutes.contains(directRoute.getId())) {
                 continue; // Skip if this route is already processed
             }
@@ -58,7 +60,7 @@ public class FlightRouteSessionBean implements FlightRouteSessionBeanRemote, Fli
             processedRoutes.add(directRoute.getId()); // Mark this route as processed
 
             // Find and add its return route, if exists
-            for (FlightRoute potentialReturnRoute : flightRoutes) {
+            for (FlightRoute potentialReturnRoute : sortedFlightRoutes) {
                 if (processedRoutes.contains(potentialReturnRoute.getId())) {
                     continue; // Skip if this route is already processed
                 }

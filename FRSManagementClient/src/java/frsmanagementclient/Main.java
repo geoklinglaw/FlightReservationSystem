@@ -4,15 +4,21 @@
  */
 package frsmanagementclient;
 
+import ejb.session.stateless.EmployeeSessionBeanRemote;
 import ejb.session.stateless.FRSManagementSessionBeanRemote;
+import entity.Employee;
 import java.util.Scanner;
 import javax.ejb.EJB;
+import util.exception.InvalidLoginCredentialException;
 
 /**
  *
  * @author apple
  */
 public class Main {
+
+    @EJB(name = "EmployeeSessionBeanRemote")
+    private static EmployeeSessionBeanRemote employeeSessionBeanRemote;
 
     @EJB(name = "FRSManagementSessionBeanRemote")
     private static FRSManagementSessionBeanRemote FRSManagementSessionBeanRemote;
@@ -41,7 +47,14 @@ public class Main {
                 response = scanner.nextInt();
 
                 if(response == 1){       
-                    doLogin();
+                    try {
+                        doLogin();
+                        System.out.println("You are logged in!");
+                        performTasks();
+                        
+                    } catch (InvalidLoginCredentialException ex) {
+                       System.out.println("Invalid login credentials: " + ex.getMessage() + "\n");
+                    }
                 }
                 else if (response == 2) {
                     break;
@@ -58,10 +71,21 @@ public class Main {
         }
     }
     
-    private static void doLogin() {
-        System.out.println("LOGGED IN RIGHT NOW!");
-        performTasks();
+    private static void doLogin() throws InvalidLoginCredentialException {
+        Scanner sc = new Scanner(System.in);
         
+        System.out.println("*** FRS System :: Login ***\n");
+        System.out.print("Enter username> ");
+        String username = sc.nextLine().trim();
+        System.out.print("Enter password> ");
+        String password = sc.nextLine().trim();
+        
+        if (username.length() > 0 && password.length() > 0) {
+            Employee currEmployee = employeeSessionBeanRemote.login(username, password);
+            
+        } else {
+            throw new InvalidLoginCredentialException("Invalid login credentials!");
+        }
     }
     
     private static void performTasks() {
@@ -110,9 +134,5 @@ public class Main {
     }
     
 
-    
-    
-    private static void performSalesManagerTasks() {
-        
-    }
+
 }

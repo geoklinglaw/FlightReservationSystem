@@ -136,7 +136,7 @@ public class FleetManagerTask {
         int index = 1;
         
         for (AircraftConfiguration acConfig: aircraftConfigList) {
-            acListString += index + ": " + acConfig.getName() + " " + acConfig.getMaxSeatCapacity() + "\n";
+            acListString += index + ": " + acConfig.getName() + " (" + acConfig.getMaxSeatCapacity() + ")\n";
             index += 1; 
         }
         

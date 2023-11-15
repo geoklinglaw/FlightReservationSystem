@@ -6,6 +6,8 @@ package frsreservationclient;
 
 import ejb.session.stateless.FRSManagementSessionBeanRemote;
 import ejb.session.stateless.FlightReservationSystemSessionBeanRemote;
+import ejb.session.stateless.PersonSessionBeanRemote;
+import entity.Airport;
 import entity.CabinClass;
 import entity.FlightSchedule;
 import entity.Person;
@@ -16,13 +18,18 @@ import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
 import javax.ejb.EJB;
+import javax.ejb.EJBTransactionRolledbackException;
 import util.enumeration.CabinClassType;
+import util.enumeration.PersonRoleType;
 
 /**
  *
  * @author apple
  */
 public class Main {
+
+    @EJB(name = "PersonSessionBeanRemote")
+    private static PersonSessionBeanRemote personSessionBeanRemote;
 
     @EJB(name = "FlightReservationSystemSessionBeanRemote")
     private static FlightReservationSystemSessionBeanRemote flightReservationSystemSessionBeanRemote;
@@ -54,19 +61,19 @@ public class Main {
             response = sc.nextInt();
             switch (response) {
                 case 1:
-                    doMenuFeatures(sc);
+                    doLogin();
                     break;
                 case 2:
-                    // Registration logic
+                    doRegistration();
                     break;
                 case 3:
                     // Search for flights logic
                     break;
                 case 4:
-                    System.out.println("Exiting...");
+                    System.out.println("You have exited. Goodbye.");
                     return; // Exit the application
                 default:
-                    System.out.println("Invalid option. Please try again.");
+                    System.out.println("Invalid input. Try again.\n");
             }
         }
     }
@@ -157,9 +164,7 @@ public class Main {
                 if (fsList.isEmpty()) {
                     System.out.println("No flights found.");
                 } else {
-                    // Print table header
-                    System.out.printf("%-12s %-20s %-12s %-25s %-25s %-15s\n", "Flight", "Cabin Class", "Fare", "Departure", "Arrival", "Duration");
-                    System.out.println(fsList.size());
+                    System.out.printf("%-12s %-20s %-8s %-25s %-25s %-15s\n", "Flight", "Cabin Class", "Fare", "Departure", "Arrival", "Duration");
 
 
                     for (FlightSchedule fs : fsList) {
@@ -174,41 +179,223 @@ public class Main {
                             int hours = (int) durationInHours;
                             int minutes = (int) ((durationInHours - hours) * 60);
 
-                            System.out.printf("%-10s %-15s $%-9.2f %-20s %-20s %d hrs %d mins\n", flightNumber, fs.getCabinClass().get(i).getType(), fareAmount, departureTime, arrivalTime, hours, minutes);
+                            System.out.printf("%-5d %-10s %-15s $%-9.2f %-20s %-20s %d hrs %d mins\n", i, flightNumber, fs.getCabinClass().get(i).getType(), fareAmount, departureTime, arrivalTime, hours, minutes);
 
                         }
                     }
                 }
             }
+            
+            System.out.print("Enter the number of days before requested date (0-3)> ");
+            int days = sc.nextInt();
+            System.out.print("Enter the section index > ");
+            int idx = sc.nextInt();
+
+            FlightSchedule selectedFS = listofFSList.get(days).get(idx);
+            String fsText = "*** Selected Flight Information *** \n";
+            List<Airport> airportList = selectedFS.getFlightSchedulePlan().getFlight().getFlightRoute().getAirportList();
+            fsText += "Flight " + selectedFS.getFlightSchedulePlan().getFlight().getFlightNumber() + " " + selectedFS.getCabinClass().get(idx) + "\n ";
+            fsText += "Departing from " + airportList.get(0) + " on " + selectedFS.getDepartureTime() + "\n ";
+            fsText += "Arriving at " + airportList.get(1) + " on " + selectedFS.getArrivalTime() + "\n ";
+            fsText += "Enter 'Y' to proceed to select your seats > ";
+            
+            System.out.print(fsText);
+
+
         }
-//        if (startDate != null) {
-//            List<List <FlightSchedule>> listofFSList = flightReservationSystemSessionBeanRemote.searchFlightsOneWay(startDate, cabinType, originCode, destCode);
-//            
-//            String fsText = "";
-//            int index = 0;
-//            for (List <FlightSchedule> fsList: listofFSList) { 
-//                System.out.println("\n\n== " + index + " NUMBER OF DAYS BEFORE REQUESTED DATE ==");
-//                if (fsList.size() == 0) {
-//                    System.out.println("no flights found.");
-//                } else {
-//                    for (FlightSchedule fs: fsList) {
-//                        for (int i = 0; i < fs.getCabinClass().size(); i++) {
-//                            if (fs.getCabinClass().get(i).getType().equals(cabinType)) {
-//                                System.out.println(fs.getFlightSchedulePlan().getFlight().getFlightNumber() + ": (" + cabinType + " $" + fs.getFlightSchedulePlan().getFare().get(i).getFareAmount() + ") " + fs.getDepartureTime() + " --> " + fs.getArrivalTime());
-//                               
-//                            }
-//                        }
-//                    }
-//                }
-//                index += 1;
-//                System.out.print("");
-//            }
-//                
-//        }
+
+
+        
 
     }
-        
-        
+
+    private static void doRegistration() {
+        Scanner sc = new Scanner(System.in);
+
+        try {
+            System.out.println("==== Registration Interface ====");
+            System.out.println("Enter your details. To cancel registration at any time, press 'q'.");
+
+            System.out.print("First Name: ");
+            String firstName = sc.nextLine();
+            if (firstName.equals("q")) {
+                cancelRegistration(sc);
+                return;
+            }
+
+            System.out.print("Last Name: ");
+            String lastName = sc.nextLine();
+            if (lastName.equals("q")) {
+                cancelRegistration(sc);
+                return;
+            }
+
+            System.out.print("Email: ");
+            String email = sc.nextLine();
+            if (email.equals("q")) {
+                cancelRegistration(sc);
+                return;
+            }
+
+            System.out.print("Contact Number: ");
+            String contactNum = sc.nextLine();
+            if (contactNum.equals("q")) {
+                cancelRegistration(sc);
+                return;
+            }
+
+            System.out.print("Address: ");
+            String address = sc.nextLine();
+            if (address.equals("q")) {
+                cancelRegistration(sc);
+                return;
+            }
+
+            System.out.print("Create Username: ");
+            String username = sc.nextLine();
+            if (username.equals("q")) {
+                cancelRegistration(sc);
+                return;
+            }
+
+            System.out.print("Create Password: ");
+            String password = sc.nextLine();
+            if (password.equals("q")) {
+                cancelRegistration(sc);
+                return;
+            }
+
+            Person newCust = new Person();
+
+            newCust.setFirstName(firstName);
+            newCust.setLastName(lastName);
+            newCust.setEmail(email);
+            newCust.setContactNum(contactNum);
+            newCust.setAddress(address);
+            newCust.setUsername(username);
+            newCust.setPassword(password);
+            newCust.setRole(PersonRoleType.CUSTOMER);
+
+            Long custId = personSessionBeanRemote.createNewPerson(newCust);
+            System.out.println("You have been successfully registered as a Merlion Airlines customer!\n");
+
+            doMenuFeatures(sc, custId);
+
+        } catch (EJBTransactionRolledbackException e) {
+            System.out.println("Sorry, you have inputted invalid values. Try again.\n");
+            runApp();
+
+        } catch (Exception ex) {
+            System.out.println("An error has occurred.\n");
+            runApp();
+        }
+    }
+
+    public static void cancelRegistration(Scanner sc) {
+        System.out.println("\nYou have canceled registration.\n");
+        runApp();
+    }
+
+    private static void doLogin() {
+        Scanner sc = new Scanner(System.in);
+        System.out.println("==== Login Interface ====");
+        System.out.println("Enter login details:");
+        System.out.print("Enter Username: ");
+        String username = sc.nextLine().trim();
+        System.out.print("Enter Password: ");
+        String password = sc.nextLine().trim();
+
+        try {
+            if (username.length() > 0 && password.length() > 0) {
+                Person currPerson = personSessionBeanRemote.login(username, password);
+                System.out.println("Welcome " + currPerson.getFirstName() + ", you're logged in!\n");
+
+                doMenuFeatures(sc, currPerson.getId());
+
+            } else {
+                System.out.println("No matching account found or wrong login details. Please try again.\n");
+                doLogin();
+            }
+
+        } catch (Exception ex) {
+            System.out.println("Oh no... An error has occurred.\n");
+            runApp();
+        }
+    }
+
+    private static void doMenuFeatures(Scanner sc, Long customerId) {
+        Integer response = 0;
+        Person person = personSessionBeanRemote.retrievePersonById(customerId);
+        while (true) {
+            System.out.println("==== Menu Interface ====");
+            System.out.println("You are logged in as " + person.getFirstName() + " " + person.getLastName() + " \n");
+            System.out.println("1. Search for Flights");
+            System.out.println("2. Reserve Flights");
+            System.out.println("3. View My Flight Reservation Details");
+            System.out.println("4. View All My Flight Reservations");
+            System.out.println("5. Logout");
+            System.out.print("> ");
+            response = sc.nextInt();
+
+            switch (response) {
+                case 1:
+                    System.out.println("You have selected 'Search for Flights'\n");
+                    doSearchFlights();
+                    break;
+                case 2:
+                    System.out.println("You have selected 'Reserve Flights'\n");
+                    doReserveFlight(sc, customerId);
+                    break;
+
+                case 3:
+                    System.out.println("You have selected 'View My Flight Reservation Details'\n");
+                    doViewFlightReservationDetails(sc, customerId);
+                    break;
+
+                case 4:
+                    System.out.println("You have selected 'View All My Flight Reservations'\n");
+                    doViewAllFlightReservations(sc, customerId);
+                    break;
+
+                case 5:
+                    System.out.println("You have logged out.\n");
+                    runApp();
+                    break;
+
+                default:
+                    System.out.println("Invalid input. Please try again.\n");
+                    doMenuFeatures(sc, customerId);
+                    break;
+            }
+        }
+
+    }
+
+    private static void doSearchFlights() {
+
+    }
+
+    public static void doReserveFlight(Scanner sc, Long custId) {
+        System.out.println("Enter the flight ID that you want to reserve> ");
+        Long flightId = sc.nextLong();
+
+        System.out.println("Enter the number of passengers> ");
+        int numPassenger = sc.nextInt();
+        sc.nextLine();
+
+        System.out.println("Select trip type: ");
+        System.out.println("1: One-way");
+        System.out.println("2: Round-trip");
+    }
+
+    private static void doViewFlightReservationDetails(Scanner sc, Long custId) {
+
+    }
+
+    private static void doViewAllFlightReservations(Scanner sc, Long custId) {
+
+    }
+
   }
 
         
@@ -220,87 +407,3 @@ public class Main {
         
 
     
-
-
-//       private static void doRegistration(Scanner sc) {
-//           System.out.println("==== Registration Interface ====");
-//           System.out.println("Enter your details. To cancel registration at anytime, press 'q'.");
-//
-//           System.out.print("> First Name: ");
-//           System.out.print("First Name: ");
-//           String firstName = sc.nextLine();
-//           if (firstName.equals("q")) {
-//               cancelRegistration(sc);
-//               return;          
-//           }
-//
-//           System.out.print("> Last Name: ");
-//           System.out.print("Last Name: ");
-//           String lastName = sc.nextLine();
-//           if (lastName.equals("q")) {
-//               cancelRegistration(sc);
-//               return;
-//           }
-//
-//           System.out.print("> Email: ");
-//           System.out.print("Email: ");
-//           String email = sc.nextLine();
-//           if (email.equals("q")) {
-//               cancelRegistration(sc);
-//               return;
-//           }
-//
-//           System.out.print("> Contact Number: ");
-//           System.out.print("Contact Number: ");
-//           String contactNum = sc.nextLine();
-//           if (contactNum.equals("q")) {
-//               cancelRegistration(sc);
-//               return;
-//           }
-//
-//           System.out.print("> Address: ");
-//           System.out.print("Address: ");
-//           String address = sc.nextLine();
-//           if (address.equals("q")) {
-//               cancelRegistration(sc);
-//               return;
-//           }
-//
-//           System.out.print("> Create Username: ");
-//           System.out.print("Create Username: ");
-//           String username = sc.nextLine();
-//           if (username.equals("q")) {
-//               cancelRegistration(sc);
-//               return;
-//           }
-//
-//           System.out.print("> Create Password: ");
-//           System.out.print("Create Password: ");
-//           String password = sc.nextLine();
-//           if (password.equals("q")) {
-//               cancelRegistration(sc);
-//           }
-//        }
-//       }
-//               
-//        private static void doLogin() {
-//           Scanner sc = new Scanner(System.in);
-//           System.out.println("==== Login Interface ====");
-//           System.out.println("Enter login details:");
-//           System.out.print("> Enter Username: ");
-//           System.out.print("Enter Username: ");
-//           String username = sc.nextLine().trim();
-//           System.out.print("> Enter Password: ");
-//           System.out.print("Enter Password: ");
-//           String password = sc.nextLine().trim();
-//           
-//       }
-//       
-//        public static void cancelRegistration(Scanner sc) {
-//            System.out.println("\nYou have cancelled registration.\n");
-//            runApp();
-//        }
-//    
-
-
-

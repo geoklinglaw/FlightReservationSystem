@@ -61,8 +61,8 @@ public class FlightReservationSystemSessionBean implements FlightReservationSyst
         System.out.println(startDate + " " + ccType + " " + originCode + " " + destCode + " " + daysBefore);
 
         for (FlightRoute r: routes) {
-            System.out.println("curr1: " + r.getAirportList().get(0).getAirportCode());
-            System.out.println("curr2: " + r.getAirportList().get(1).getAirportCode());
+            System.out.println("curr1: " + r.getAirportList().get(0).getAirportCode() + "  " + originCode);
+            System.out.println("curr2: " + r.getAirportList().get(1).getAirportCode() + "  " + destCode);
 
             if (r.getAirportList().get(0).getAirportCode().equals(originCode) && r.getAirportList().get(1).getAirportCode().equals(destCode)) {
                 selectedRoutes.add(r);
@@ -71,6 +71,7 @@ public class FlightReservationSystemSessionBean implements FlightReservationSyst
                     System.out.println("flight " + f.getFlightNumber() + f.getFlightSchedulePlan().getId());
 
                     if (f.getFlightSchedulePlan() != null) {
+                        System.out.println("selected  "  + f.getFlightNumber());
                         flightListWithFSP.add(f);
                     }
                 }
@@ -99,6 +100,8 @@ public class FlightReservationSystemSessionBean implements FlightReservationSyst
                 int size = fs.getCabinClass().size();
                 System.out.println(fs.getId() + "  " + size);
                 int size1 = fs.getFlightSchedulePlan().getFare().size();
+                int size2 = fs.getFlightSchedulePlan().getFlight().getFlightRoute().getAirportList().size();
+                int size3 = fs.getCabinClass().size();
 
             }
             
