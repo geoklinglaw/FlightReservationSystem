@@ -11,6 +11,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import util.enumeration.CabinClassType;
 
 /**
  *
@@ -72,8 +73,10 @@ public class FleetManagerTask {
         int type = sc.nextInt();
         System.out.print("Enter number of cabin classes \n> ");
         int num = sc.nextInt();
+        System.out.print("Enter maximum seat capacity \n> ");
+        int maxSeats = sc.nextInt();
+        sc.nextLine();
 
-        
         List<CabinClass> cabinClasses = new ArrayList<CabinClass>();
         
         for (int i = 0; i < num; i++) {
@@ -85,8 +88,9 @@ public class FleetManagerTask {
             cabinClassText += "> ";
             System.out.print(cabinClassText);
             String ccType = sc.nextLine().trim();
+            System.out.print("Selected Cabin Class: " + CabinClassType.fromValue(ccType));
             
-            System.out.print("Enter number of seats \n> ");
+            System.out.print("\nEnter number of seats \n> ");
             int numSeats = sc.nextInt();
             System.out.print("Enter number of rows \n> ");
             int numRows = sc.nextInt();
@@ -94,6 +98,7 @@ public class FleetManagerTask {
             int numSeatsAbreast = sc.nextInt();
             System.out.print("Enter number of aisles \n> ");
             int numAisles = sc.nextInt();
+            sc.nextLine();
             System.out.print("Enter seating configuration per column \n> ");
             String seatConfig = sc.nextLine().trim();
             
@@ -102,7 +107,7 @@ public class FleetManagerTask {
             
         }
         
-        FRSManagementSessionBeanRemote.createAircraftConfiguration(type, cabinClasses);
+        FRSManagementSessionBeanRemote.createAircraftConfiguration(type, maxSeats, cabinClasses);
         
         String msg;
         msg = type == 0 ? "Boeing 737" : "Boeing 747";
@@ -131,7 +136,7 @@ public class FleetManagerTask {
         int index = 1;
         
         for (AircraftConfiguration acConfig: aircraftConfigList) {
-            acListString += index + ": " + acConfig.getName() + "\n";
+            acListString += index + ": " + acConfig.getName() + " " + acConfig.getMaxSeatCapacity() + "\n";
             index += 1; 
         }
         
@@ -154,7 +159,7 @@ public class FleetManagerTask {
         List<CabinClass> cabinClassList = selectedACConfig.getCabinClassList();
         configDetails += "\nCabin Class: ";
         for (CabinClass cc: cabinClassList) {
-            configDetails += cc.getType().name() + ", ";
+            configDetails += cc.getType().name() + "(" + cc.getSeatingCapacity() + ")" + ", ";
         }
         System.out.println(configDetails);
     }

@@ -68,13 +68,14 @@ public class FRSManagementSessionBean implements FRSManagementSessionBeanRemote,
     }
     
     @Override
-    public void createAircraftConfiguration(int aircraftType, List<CabinClass> ccList) {
+    public void createAircraftConfiguration(int aircraftType, int maxSeats, List<CabinClass> ccList) {
         
         AircraftType acType = aircraftTypeSessionBeanLocal.retrieveAircraftTypeByValue(aircraftType);
         
         AircraftConfiguration aircraftConfig = new AircraftConfiguration(acType);
         aircraftConfig.setAircraftType(acType);
         aircraftConfig.setCabinClassList(ccList);
+        aircraftConfig.setMaxSeatCapacity(new BigDecimal(maxSeats));
         
         for (CabinClass cc: ccList) {
             cc.setAircraftConfig(aircraftConfig);
@@ -238,7 +239,7 @@ public class FRSManagementSessionBean implements FRSManagementSessionBeanRemote,
     public void createFareforEachCabinClass(Long ccId, String fareBasisCode) {
         Fare managedFare = fareEntitySessionBeanLocal.retrieveFareByFBC(fareBasisCode);
         CabinClass cc = cabinClassSessionBeanLocal.retrieveCabinClassById(ccId);
-        cc.getFare().add(managedFare);
+        cc.setFare(managedFare);
         managedFare.setCabinClass(cc);
     }
     
@@ -259,6 +260,12 @@ public class FRSManagementSessionBean implements FRSManagementSessionBeanRemote,
         
         flightSchedulePlanSessionBeanLocal.createNewFlightSchedulePlan(fsp);
     }
+    
+//    public List<CabinClass> viewSeatsInventory(String flightNum) {
+//        Flight flight = flightSessionBeanLocal.retrieveFlightByNumber(flightNum, true);
+////        List<CabinClass> ccList = flight.getFlightSchedulePlan().
+//        
+//    }
    
     
 }

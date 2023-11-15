@@ -55,8 +55,8 @@ public class CabinClass implements Serializable {
     @OneToMany (mappedBy = "cabinClass")
     private List<Seat> seatList;
     
-    @ManyToMany (mappedBy= "cabinClass") 
-    private List<Fare> fare;
+    @OneToOne (mappedBy= "cabinClass") 
+    private Fare fare;
     
     @ManyToOne 
     private FlightSchedule flightSchedule;
@@ -202,16 +202,6 @@ public class CabinClass implements Serializable {
     /**
      * @return the fare
      */
-    public List<Fare> getFare() {
-        return fare;
-    }
-
-    /**
-     * @param fare the fare to set
-     */
-    public void setFare(List<Fare> fare) {
-        this.fare = fare;
-    }
 
     /**
      * @return the numAvailableSeats
@@ -295,6 +285,20 @@ public class CabinClass implements Serializable {
      */
     public void setSeatConfig(String seatConfig) {
         this.seatConfig = seatConfig;
+    }
+
+    /**
+     * @return the fare
+     */
+    public Fare getFare() {
+        return fare;
+    }
+
+    /**
+     * @param fare the fare to set
+     */
+    public void setFare(Fare fare) {
+        this.fare = fare;
     }
 
     /**

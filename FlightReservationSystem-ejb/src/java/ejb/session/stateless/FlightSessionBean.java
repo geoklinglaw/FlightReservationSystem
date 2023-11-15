@@ -61,12 +61,11 @@ public class FlightSessionBean implements FlightSessionBeanRemote, FlightSession
         Flight flight = (Flight) em.createNamedQuery("selectFlight").setParameter("inNum", flightNum).getSingleResult();
         int size1 = flight.getFlightRoute().getAirportList().size();
         int size2 = flight.getFlightSchedulePlan().getFlightSchedule().get(0).getCabinClass().size();
-        List<CabinClass> fccList = flight.getFlightSchedulePlan().getFlightSchedule().get(0).getCabinClass();
+        List<CabinClass> ccList = flight.getFlightSchedulePlan().getFlightSchedule().get(0).getCabinClass();
         
-        for (CabinClass cc: fccList) {
+        for (CabinClass cc: ccList) {
             CabinClass managedCC = cabinClassSessionBeanLocal.retrieveCabinClassById(cc.getId());
             int size3 = managedCC.getSeatList().size();
-            
         }
 
         return flight;

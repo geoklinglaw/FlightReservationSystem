@@ -6,6 +6,7 @@ package entity;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -31,7 +32,7 @@ public class Fare implements Serializable {
     @Column(nullable = false)
     private BigDecimal fareAmount;
     
-    @ManyToMany 
+    @OneToOne 
     private CabinClass cabinClass;
     
     @ManyToOne
@@ -109,19 +110,7 @@ public class Fare implements Serializable {
         this.fareAmount = fareAmount;
     }
 
-    /**
-     * @return the cabinClass
-     */
-    public CabinClass getCabinClass() {
-        return cabinClass;
-    }
 
-    /**
-     * @param cabinClass the cabinClass to set
-     */
-    public void setCabinClass(CabinClass cabinClass) {
-        this.cabinClass = cabinClass;
-    }
 
     /**
      * @return the fareBasisCode
@@ -150,5 +139,21 @@ public class Fare implements Serializable {
     public void setFlightSchedulePlan(FlightSchedulePlan flightSchedulePlan) {
         this.flightSchedulePlan = flightSchedulePlan;
     }
+
+    /**
+     * @return the cabinClass
+     */
+    public CabinClass getCabinClass() {
+        return cabinClass;
+    }
+
+    /**
+     * @param cabinClass the cabinClass to set
+     */
+    public void setCabinClass(CabinClass cabinClass) {
+        this.cabinClass = cabinClass;
+    }
+
+
     
 }

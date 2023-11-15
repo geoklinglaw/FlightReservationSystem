@@ -25,7 +25,7 @@ import javax.ejb.Local;
 @Local
 public interface FRSManagementSessionBeanLocal {
     
-    public void createAircraftConfiguration(int aircraftType, List<CabinClass> ccList);
+    public void createAircraftConfiguration(int aircraftType, int maxSeats, List<CabinClass> ccList);
     
     public List<AircraftConfiguration> viewAllAircraftConfiguration();
     

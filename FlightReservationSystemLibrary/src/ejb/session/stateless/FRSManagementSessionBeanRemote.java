@@ -25,7 +25,7 @@ import javax.ejb.Remote;
 @Remote
 public interface FRSManagementSessionBeanRemote {
     
-    public void createAircraftConfiguration(int aircraftType, List<CabinClass> ccList);
+    public void createAircraftConfiguration(int aircraftType, int maxSeats, List<CabinClass> ccList);
     
     public List<AircraftConfiguration> viewAllAircraftConfiguration();
     
