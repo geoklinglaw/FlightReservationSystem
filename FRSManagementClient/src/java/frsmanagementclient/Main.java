@@ -46,15 +46,16 @@ public class Main {
 
                 response = scanner.nextInt();
 
-                if(response == 1){       
-                    try {
-                        doLogin();
-                        System.out.println("You are logged in!");
-                        performTasks();
-                        
-                    } catch (InvalidLoginCredentialException ex) {
-                       System.out.println("Invalid login credentials: " + ex.getMessage() + "\n");
-                    }
+                if(response == 1){  
+                    performTasks();
+//                    try {
+//                        doLogin();
+//                        System.out.println("You are logged in!");
+//                        performTasks();
+//                        
+//                    } catch (InvalidLoginCredentialException ex) {
+//                       System.out.println("Invalid login credentials: " + ex.getMessage() + "\n");
+//                    }
                 }
                 else if (response == 2) {
                     break;

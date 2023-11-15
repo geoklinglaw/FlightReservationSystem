@@ -20,8 +20,10 @@ public class FareEntitySessionBean implements FareEntitySessionBeanRemote, FareE
     @PersistenceContext(unitName = "FlightReservationSystem-ejbPU")
     private EntityManager em;
 
-    public void createNewFare(Fare fare) {
+    public Long createNewFare(Fare fare) {
         em.persist(fare);
+        em.flush();
+        return fare.getId();
     }
 
     public Fare retrieveFareById(Long id) {

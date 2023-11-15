@@ -301,7 +301,6 @@ public class ScheduleManagerTask {
     private Pair<Flight, List<Fare>> handlingFSPCreation(String flightNum, Scanner sc) {
         Flight flight = viewFlightDetailsCabinClasses(flightNum);
         String ccText = "\nInput fare for each cabin class:";
-        System.out.println("reached here");
         List<Fare> fareList = new ArrayList<Fare>();
 
 
@@ -314,7 +313,6 @@ public class ScheduleManagerTask {
 
             String fareAmt = sc.nextLine().trim();
             BigDecimal fareAmount = new BigDecimal(fareAmt);
-//            Fare createdFare = createFareforEachCabinClass(flight, cc, fare);
             Fare fare = new Fare();
             fare.setFareAmount(fareAmount);
             fare.setFareBasisCode(flight.getFlightNumber()+cc.getType());
@@ -365,10 +363,10 @@ public class ScheduleManagerTask {
             fare.get(i).setCabinClass(ccList.get(i));
         }
         
-        updateDatabaseOnFSPFS(fsList, singleFsp, flight, fare);
-        for (int i = 0; i < ccList.size(); i++) {
-            createFareforEachCabinClass(flight, ccList.get(i), fare.get(i));
-        }
+//        updateDatabaseOnFSPFS(fsList, singleFsp, flight, fare);
+//        for (int i = 0; i < ccList.size(); i++) {
+//            createFareforEachCabinClass(flight, ccList.get(i), fare.get(i));
+//        }
 
     }
     
@@ -419,12 +417,12 @@ public class ScheduleManagerTask {
             fare.get(i).setCabinClass(ccList.get(i));
         }
         
-        updateDatabaseOnFSPFS(fsList, multipleFsp, flight, fare);
-        
-        
-        for (int i = 0; i < ccList.size(); i++) {
-            createFareforEachCabinClass(flight, ccList.get(i), fare.get(i));
-        }
+//        updateDatabaseOnFSPFS(fsList, multipleFsp, flight, fare);
+//        
+//        
+//        for (int i = 0; i < ccList.size(); i++) {
+//            createFareforEachCabinClass(flight, ccList.get(i), fare.get(i));
+//        }
 
     }
     
@@ -497,10 +495,10 @@ public class ScheduleManagerTask {
         
         recNFsp.setFlightSchedule(fsList);
         recNFsp.setFare(fare);
-        updateDatabaseOnFSPFS(fsList, recNFsp, flight, fare);
-        for (int i = 0; i < ccList.size(); i++) {
-            createFareforEachCabinClass(flight, ccList.get(i), fare.get(i));
-        }
+//        updateDatabaseOnFSPFS(fsList, recNFsp, flight, fare);
+//        for (int i = 0; i < ccList.size(); i++) {
+//            createFareforEachCabinClass(flight, ccList.get(i), fare.get(i));
+//        }
 
     }
     
@@ -574,12 +572,16 @@ public class ScheduleManagerTask {
         recWFsp.setFlightSchedule(fsList);
         recWFsp.setFare(fare);
         recWFsp.setDayOfWeek(new BigDecimal(dayOfWeekInt));
-        updateDatabaseOnFSPFS(fsList, recWFsp, flight, fare);
+        createPersistAll(fsList, recWFsp, flight, fare, ccList);
         
-        for (int i = 0; i < ccList.size(); i++) {
-            createFareforEachCabinClass(flight, ccList.get(i), fare.get(i));
-        }
+//        for (int i = 0; i < ccList.size(); i++) {
+//            createFareforEachCabinClass(flight, ccList.get(i), fare.get(i));
+//        }
 
+    }
+    
+    private void createPersistAll(List<FlightSchedule> fsList, FlightSchedulePlan fsp, Flight flight, List<Fare> fareList, List<CabinClass> ccList) {
+        FRSManagementSessionBeanRemote.createFlightScheduleAndPlan(fsList, fsp, flight, fareList, ccList);
     }
     
     
@@ -614,13 +616,11 @@ public class ScheduleManagerTask {
     }
     
     private Fare createFareforEachCabinClass(Flight flight, CabinClass cc, Fare fare) {
-        FRSManagementSessionBeanRemote.createFareforEachCabinClass(cc.getId(), fare.getFareBasisCode());
+        FRSManagementSessionBeanRemote.createFareforEachCabinClass(cc, fare.getFareBasisCode());
         return fare;
     }
     
-    private void updateDatabaseOnFSPFS(List<FlightSchedule> fsList, FlightSchedulePlan fsp, Flight flight, List<Fare> fare) {
-        FRSManagementSessionBeanRemote.createFlightScheduleAndPlan(fsList, fsp, flight, fare);
-    }
+
     
     private List<FlightSchedulePlan> viewFlightSchedulePlan() {
         System.out.println("\n\n*** View All Flight Schedule Plan *** \n");

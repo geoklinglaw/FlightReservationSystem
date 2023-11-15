@@ -74,7 +74,7 @@ public class RoutePlannerTask {
             airportText += index + ": " + airport.getCountry() + " -- " + airport.getAirportName() + " (" + airport.getAirportCode() + ")\n";
             index += 1;
         }
-        sc.nextLine();
+
         
         System.out.print(airportText);
         System.out.print("\nEnter IATA code of ORIGIN location: \n> ");
@@ -110,7 +110,7 @@ public class RoutePlannerTask {
         System.out.println("\n\n*** Creating Flight Route *** \n");
         List<FlightRoute> flightRoutes = FRSManagementSessionBeanRemote.viewAllFlightRoutes();
         
-        String routeText = "List of FLight Routes:\n";
+        String routeText = "List of Flight Routes:\n";
         
         for (FlightRoute flightRoute: flightRoutes) {
             routeText += flightRoute.getAirportList().get(0).getCountry() + " --> " + flightRoute.getAirportList().get(1).getCountry() +"\n";

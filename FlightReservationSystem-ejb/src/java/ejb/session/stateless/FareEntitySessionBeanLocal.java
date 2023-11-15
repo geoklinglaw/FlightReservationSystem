@@ -14,7 +14,7 @@ import javax.ejb.Local;
 @Local
 public interface FareEntitySessionBeanLocal {
     
-    public void createNewFare(Fare fare);
+    public Long createNewFare(Fare fare);
     
     public Fare retrieveFareById(Long id);
     

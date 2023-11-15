@@ -51,9 +51,9 @@ public interface FRSManagementSessionBeanRemote {
     
     public Flight viewSpecificFlight(String flightNum);
 
-    public void createFareforEachCabinClass(Long ccId, String fareBasisCode);
+    public void createFareforEachCabinClass(CabinClass cc, String fareBasisCode);
 
-    public void createFlightScheduleAndPlan(List<FlightSchedule> fsList, FlightSchedulePlan fsp, Flight flight, List<Fare> fareList);
+    public void createFlightScheduleAndPlan(List<FlightSchedule> fsList, FlightSchedulePlan fsp, Flight flight, List<Fare> fareList, List<CabinClass> ccList); 
 
     public List<FlightSchedulePlan> viewAllFlightSchedulePlan();
     

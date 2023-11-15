@@ -37,47 +37,21 @@ public class FlightRouteSessionBean implements FlightRouteSessionBeanRemote, Fli
     @Override
     public List<FlightRoute> viewAllFlightRoute() {
         List<FlightRoute> flightRoutes = em.createNamedQuery("viewAllFlightRoutes").getResultList();
-        
         List<FlightRoute> sortedFlightRoutes = flightRoutes;
-
+        
+        System.out.println("before sorting in flightroute sb ");
+        for (FlightRoute fr: flightRoutes) {
+            System.out.println(fr.getId() + " : " + fr.getAirportList().get(0).getAirportCode() + " --> " + fr.getAirportList().get(1).getAirportCode());
+        }
+        
         // Sort the entire list based on the country of the origin airport
         sortedFlightRoutes.sort(Comparator.comparing(route -> route.getAirportList().get(0).getCountry()));
-
-        List<FlightRoute> sortedRoutes = new ArrayList<>();
-        Set<Long> processedRoutes = new HashSet<>(); // Set to track processed routes
-
-        // Process each route to find and pair with its return route
-        for (FlightRoute directRoute : sortedFlightRoutes) {
-            if (processedRoutes.contains(directRoute.getId())) {
-                continue; // Skip if this route is already processed
-            }
-
-            Airport origin = directRoute.getAirportList().get(0);
-            Airport destination = directRoute.getAirportList().get(1);
-
-            // Add the direct route
-            sortedRoutes.add(directRoute);
-            processedRoutes.add(directRoute.getId()); // Mark this route as processed
-
-            // Find and add its return route, if exists
-            for (FlightRoute potentialReturnRoute : sortedFlightRoutes) {
-                if (processedRoutes.contains(potentialReturnRoute.getId())) {
-                    continue; // Skip if this route is already processed
-                }
-
-                Airport returnOrigin = potentialReturnRoute.getAirportList().get(0);
-                Airport returnDestination = potentialReturnRoute.getAirportList().get(1);
-
-                // Check if it's a return route
-                if (origin.equals(returnDestination) && destination.equals(returnOrigin)) {
-                    sortedRoutes.add(potentialReturnRoute);
-                    processedRoutes.add(potentialReturnRoute.getId()); // Mark return route as processed
-                    break; // Break after adding the return route
-                }
-            }
+        
+        System.out.println("in flightroute sb ");
+        for (FlightRoute fr: sortedFlightRoutes) {
+            System.out.println(fr.getId() + " : " + fr.getAirportList().get(0).getAirportCode() + " --> " + fr.getAirportList().get(1).getAirportCode());
         }
-
-        return sortedRoutes;
+        return sortedFlightRoutes;
     }
 
 
