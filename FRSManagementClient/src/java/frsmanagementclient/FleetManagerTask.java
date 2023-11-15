@@ -7,6 +7,7 @@ package frsmanagementclient;
 import ejb.session.stateless.FRSManagementSessionBeanRemote;
 import entity.AircraftConfiguration;
 import entity.CabinClass;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -69,28 +70,39 @@ public class FleetManagerTask {
 
         System.out.print("Enter Aircraft Type \n> ");
         int type = sc.nextInt();
+        System.out.print("Enter number of cabin classes \n> ");
+        int num = sc.nextInt();
+
         
-        boolean selecting = true;
-        List<Integer> cabinClassSelection = new ArrayList<>();
+        List<CabinClass> cabinClasses = new ArrayList<CabinClass>();
         
-        while (selecting) {
+        for (int i = 0; i < num; i++) {
             String cabinClassText = "Enter Select Cabin Class(es) \n";
-            cabinClassText += "0: First Class \n";
-            cabinClassText += "1: Business Class \n";
-            cabinClassText += "2: Premium Economy \n";
-            cabinClassText += "3: Economy \n";
-            cabinClassText += "4: Selection Complete\n";
+            cabinClassText += "F: First Class \n";
+            cabinClassText += "J: Business Class \n";
+            cabinClassText += "W: Premium Economy \n";
+            cabinClassText += "Y: Economy \n";
             cabinClassText += "> ";
             System.out.print(cabinClassText);
-            Integer cc = sc.nextInt();
-            if (cc == 4) {
-                selecting = false;
-                break;
-            }
-            cabinClassSelection.add(cc);
+            String ccType = sc.nextLine().trim();
+            
+            System.out.print("Enter number of seats \n> ");
+            int numSeats = sc.nextInt();
+            System.out.print("Enter number of rows \n> ");
+            int numRows = sc.nextInt();
+            System.out.print("Enter number of seats abreast \n> ");
+            int numSeatsAbreast = sc.nextInt();
+            System.out.print("Enter number of aisles \n> ");
+            int numAisles = sc.nextInt();
+            System.out.print("Enter seating configuration per column \n> ");
+            String seatConfig = sc.nextLine().trim();
+            
+            CabinClass cabinClass = new CabinClass(ccType, new BigDecimal(numSeats), new BigDecimal(numAisles), new BigDecimal(numRows), new BigDecimal(numAisles), seatConfig);
+            cabinClasses.add(cabinClass);
+            
         }
         
-        FRSManagementSessionBeanRemote.createAircraftConfiguration(type, cabinClassSelection);
+        FRSManagementSessionBeanRemote.createAircraftConfiguration(type, cabinClasses);
         
         String msg;
         msg = type == 0 ? "Boeing 737" : "Boeing 747";

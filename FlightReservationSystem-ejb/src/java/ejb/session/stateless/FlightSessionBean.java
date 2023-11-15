@@ -6,7 +6,6 @@ package ejb.session.stateless;
 
 import entity.CabinClass;
 import entity.Flight;
-import entity.FlightCabinClass;
 import entity.FlightRoute;
 import java.util.List;
 import javax.ejb.EJB;
@@ -21,8 +20,7 @@ import javax.persistence.PersistenceContext;
 @Stateless
 public class FlightSessionBean implements FlightSessionBeanRemote, FlightSessionBeanLocal {
 
-    @EJB(name = "FlightCabinClassSessionBeanLocal")
-    private FlightCabinClassSessionBeanLocal flightCabinClassSessionBeanLocal;
+
 
     @EJB(name = "CabinClassSessionBeanLocal")
     private CabinClassSessionBeanLocal cabinClassSessionBeanLocal;
@@ -63,11 +61,11 @@ public class FlightSessionBean implements FlightSessionBeanRemote, FlightSession
         Flight flight = (Flight) em.createNamedQuery("selectFlight").setParameter("inNum", flightNum).getSingleResult();
         int size1 = flight.getFlightRoute().getAirportList().size();
         int size2 = flight.getFlightSchedulePlan().getFlightSchedule().get(0).getCabinClass().size();
-        List<FlightCabinClass> fccList = flight.getFlightSchedulePlan().getFlightSchedule().get(0).getCabinClass();
+        List<CabinClass> fccList = flight.getFlightSchedulePlan().getFlightSchedule().get(0).getCabinClass();
         
-        for (FlightCabinClass cc: fccList) {
-            FlightCabinClass managedFCC = flightCabinClassSessionBeanLocal.retrieveFlightCabinClassById(cc.getId());
-            int size3 = managedFCC.getSeatList().size();
+        for (CabinClass cc: fccList) {
+            CabinClass managedCC = cabinClassSessionBeanLocal.retrieveCabinClassById(cc.getId());
+            int size3 = managedCC.getSeatList().size();
             
         }
 

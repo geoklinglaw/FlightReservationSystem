@@ -44,18 +44,18 @@ public class FlightSchedule implements Serializable {
     private FlightSchedulePlan flightSchedulePlan;
     
     @OneToMany (mappedBy = "flightSchedule")
-    private List<FlightCabinClass> flightCabinClass;
+    private List<CabinClass> cabinClass;
     
     @OneToMany (mappedBy= "flightSchedule")
     private List<FlightBooking> flightBookings;
 
     public FlightSchedule() {
-        this.flightCabinClass = new ArrayList<>();
+        this.cabinClass = new ArrayList<>();
     }
 
-    public FlightSchedule(FlightSchedulePlan flightSchedulePlan, List<FlightCabinClass> cabinClassList) {
+    public FlightSchedule(FlightSchedulePlan flightSchedulePlan, List<CabinClass> cabinClassList) {
         this.flightSchedulePlan = flightSchedulePlan;
-        this.flightCabinClass = cabinClassList;
+        this.cabinClass = cabinClassList;
     }
     
     public Long getId() {
@@ -154,15 +154,15 @@ public class FlightSchedule implements Serializable {
     /**
      * @return the cabinClass
      */
-    public List<FlightCabinClass> getCabinClass() {
-        return flightCabinClass;
+    public List<CabinClass> getCabinClass() {
+        return cabinClass;
     }
 
     /**
      * @param cabinClass the cabinClass to set
      */
-    public void setCabinClass(List<FlightCabinClass> cabinClass) {
-        this.flightCabinClass = cabinClass;
+    public void setCabinClass(List<CabinClass> cabinClass) {
+        this.cabinClass = cabinClass;
     }
 
     /**

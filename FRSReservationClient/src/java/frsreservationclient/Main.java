@@ -144,8 +144,9 @@ public class Main {
         }
         
         System.out.print("Select your preference for cabin class > ");
-        int ccType = sc.nextInt();
-        CabinClassType cabinType = CabinClassType.fromValue(ccType - 1);
+        sc.nextLine();
+        String ccType = sc.nextLine().trim();
+        CabinClassType cabinType = CabinClassType.fromValue(ccType);
 
         if (startDate != null) {
             List<List<FlightSchedule>> listofFSList = flightReservationSystemSessionBeanRemote.searchFlightsOneWay(startDate, cabinType, originCode, destCode);

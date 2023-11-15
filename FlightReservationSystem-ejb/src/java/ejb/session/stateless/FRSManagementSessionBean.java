@@ -10,7 +10,6 @@ import entity.Airport;
 import entity.CabinClass;
 import entity.Fare;
 import entity.Flight;
-import entity.FlightCabinClass;
 import entity.FlightRoute;
 import entity.FlightSchedule;
 import entity.FlightSchedulePlan;
@@ -69,81 +68,21 @@ public class FRSManagementSessionBean implements FRSManagementSessionBeanRemote,
     }
     
     @Override
-    public void createAircraftConfiguration(int aircraftType, List<Integer> ccList) {
+    public void createAircraftConfiguration(int aircraftType, List<CabinClass> ccList) {
         
         AircraftType acType = aircraftTypeSessionBeanLocal.retrieveAircraftTypeByValue(aircraftType);
-        List<CabinClass> cabinClassList = new ArrayList<CabinClass>();
-        
-        int seatCapacityForEachCabinClass = acType.getMaxSeatCapacity().intValue() / ccList.size();
-        
-        // Logic for Assigning Number of Rows
-        int numRows;
-        int numSRow = 0;
-
-        if (ccList.size() == 1) {
-            numRows = 20;
-        } else if (ccList.size() == 2) {
-            numRows = 10;
-        } else if (ccList.size() == 3) {
-            numRows = 7;
-            numSRow = 6;
-        } else {
-            numRows = 5;
-        }
-
-        
-        for (int i = 0; i < ccList.size(); i++) {
-            if (acType.getName() == "Boeing 737") {
-               if (i == ccList.size() - 1 && numSRow != 0) {
-                   CabinClass cc = new CabinClass((int) ccList.get(i), new BigDecimal(seatCapacityForEachCabinClass), new BigDecimal("2"), new BigDecimal(numSRow), new BigDecimal("6"));
-                   FlightCabinClass fcc = new FlightCabinClass(new BigDecimal(seatCapacityForEachCabinClass), new BigDecimal(seatCapacityForEachCabinClass), new BigDecimal(seatCapacityForEachCabinClass));
-                   List<Seat> seatList = createSeatsPerCabinClass(6, numSRow, fcc);
-                   cc.setFlightCabinClass(fcc);
-                   fcc.setCabinClass(cc);
-                   cabinClassList.add(cc);
-               } else {
-                    if (i == ccList.size() - 1 && numSRow != 0) {
-                        CabinClass cc = new CabinClass((int) ccList.get(i), new BigDecimal(seatCapacityForEachCabinClass), new BigDecimal("2"), new BigDecimal(numSRow), new BigDecimal("6"));
-                        FlightCabinClass fcc = new FlightCabinClass(new BigDecimal(seatCapacityForEachCabinClass), new BigDecimal(seatCapacityForEachCabinClass), new BigDecimal(seatCapacityForEachCabinClass));
-                        List<Seat> seatList = createSeatsPerCabinClass(6, numSRow, fcc);
-                        cc.setFlightCabinClass(fcc);
-                        fcc.setCabinClass(cc);
-                        cabinClassList.add(cc);
-                    }
-               }
-            } else {
-               if (i == ccList.size() - 1 && numSRow != 0) {
-                   CabinClass cc = new CabinClass((int) ccList.get(i), new BigDecimal(seatCapacityForEachCabinClass), new BigDecimal("2"), new BigDecimal(numSRow), new BigDecimal("6"));
-                   FlightCabinClass fcc = new FlightCabinClass(new BigDecimal(seatCapacityForEachCabinClass), new BigDecimal(seatCapacityForEachCabinClass), new BigDecimal(seatCapacityForEachCabinClass));
-                   List<Seat> seatList = createSeatsPerCabinClass(6, numSRow, fcc);
-                   cc.setFlightCabinClass(fcc);
-                   fcc.setCabinClass(cc);
-                   cabinClassList.add(cc);
-               } else {
-                    if (i == ccList.size() - 1 && numSRow != 0) {
-                        CabinClass cc = new CabinClass((int) ccList.get(i), new BigDecimal(seatCapacityForEachCabinClass), new BigDecimal("2"), new BigDecimal(numSRow), new BigDecimal("6"));
-                        FlightCabinClass fcc = new FlightCabinClass(new BigDecimal(seatCapacityForEachCabinClass), new BigDecimal(seatCapacityForEachCabinClass), new BigDecimal(seatCapacityForEachCabinClass));
-                        List<Seat> seatList = createSeatsPerCabinClass(6, numRows, fcc);
-                        cc.setFlightCabinClass(fcc);
-                        fcc.setCabinClass(cc);
-                        cabinClassList.add(cc);
-                     }
-                }
-            }
-        }
         
         AircraftConfiguration aircraftConfig = new AircraftConfiguration(acType);
         aircraftConfig.setAircraftType(acType);
-        aircraftConfig.setCabinClassList(cabinClassList);
+        aircraftConfig.setCabinClassList(ccList);
         
-        for (CabinClass cc: cabinClassList) {
+        for (CabinClass cc: ccList) {
             cc.setAircraftConfig(aircraftConfig);
+            createSeatsPerCabinClass(cc);
             cabinClassSessionBeanLocal.createNewCabinClass(cc);
         }
             
-
         Long acConfig = aircraftConfigurationSessionBean.createNewAircraftConfiguration(aircraftConfig);   
-    
     }
     
     public List<AircraftConfiguration> viewAllAircraftConfiguration() {
@@ -152,23 +91,37 @@ public class FRSManagementSessionBean implements FRSManagementSessionBeanRemote,
         return aircraftConfigList;
     }
     
-    public List<Seat> createSeatsPerCabinClass(int numSeatAbreast, int numRows, FlightCabinClass fCabinClass) {
-        String[] charArr = new String[]{"A", "B", "C", "D", "E", "F", "G", "H", "I"};
-        String seatName = "";
+    public List<Seat> createSeatsPerCabinClass(CabinClass cabinClass) {
+        String[] charArr = new String[]{"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L"};
         List<Seat> seatList = new ArrayList<>();
-        
-        for (int i = 1; i <= numRows; i++) {
-            for (int j = 0; j < numSeatAbreast - 1; j++) {
-                seatName = i + charArr[j];
-                Seat seat = new Seat(seatName, 0);
-                seat.setCabinClass(fCabinClass);
-                seatEntitySessionBeanLocal.createNewSeat(seat);
-                seatList.add(seat);
+        int numRows = cabinClass.getNumRows().intValue();
+        String seatConfig = cabinClass.getSeatConfig();
+
+        // Split the seat configuration to identify aisles
+        String[] seatConfigParts = seatConfig.split("-");
+        int totalSeatsInRow = Arrays.stream(seatConfigParts).mapToInt(Integer::parseInt).sum();
+
+        for (int row = 1; row <= numRows; row++) {
+            int seatCounter = 0;
+            for (int part = 0; part < seatConfigParts.length; part++) {
+                int seatsInPart = Integer.parseInt(seatConfigParts[part]);
+                for (int seat = 0; seat < seatsInPart; seat++) {
+                    String seatName = row + charArr[seatCounter++];
+                    Seat seatObj = new Seat(seatName, 0); // Assuming constructor Seat(String, int)
+                    seatObj.setCabinClass(cabinClass);
+                    seatEntitySessionBeanLocal.createNewSeat(seatObj);
+                    seatList.add(seatObj);
+                }
+                if (part < seatConfigParts.length - 1) {
+                    // Add an aisle after each part except the last one
+                    seatCounter++; 
+                }
             }
         }
-        
+
         return seatList;
     }
+
     
     public List<Airport> viewAllAirports() {
         List<Airport> airportList = airportEntitySessionBeanLocal.retrieveAllAirports();

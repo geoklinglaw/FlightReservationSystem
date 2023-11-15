@@ -34,7 +34,7 @@ public class Seat implements Serializable {
     
     @ManyToOne (optional = false)
     @JoinColumn(nullable = false)
-    private FlightCabinClass flightCabinClass;
+    private CabinClass cabinClass;
     
     
     @ManyToMany 
@@ -110,19 +110,6 @@ public class Seat implements Serializable {
         this.seatStatus = seatStatus;
     }
 
-    /**
-     * @return the cabinClass
-     */
-    public FlightCabinClass getCabinClass() {
-        return flightCabinClass;
-    }
-
-    /**
-     * @param cabinClass the cabinClass to set
-     */
-    public void setCabinClass(FlightCabinClass cabinClass) {
-        this.flightCabinClass = cabinClass;
-    }
 
     /**
      * @return the flightBooking
@@ -136,6 +123,20 @@ public class Seat implements Serializable {
      */
     public void setFlightBooking(List<FlightBooking> flightBooking) {
         this.flightBooking = flightBooking;
+    }
+
+    /**
+     * @return the cabinClass
+     */
+    public CabinClass getCabinClass() {
+        return cabinClass;
+    }
+
+    /**
+     * @param cabinClass the cabinClass to set
+     */
+    public void setCabinClass(CabinClass cabinClass) {
+        this.cabinClass = cabinClass;
     }
     
 }

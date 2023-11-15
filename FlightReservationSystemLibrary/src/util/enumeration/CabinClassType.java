@@ -9,24 +9,24 @@ package util.enumeration;
  * @author apple
  */
 public enum CabinClassType {
-    FIRST_CLASS(0),
-    BUSINESS(1),
-    PREMIUM_ECONOMY(2),
-    ECONOMY(3);
+    FIRST_CLASS("F"),
+    BUSINESS("J"),
+    PREMIUM_ECONOMY("W"),
+    ECONOMY("Y");
     
-    private final int value;
+    private final String value;
 
-    CabinClassType(int value) {
+    CabinClassType(String value) {
         this.value = value;
     }
 
-    public int getValue() {
+    public String getValue() {
         return this.value;
     }
 
-    public static CabinClassType fromValue(int value) {
+    public static CabinClassType fromValue(String value) {
         for (CabinClassType type : CabinClassType.values()) {
-            if (type.getValue() == value) {
+            if (type.getValue().equals(value)) {
                 return type;
             }
         }

@@ -11,6 +11,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 
@@ -30,7 +31,7 @@ public class Fare implements Serializable {
     @Column(nullable = false)
     private BigDecimal fareAmount;
     
-    @ManyToOne 
+    @ManyToMany 
     private CabinClass cabinClass;
     
     @ManyToOne

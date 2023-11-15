@@ -9,7 +9,6 @@ import entity.Airport;
 import entity.CabinClass;
 import entity.Fare;
 import entity.Flight;
-import entity.FlightCabinClass;
 import entity.FlightRoute;
 import entity.FlightSchedule;
 import entity.FlightSchedulePlan;
@@ -26,11 +25,11 @@ import javax.ejb.Remote;
 @Remote
 public interface FRSManagementSessionBeanRemote {
     
-    public void createAircraftConfiguration(int aircraftType, List<Integer> ccList);
+    public void createAircraftConfiguration(int aircraftType, List<CabinClass> ccList);
     
     public List<AircraftConfiguration> viewAllAircraftConfiguration();
     
-    public List<Seat> createSeatsPerCabinClass(int numSeatAbreast, int numRows, FlightCabinClass fCabinClass);
+    public List<Seat> createSeatsPerCabinClass(CabinClass cabinClass);
 
     public List<Airport> viewAllAirports();
     
