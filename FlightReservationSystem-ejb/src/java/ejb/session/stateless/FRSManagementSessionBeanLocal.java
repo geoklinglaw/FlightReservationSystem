@@ -9,6 +9,7 @@ import entity.Airport;
 import entity.CabinClass;
 import entity.Fare;
 import entity.Flight;
+import entity.FlightCabinClass;
 import entity.FlightRoute;
 import entity.FlightSchedule;
 import entity.FlightSchedulePlan;
@@ -29,7 +30,7 @@ public interface FRSManagementSessionBeanLocal {
     
     public List<AircraftConfiguration> viewAllAircraftConfiguration();
     
-    public List<Seat> createSeatsPerCabinClass(int numSeatAbreast, int numRows, CabinClass cabinClass);
+    public List<Seat> createSeatsPerCabinClass(int numSeatAbreast, int numRows, FlightCabinClass fCabinClass);
     
     public List<Airport> viewAllAirports();
     

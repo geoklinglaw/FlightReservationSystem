@@ -24,6 +24,9 @@ public interface FlightSessionBeanRemote {
     public Flight retrieveFlightByNumber(String flightNum);
     
     public void deleteFlight(Flight flight);
+    
+    public Flight retrieveFlightByNumber(String flightNum, boolean needSeats);
+
 
     
 }

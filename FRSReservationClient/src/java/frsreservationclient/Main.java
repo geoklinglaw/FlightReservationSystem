@@ -162,6 +162,8 @@ public class Main {
 
 
                     for (FlightSchedule fs : fsList) {
+                        System.out.println(fs.getCabinClass().size());
+
                         for (int i = 0; i < fs.getCabinClass().size(); i++) {
                             String flightNumber = fs.getFlightSchedulePlan().getFlight().getFlightNumber();
                             BigDecimal fareAmount = fs.getFlightSchedulePlan().getFare().get(i).getFareAmount();

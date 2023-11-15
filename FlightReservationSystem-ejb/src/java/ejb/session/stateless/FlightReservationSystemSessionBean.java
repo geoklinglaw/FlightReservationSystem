@@ -58,12 +58,18 @@ public class FlightReservationSystemSessionBean implements FlightReservationSyst
         List <FlightRoute> routes = flightRouteSessionBeanLocal.viewAllFlightRoute();
         List <FlightRoute> selectedRoutes = new ArrayList<FlightRoute>();
         List <Flight> flightListWithFSP = new ArrayList<Flight>();
+        System.out.println(startDate + " " + ccType + " " + originCode + " " + destCode + " " + daysBefore);
 
         for (FlightRoute r: routes) {
+            System.out.println("curr1: " + r.getAirportList().get(0).getAirportCode());
+            System.out.println("curr2: " + r.getAirportList().get(1).getAirportCode());
+
             if (r.getAirportList().get(0).getAirportCode().equals(originCode) && r.getAirportList().get(1).getAirportCode().equals(destCode)) {
                 selectedRoutes.add(r);
                 
                 for (Flight f: r.getFlightList()) {
+                    System.out.println("flight " + f.getFlightNumber() + f.getFlightSchedulePlan().getId());
+
                     if (f.getFlightSchedulePlan() != null) {
                         flightListWithFSP.add(f);
                     }
@@ -77,6 +83,8 @@ public class FlightReservationSystemSessionBean implements FlightReservationSyst
         Date rangeStartDate = calendar.getTime();
         
         List<FlightSchedule> resultSchedules = new ArrayList<>();
+        
+        
         
         for (Flight flight : flightListWithFSP) {
             System.out.println(flight.getFlightNumber() + " " + flight.getFlightRoute().getId());

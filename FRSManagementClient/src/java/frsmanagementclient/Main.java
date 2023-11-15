@@ -97,7 +97,8 @@ public class Main {
 
                 }
                 else if (response == 4) {
-                    performSalesManagerTasks();
+                    SalesManagerTask salesManagerTasks = new SalesManagerTask(FRSManagementSessionBeanRemote);
+                    salesManagerTasks.getTasks();
                 }
                 else {
                     System.out.println("Invalid option, please try again!\n");                

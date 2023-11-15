@@ -25,4 +25,6 @@ public interface FlightSessionBeanLocal {
     
     public void deleteFlight(Flight flight);
     
+    public Flight retrieveFlightByNumber(String flightNum, boolean needSeats);
+    
 }
