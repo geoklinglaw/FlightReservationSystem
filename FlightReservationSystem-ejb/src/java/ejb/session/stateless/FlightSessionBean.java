@@ -37,29 +37,24 @@ public class FlightSessionBean implements FlightSessionBeanRemote, FlightSession
         List<Flight> flightList = em.createNamedQuery("viewAllFlight").getResultList();
         for (Flight flight: flightList) {
             FlightRoute route = flight.getFlightRoute();
-            int size1 = route.getAirportList().size();
         }
         return flightList;
     }
     
     public Flight retrieveFlightById(Long id) {
         Flight flight = em.find(Flight.class, id);
-        int size1 = flight.getFlightRoute().getAirportList().size();
-
         return flight;
     }
     
             
     public Flight retrieveFlightByNumber(String flightNum) {
         Flight flight = (Flight) em.createNamedQuery("selectFlight").setParameter("inNum", flightNum).getSingleResult();
-        int size1 = flight.getFlightRoute().getAirportList().size();
 
         return flight;
     }
     
     public Flight retrieveFlightByNumber(String flightNum, boolean needSeats) {
         Flight flight = (Flight) em.createNamedQuery("selectFlight").setParameter("inNum", flightNum).getSingleResult();
-        int size1 = flight.getFlightRoute().getAirportList().size();
         int size2 = flight.getFlightSchedulePlan().getFlightSchedule().get(0).getCabinClass().size();
         List<CabinClass> ccList = flight.getFlightSchedulePlan().getFlightSchedule().get(0).getCabinClass();
         

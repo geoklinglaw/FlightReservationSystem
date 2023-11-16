@@ -44,7 +44,8 @@ public class AirportEntitySessionBean implements AirportEntitySessionBeanRemote,
         Query query = em.createNamedQuery("retrieveAirportByCode", Airport.class);
         query.setParameter("airportCode", code);
         Airport airport = (Airport) query.getSingleResult();
-        airport.getFlightRoute().size();
+        airport.getFlightRouteDestination().size();
+        airport.getFlightRouteOrigin().size();
 
         return airport;
 

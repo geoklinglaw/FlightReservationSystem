@@ -9,6 +9,7 @@ import ejb.session.stateless.FlightReservationSystemSessionBeanRemote;
 import ejb.session.stateless.PersonSessionBeanRemote;
 import entity.Airport;
 import entity.CabinClass;
+import entity.FlightRoute;
 import entity.FlightSchedule;
 import entity.Person;
 import java.math.BigDecimal;
@@ -61,7 +62,8 @@ public class Main {
             response = sc.nextInt();
             switch (response) {
                 case 1:
-                    doLogin();
+//                    doLogin();
+                      doMenuFeatures(sc);
                     break;
                 case 2:
                     doRegistration();
@@ -193,10 +195,10 @@ public class Main {
 
             FlightSchedule selectedFS = listofFSList.get(days).get(idx);
             String fsText = "*** Selected Flight Information *** \n";
-            List<Airport> airportList = selectedFS.getFlightSchedulePlan().getFlight().getFlightRoute().getAirportList();
+            FlightRoute fr = selectedFS.getFlightSchedulePlan().getFlight().getFlightRoute();
             fsText += "Flight " + selectedFS.getFlightSchedulePlan().getFlight().getFlightNumber() + " " + selectedFS.getCabinClass().get(idx) + "\n ";
-            fsText += "Departing from " + airportList.get(0) + " on " + selectedFS.getDepartureTime() + "\n ";
-            fsText += "Arriving at " + airportList.get(1) + " on " + selectedFS.getArrivalTime() + "\n ";
+            fsText += "Departing from " + fr.getOrigin() + " on " + selectedFS.getDepartureTime() + "\n ";
+            fsText += "Arriving at " + fr.getDestination() + " on " + selectedFS.getArrivalTime() + "\n ";
             fsText += "Enter 'Y' to proceed to select your seats > ";
             
             System.out.print(fsText);

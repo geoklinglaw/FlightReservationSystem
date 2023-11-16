@@ -6,7 +6,9 @@ package frsmanagementclient;
 
 import ejb.session.stateless.FRSManagementSessionBeanRemote;
 import ejb.session.stateless.FlightSessionBeanRemote;
+import entity.CabinClass;
 import entity.Flight;
+import java.util.List;
 import java.util.Scanner;
 import javax.ejb.EJB;
 
@@ -29,11 +31,12 @@ public class SalesManagerTask {
         Integer response = 0;
         
         while(true) {
-            System.out.println("\n\n*** Route Planner ***\n");
+            System.out.println("\n\n*** Sales Manager ***\n");
             System.out.print("Enter your task: \n");
             System.out.println("1: View Seat Inventory");
             System.out.println("2: View all Flight Route");
             System.out.println("3: Delete Flight Route");
+            System.out.println("To go back, please press '0'.");            
 
             response = 0;
             
@@ -50,6 +53,9 @@ public class SalesManagerTask {
                 }
                 else if (response == 3) {
                    
+                } 
+                else if (response == 0) {
+                    goBack();
                 }
                 else {
                     System.out.println("Invalid option, please try again!\n");                
@@ -59,12 +65,17 @@ public class SalesManagerTask {
         }
     }
     
+    private void goBack() {
+        Main.runApp();
+    }
+    
     private void viewSeatsInventory(Scanner sc) {
         System.out.println("\n\n*** Viewing Seat Inventory *** \n");
         
         String aircraftTypeText = "Enter Flight Number\n";
         String flightNum = sc.nextLine().trim();
-        List<CabinClass> ccList = FRSManagementSessionBeanRemote.vie
+        List<CabinClass> ccList = FRSManagementSessionBeanRemote.viewSeatsInventory(flightNum);
+        
         
 
     }

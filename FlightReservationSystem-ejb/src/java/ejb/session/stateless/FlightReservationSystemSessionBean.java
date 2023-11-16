@@ -61,10 +61,10 @@ public class FlightReservationSystemSessionBean implements FlightReservationSyst
         System.out.println(startDate + " " + ccType + " " + originCode + " " + destCode + " " + daysBefore);
 
         for (FlightRoute r: routes) {
-            System.out.println("curr1: " + r.getAirportList().get(0).getAirportCode() + "  " + originCode);
-            System.out.println("curr2: " + r.getAirportList().get(1).getAirportCode() + "  " + destCode);
+            System.out.println("curr1: " + r.getOrigin().getAirportCode() + "  " + originCode);
+            System.out.println("curr2: " + r.getDestination().getAirportCode() + "  " + destCode);
 
-            if (r.getAirportList().get(0).getAirportCode().equals(originCode) && r.getAirportList().get(1).getAirportCode().equals(destCode)) {
+            if (r.getOrigin().getAirportCode().equals(originCode) && r.getDestination().getAirportCode().equals(destCode)) {
                 selectedRoutes.add(r);
                 
                 for (Flight f: r.getFlightList()) {
@@ -100,7 +100,6 @@ public class FlightReservationSystemSessionBean implements FlightReservationSyst
                 int size = fs.getCabinClass().size();
                 System.out.println(fs.getId() + "  " + size);
                 int size1 = fs.getFlightSchedulePlan().getFare().size();
-                int size2 = fs.getFlightSchedulePlan().getFlight().getFlightRoute().getAirportList().size();
                 int size3 = fs.getCabinClass().size();
 
             }

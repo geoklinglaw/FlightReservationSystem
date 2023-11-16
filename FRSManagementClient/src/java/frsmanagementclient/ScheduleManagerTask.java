@@ -117,7 +117,7 @@ public class ScheduleManagerTask {
         String routeText = "";
 
         for (FlightRoute route: routeList) {
-            routeText += route.getId() + ": " + route.getAirportList().get(0).getCountry() + " --> " + route.getAirportList().get(1).getCountry() +"\n";
+            routeText += route.getId() + ": " + route.getOrigin().getCountry() + " --> " + route.getDestination().getCountry() +"\n";
         }
         System.out.print(routeText);
 
@@ -167,7 +167,7 @@ public class ScheduleManagerTask {
         flightDetails += "Flight Number: " + flight.getFlightNumber() + "\n";
         flightDetails += "Aircraft Configuration: " + flight.getAircraftConfig().getName() + "\n";
         FlightRoute flightRoute = flight.getFlightRoute();
-        flightDetails += "Flight Route: " + flightRoute.getAirportList().get(0).getCountry() + " --> " + flightRoute.getAirportList().get(1).getCountry();
+        flightDetails += "Flight Route: " + flightRoute.getOrigin().getCountry() + " --> " + flightRoute.getDestination().getCountry();
         System.out.println(flightDetails);
     }
     
@@ -195,7 +195,7 @@ public class ScheduleManagerTask {
         String routeText = "\nList of Flight Routes: \n";
         int index = 1;
         for (FlightRoute route: routeList) {
-            routeText += index + ": " + route.getAirportList().get(0).getCountry() + " --> " + route.getAirportList().get(1).getCountry() +"\n";
+            routeText += index + ": " + route.getOrigin().getCountry() + " --> " + route.getDestination().getCountry() +"\n";
             index += 1;
         }
         System.out.print(routeText);
@@ -220,7 +220,7 @@ public class ScheduleManagerTask {
         flightDetails += "Flight Number: " + updatedFlight.getFlightNumber() + "\n";
         flightDetails += "Aircraft Configuration: " + updatedFlight.getAircraftConfig().getName() + "\n";
         FlightRoute flightRoute = updatedFlight.getFlightRoute();
-        flightDetails += "Flight Route: " + flightRoute.getAirportList().get(0).getCountry() + " --> " + flightRoute.getAirportList().get(1).getCountry();
+        flightDetails += "Flight Route: " + flightRoute.getOrigin().getCountry() + " --> " + flightRoute.getDestination().getCountry();
         System.out.println(flightDetails);
     }
     
@@ -362,7 +362,8 @@ public class ScheduleManagerTask {
             fare.get(i).setFlightSchedulePlan(singleFsp);
             fare.get(i).setCabinClass(ccList.get(i));
         }
-        
+        createPersistAll(fsList, singleFsp, flight, fare, ccList);
+
 //        updateDatabaseOnFSPFS(fsList, singleFsp, flight, fare);
 //        for (int i = 0; i < ccList.size(); i++) {
 //            createFareforEachCabinClass(flight, ccList.get(i), fare.get(i));
@@ -416,7 +417,8 @@ public class ScheduleManagerTask {
             fare.get(i).setFlightSchedulePlan(multipleFsp);
             fare.get(i).setCabinClass(ccList.get(i));
         }
-        
+        createPersistAll(fsList, multipleFsp, flight, fare, ccList);
+
 //        updateDatabaseOnFSPFS(fsList, multipleFsp, flight, fare);
 //        
 //        
@@ -472,9 +474,6 @@ public class ScheduleManagerTask {
             index += 1;
 
             FlightSchedule flightSch = new FlightSchedule();
-            for (CabinClass cc: ccList) { // REMEMBER TO DO FOR OTHERS!!!!!!!
-                System.out.println(cc.getId());
-            }
             flightSch.setCabinClass(ccList);
             flightSch.setDepartureTime(formattedDate);
             flightSch.setFlightDuration(duration);
@@ -495,6 +494,7 @@ public class ScheduleManagerTask {
         
         recNFsp.setFlightSchedule(fsList);
         recNFsp.setFare(fare);
+        createPersistAll(fsList, recNFsp, flight, fare, ccList);
 //        updateDatabaseOnFSPFS(fsList, recNFsp, flight, fare);
 //        for (int i = 0; i < ccList.size(); i++) {
 //            createFareforEachCabinClass(flight, ccList.get(i), fare.get(i));
@@ -609,7 +609,7 @@ public class ScheduleManagerTask {
         flightDetails += "Flight Number: " + flight.getFlightNumber() + "\n";
         flightDetails += "Aircraft Configuration: " + flight.getAircraftConfig().getName() + "\n";
         FlightRoute flightRoute = flight.getFlightRoute();
-        flightDetails += "Flight Route: " + flightRoute.getAirportList().get(0).getCountry() + " --> " + flightRoute.getAirportList().get(1).getCountry();
+        flightDetails += "Flight Route: " + flightRoute.getOrigin().getCountry() + " --> " + flightRoute.getDestination().getCountry();
         System.out.println(flightDetails);
         
         return flight;

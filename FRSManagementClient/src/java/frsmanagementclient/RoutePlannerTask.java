@@ -21,9 +21,13 @@ public class RoutePlannerTask {
         this.FRSManagementSessionBeanRemote = FRSManagementSessionBeanRemote;
     }
     
+    private void goBack() {
+        Main.runApp();
+    }
+    
     public void getTasks() {
         Scanner scanner = new Scanner(System.in);
-        Integer response = 0;
+        Integer response = -1;
         
         while(true) {
             System.out.println("\n\n*** Route Planner ***\n");
@@ -31,8 +35,9 @@ public class RoutePlannerTask {
             System.out.println("1: Create Flight Route");
             System.out.println("2: View all Flight Route");
             System.out.println("3: Delete Flight Route");
+            System.out.println("To go back, please press '0'.");
 
-            response = 0;
+            response = -1;
             
             while(response < 1 || response > 3) {
                 System.out.print("> ");
@@ -47,6 +52,9 @@ public class RoutePlannerTask {
                 }
                 else if (response == 3) {
                     deleteFlightRoute(scanner);
+                }
+                else if (response == 0) {
+                    goBack();
                 }
                 else {
                     System.out.println("Invalid option, please try again!\n");                
@@ -113,7 +121,7 @@ public class RoutePlannerTask {
         String routeText = "List of Flight Routes:\n";
         
         for (FlightRoute flightRoute: flightRoutes) {
-            routeText += flightRoute.getAirportList().get(0).getCountry() + " --> " + flightRoute.getAirportList().get(1).getCountry() +"\n";
+            routeText += flightRoute.getOrigin().getCountry() + " --> " + flightRoute.getDestination().getCountry() +"\n";
             
         }
         System.out.print(routeText);

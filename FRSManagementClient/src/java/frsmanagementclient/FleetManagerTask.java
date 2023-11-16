@@ -26,7 +26,7 @@ public class FleetManagerTask {
     
     public void getTasks() {
         Scanner scanner = new Scanner(System.in);
-        Integer response = 0;
+        Integer response = -1;
         
         while(true) {
             System.out.println("\n\n*** Fleet Manager ***\n");
@@ -34,8 +34,9 @@ public class FleetManagerTask {
             System.out.println("1: Create Aircraft Configuration");
             System.out.println("2: View all Aircraft Configurations");
             System.out.println("3: View Aircraft Configuration Details");
+            System.out.println("To go back, please press '0'.");
 
-            response = 0;
+            response = -1;
             
             while(response < 1 || response > 3) {
                 System.out.print("> ");
@@ -50,6 +51,9 @@ public class FleetManagerTask {
                 }
                 else if (response == 3) {
                     viewConfigurationDetails(scanner);
+                } 
+                else if (response == 0) {
+                    goBack();
                 }
                 else {
                     System.out.println("Invalid option, please try again!\n");                
@@ -57,6 +61,10 @@ public class FleetManagerTask {
             }
             
         }
+    }
+    
+    private void goBack() {
+        Main.runApp();
     }
     
     private void createAircraftConfiguration(Scanner sc) {

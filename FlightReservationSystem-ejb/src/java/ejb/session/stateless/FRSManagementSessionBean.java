@@ -134,15 +134,12 @@ public class FRSManagementSessionBean implements FRSManagementSessionBeanRemote,
     public void createFlightRoute(Long originId, Long destId) {
         Airport origin = airportEntitySessionBeanLocal.retrieveAirport(originId);
         Airport destination = airportEntitySessionBeanLocal.retrieveAirport(destId);
+       
         
-        List<Airport> odPair = new ArrayList<Airport>();
-        odPair.add(origin);
-        odPair.add(destination);
-        
-        FlightRoute flightRoute = new FlightRoute(odPair, 1);
+        FlightRoute flightRoute = new FlightRoute(origin, destination, 1);
         flightRouteSessionBeanLocal.createNewFlightRoute(flightRoute);
-        origin.getFlightRoute().add(flightRoute);
-        destination.getFlightRoute().add(flightRoute);
+        origin.getFlightRouteOrigin().add(flightRoute);
+        destination.getFlightRouteDestination().add(flightRoute);
     }
     
     public List<FlightRoute> viewAllFlightRoutes() {
@@ -160,11 +157,11 @@ public class FRSManagementSessionBean implements FRSManagementSessionBeanRemote,
 
             
 
-            System.out.println(" directroute : " + directRoute.getId() + " : " + directRoute.getAirportList().get(0).getAirportCode() + " --> " + directRoute.getAirportList().get(1).getAirportCode());
+            System.out.println(" directroute : " + directRoute.getId() + " : " + directRoute.getOrigin().getAirportCode() + " --> " + directRoute.getDestination().getAirportCode());
 
             
-            Airport origin = directRoute.getAirportList().get(0);
-            Airport destination = directRoute.getAirportList().get(1);
+            Airport origin = directRoute.getOrigin();
+            Airport destination = directRoute.getDestination();
 
             // Add the direct route
             sortedRoutes.add(directRoute);
@@ -176,9 +173,9 @@ public class FRSManagementSessionBean implements FRSManagementSessionBeanRemote,
                     continue; // Skip if this route is already processed
                 }
 
-                Airport returnOrigin = potentialReturnRoute.getAirportList().get(0);
-                Airport returnDestination = potentialReturnRoute.getAirportList().get(1);
-                System.out.println(" potentialReturnRoute : " + potentialReturnRoute.getId() + " : " + potentialReturnRoute.getAirportList().get(0).getAirportCode() + " --> " + potentialReturnRoute.getAirportList().get(1).getAirportCode());
+                Airport returnOrigin = potentialReturnRoute.getOrigin();
+                Airport returnDestination = potentialReturnRoute.getDestination();
+                System.out.println(" potentialReturnRoute : " + potentialReturnRoute.getId() + " : " + potentialReturnRoute.getOrigin().getAirportCode() + " --> " + potentialReturnRoute.getDestination().getAirportCode());
 
                 // Check if it's a return route
                 if (origin.equals(returnDestination) && destination.equals(returnOrigin)) {
@@ -190,7 +187,7 @@ public class FRSManagementSessionBean implements FRSManagementSessionBeanRemote,
         }
         System.out.println("in sortedRoutes ");
         for (FlightRoute fr: sortedRoutes) {
-            System.out.println(fr.getId() + " : " + fr.getAirportList().get(0).getAirportCode() + " --> " + fr.getAirportList().get(1).getAirportCode());
+            System.out.println(fr.getId() + " : " + fr.getOrigin().getAirportCode() + " --> " + fr.getDestination().getAirportCode());
         }
         return sortedRoutes;
     }
@@ -202,8 +199,8 @@ public class FRSManagementSessionBean implements FRSManagementSessionBeanRemote,
         Airport destinationAirport = airportEntitySessionBeanLocal.retrieveAirportByCode(destCode);
 
         FlightRoute intendedRoute = null;
-        for (FlightRoute originRoute: originAirport.getFlightRoute()) {
-            for (FlightRoute destRoute: destinationAirport.getFlightRoute()) {
+        for (FlightRoute originRoute: originAirport.getFlightRouteOrigin()) {
+            for (FlightRoute destRoute: destinationAirport.getFlightRouteDestination()) {
                 if (originRoute.getId().equals(destRoute.getId())) {
                     intendedRoute = originRoute;
                     break;
@@ -214,9 +211,9 @@ public class FRSManagementSessionBean implements FRSManagementSessionBeanRemote,
             }
         }
 
-        intendedRoute.setAirportList(new ArrayList<Airport>());
-        originAirport.getFlightRoute().remove(intendedRoute);
-        destinationAirport.getFlightRoute().remove(intendedRoute);
+        intendedRoute.setOrigin(null);
+        originAirport.getFlightRouteOrigin().remove(intendedRoute);
+        destinationAirport.getFlightRouteDestination().remove(intendedRoute);
         flightRouteSessionBeanLocal.deleteFlightRoute(intendedRoute);
 
         return new ArrayList<Airport>(Arrays.asList(originAirport, destinationAirport));
@@ -254,7 +251,6 @@ public class FRSManagementSessionBean implements FRSManagementSessionBeanRemote,
             Long routeID = new Long(routeId);
             FlightRoute route = flightRouteSessionBeanLocal.retrieveFlightRouteById(routeID);
             managedFlight.setFlightRoute(route);
-            managedFlight.getFlightRoute().getAirportList().size();
         }
         
         if (configId != 0) {
@@ -295,6 +291,13 @@ public class FRSManagementSessionBean implements FRSManagementSessionBeanRemote,
     
     public void createFlightScheduleAndPlan(List<FlightSchedule> fsList, FlightSchedulePlan fsp, Flight flight, List<Fare> fareList, List<CabinClass> ccList) {
         
+        for (FlightSchedule fs: fsList) {
+            flightSchedulePlanSessionBeanLocal.createNewFlightSchedule(fs);
+            
+        }
+        
+        flightSchedulePlanSessionBeanLocal.createNewFlightSchedulePlan(fsp);
+        
         List<Fare> managedFareList = new ArrayList<>();
         for (Fare f: fareList) {
             Long id = fareEntitySessionBeanLocal.createNewFare(f);
@@ -303,11 +306,6 @@ public class FRSManagementSessionBean implements FRSManagementSessionBeanRemote,
             managedFareList.add(tempFare);
         }
         
-        
-        for (FlightSchedule fs: fsList) {
-            flightSchedulePlanSessionBeanLocal.createNewFlightSchedule(fs);
-            
-        }
         
         Flight managedFlight = flightSessionBeanLocal.retrieveFlightById(flight.getId());
         managedFlight.setFlightSchedulePlan(fsp);
@@ -322,7 +320,7 @@ public class FRSManagementSessionBean implements FRSManagementSessionBeanRemote,
             
         }
         
-        flightSchedulePlanSessionBeanLocal.createNewFlightSchedulePlan(fsp);
+        
     }
     
     public List<CabinClass> viewSeatsInventory(String flightNum) {
