@@ -14,6 +14,7 @@ import entity.Fare;
 import entity.FlightRoute;
 import entity.FlightSchedule;
 import entity.Person;
+import entity.Seat;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -53,6 +54,11 @@ public class Main {
 "  o/\\  \\\n" +
 "     \\__\\";
     
+    public static final String ANSI_BOLD = "\u001B[1m";
+    public static final String ANSI_RESET = "\u001B[0m";
+    public static final String ANSI_GREEN = "\u001B[32m";
+    public static final String ANSI_RED = "\u001B[31m";
+    public static final String ANSI_BLUE = "\u001B[34m";
     
     @EJB(name = "PersonSessionBeanRemote")
     private static PersonSessionBeanRemote personSessionBeanRemote;
@@ -75,9 +81,9 @@ public class Main {
         Integer response = 0;
 
         while (true) {
-            System.out.println(PLANE_ART);
+            System.out.println(ANSI_BLUE + PLANE_ART);
             System.out.println(ASCII_ART1);
-            System.out.println(ASCII_ART2);
+            System.out.println(ASCII_ART2 + ANSI_RESET);
             System.out.println("Select an action:");
             System.out.println("1. Login");
             System.out.println("2. Register as Customer");
@@ -105,145 +111,6 @@ public class Main {
                     System.out.println("Invalid input. Try again.\n");
             }
         }
-    }
-
-    private static void doMenuFeatures(Scanner sc) {
-        Integer response = 0;
-//        Person person = personSessionBean.retrievePersonById(customerId);
-        while (true) {
-            System.out.println("\n==== Menu Interface ====");
-//            System.out.println("You are logged in as " + person.getFirstName() + " " + person.getLastName()+ " \n");
-            System.out.println("> 1. Search for Flights");
-            System.out.println("> 2. Reserve Flights");
-            System.out.println("> 3. View My Flight Reservation Details");
-            System.out.println("> 4. View All My Flight Reservations");
-            System.out.println("> 5. Logout");
-            System.out.print("> ");
-            sc.nextLine();
-            response = sc.nextInt();
-            switch (response) {
-                case 1:
-                    doSearchFlights(sc);
-                    break;
-                case 2:
-                    // Registration logic
-                    break;
-                case 3:
-                    // Search for flights logic
-                    break;
-                case 4:
-                    System.out.println("Exiting...");
-                    return; // Exit the application
-                default:
-                    System.out.println("Invalid option. Please try again.");
-            }
-        }
-    }
-        
-    private static void doSearchFlights(Scanner sc) {
-        sc.nextLine();
-        
-        System.out.print("Enter trip type (1: one way, 2: twoway) > ");
-        int tripType = sc.nextInt();
-        sc.nextLine();
-        System.out.print("Enter your departure airport IATA code> ");
-        String originCode = sc.nextLine().trim();
-        
-        System.out.print("Enter your arrival airport IATA code > ");
-        String destCode = sc.nextLine().trim();
-        
-        System.out.print("Enter your departure date date of schedule (yyyy-MM-dd) > ");
-        String startDateStr = sc.nextLine().trim();
-        Date startDate = null;
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-        try {
-            startDate = formatter.parse(startDateStr);
-        } catch (ParseException e) {
-            System.out.println("Invalid date format. Please enter the date in yyyy-MM-dd format.");
-        }
-        
-        
-        if (tripType == 2) {
-            System.out.print("Enter your return date date of schedule (yyyy-MM-dd) > ");
-            String endDateStr = sc.nextLine().trim();
-        }
-        
-        System.out.print("Enter number of passengers > ");
-        int numPass = sc.nextInt();
-        
-        System.out.print("Enter direct or connecting flights (1: direct, 2: connecting) > ");
-        int flightType = sc.nextInt();
-        
-//        int index = 1;
-        for (CabinClassType cabinClass : CabinClassType.values()) {
-            System.out.println(cabinClass + " " + cabinClass.getValue());
-        }
-        
-        System.out.print("Select your preference for cabin class > ");
-        sc.nextLine();
-        String ccType = sc.nextLine().trim();
-        CabinClassType cabinType = CabinClassType.fromValue(ccType);
-        HashMap<Long, Integer> map = new HashMap<Long, Integer>();
-
-        if (startDate != null) {
-            List<List<FlightSchedule>> listofFSList = flightReservationSystemSessionBeanRemote.searchFlightsOneWay(startDate, cabinType, originCode, destCode);
-
-            for (int index = 0; index < listofFSList.size(); index++) {
-                List<FlightSchedule> fsList = listofFSList.get(index);
-                System.out.printf("\n\n                               == %d DAY(S) BEFORE REQUESTED DATE ==\n", index);
-                if (fsList.isEmpty()) {
-                    System.out.println("No flights found.");
-                } else {
-                    System.out.printf("%-2s %-12s %-20s %-8s %-25s %-25s %-15s\n","No", "Flight", "Cabin Class", "Fare", "Departure", "Arrival", "Duration");
-
-
-                    for (FlightSchedule fs : fsList) {
-                        for (int i = 0; i < fs.getFlightSchedulePlan().getFlight().getAircraftConfig().getCabinClassList().size(); i++) {
-                            String flightNumber = fs.getFlightSchedulePlan().getFlight().getFlightNumber();
-                            BigDecimal fareAmount = fs.getFlightSchedulePlan().getFare().get(i).getFareAmount();
-                            String departureTime = new SimpleDateFormat("EEE, MMM dd, yyyy, hh:mm a").format(fs.getDepartureTime());
-                            String arrivalTime = new SimpleDateFormat("EEE, MMM dd, yyyy, hh:mm a").format(fs.getArrivalTime());
-                            double durationInHours = fs.getFlightDuration();
-                            int hours = (int) durationInHours;
-                            int minutes = (int) ((durationInHours - hours) * 60);
-                            map.put(fs.getId(), i);
-                            CabinClass cc = fs.getFlightSchedulePlan().getFlight().getAircraftConfig().getCabinClassList().get(i);;
-
-                            System.out.printf("%-2d %-10s %-15s $%-9.2f %-20s %-20s %d hrs %d mins\n", fs.getId(), flightNumber, cc.getType(), fareAmount, departureTime, arrivalTime, hours, minutes);
-
-                        }
-                    }
-                }
-            }
-            
-            System.out.print("\nEnter the flight schedule ID > ");
-            int id = sc.nextInt();
-            Long fsId = new Long(id);
-            Integer index = map.get(fsId);
-            
-            FlightSchedule selectedFS = flightReservationSystemSessionBeanRemote.findFS(fsId);
-            String fsText = "*** Selected Flight Information *** \n\n";
-            FlightRoute fr = selectedFS.getFlightSchedulePlan().getFlight().getFlightRoute();
-            CabinClass cc = selectedFS.getFlightSchedulePlan().getFlight().getAircraftConfig().getCabinClassList().get(index);
-            Fare fare = selectedFS.getFlightSchedulePlan().getFare().get(index);
-            fsText += "Flight " + selectedFS.getFlightSchedulePlan().getFlight().getFlightNumber() + " " + cc.getType() + " $" + fare.getFareAmount() + "\n";
-            fsText += "Departing from " + fr.getOrigin().getCountry() + "("  + fr.getOrigin().getAirportCode() + ") on " + selectedFS.getDepartureTime() + "\n";
-            fsText += "Arriving at " + fr.getDestination().getCountry() + "(" + fr.getDestination().getAirportCode() + ") on " + selectedFS.getArrivalTime() + "\n\n";
-            fsText += "Enter 'Y' to proceed to select your seats > ";
-            
-            System.out.print(fsText);
-            String ans = sc.nextLine().trim();
-            
-            if (ans.equals("Y")) {
-                
-            }
-
-
-        }
-
-
-        
-
     }
 
     private static void doRegistration() {
@@ -431,6 +298,280 @@ public class Main {
 
     private static void doViewAllFlightReservations(Scanner sc, Long custId) {
 
+    }
+    
+    
+    private static void doMenuFeatures(Scanner sc) {
+        Integer response = 0;
+//        Person person = personSessionBean.retrievePersonById(customerId);
+        while (true) {
+            System.out.println("\n==== Menu Interface ====");
+            System.out.println("> 1. Search for Flights");
+            System.out.println("> 2. Reserve Flights");
+            System.out.println("> 3. View My Flight Reservation Details");
+            System.out.println("> 4. View All My Flight Reservations");
+            System.out.println("> 5. Logout");
+            System.out.print("> ");
+            sc.nextLine();
+            response = sc.nextInt();
+            switch (response) {
+                case 1:
+                    doSearchFlights(sc);
+                    break;
+                case 2:
+                    // Registration logic
+                    break;
+                case 3:
+                    // Search for flights logic
+                    break;
+                case 4:
+                    System.out.println("Exiting...");
+                    return; // Exit the application
+                default:
+                    System.out.println("Invalid option. Please try again.");
+            }
+        }
+    }
+        
+    private static void doSearchFlights(Scanner sc) {
+        sc.nextLine();
+        
+        System.out.print("Enter trip type (1: one way, 2: twoway) > ");
+        int tripType = sc.nextInt();
+        sc.nextLine();
+        System.out.print("Enter your departure airport IATA code> ");
+        String originCode = sc.nextLine().trim();
+        
+        System.out.print("Enter your arrival airport IATA code > ");
+        String destCode = sc.nextLine().trim();
+        
+        System.out.print("Enter your departure date date of schedule (yyyy-MM-dd) > ");
+        String startDateStr = sc.nextLine().trim();
+        Date startDate = null;
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        try {
+            startDate = formatter.parse(startDateStr);
+        } catch (ParseException e) {
+            System.out.println("Invalid date format. Please enter the date in yyyy-MM-dd format.");
+        }
+        
+        
+        if (tripType == 2) {
+            System.out.print("Enter your return date date of schedule (yyyy-MM-dd) > ");
+            String endDateStr = sc.nextLine().trim();
+        }
+        
+        System.out.print("Enter number of passengers > ");
+        int numPass = sc.nextInt();
+        
+        System.out.print("Enter direct or connecting flights (1: direct, 2: connecting) > ");
+        int flightType = sc.nextInt();
+        
+
+        for (CabinClassType cabinClass : CabinClassType.values()) {
+            System.out.println(cabinClass + " " + cabinClass.getValue());
+        }
+        
+        System.out.print("Select your preference for cabin class > ");
+        sc.nextLine();
+        String ccType = sc.nextLine().trim();
+        CabinClassType cabinType = CabinClassType.fromValue(ccType);
+        HashMap<Long, Integer> mapOne = new HashMap<Long, Integer>();
+        HashMap<Long, Integer> mapTwo = new HashMap<Long, Integer>();
+
+
+        if (startDate != null) {
+            if (tripType == 1 && flightType == 1) {
+                List<List<FlightSchedule>> listofFSList = flightReservationSystemSessionBeanRemote.searchFlightsOneWay(startDate, cabinType, originCode, destCode);
+                handleOneWayFlight(listofFSList, tripType, originCode, destCode, startDate, numPass, cabinType, mapOne);
+                printSelectedFlightSchedule(sc, mapOne, numPass);
+            } else if (tripType == 2 && flightType == 1) {
+                List<List<FlightSchedule>> listofFSList = flightReservationSystemSessionBeanRemote.searchFlightsOneWay(startDate, cabinType, originCode, destCode);
+                handleOneWayFlight(listofFSList, tripType, originCode, destCode, startDate, numPass, cabinType, mapOne);
+                handleOneWayFlight(listofFSList, tripType, destCode, originCode, startDate, numPass, cabinType, mapTwo);
+                printSelectedFlightSchedule(sc, mapOne, numPass);
+                printSelectedFlightSchedule(sc, mapTwo, numPass);
+            }
+        } 
+
+
+
+    }
+    
+    private static void printSelectedFlightSchedule(Scanner sc, HashMap<Long, Integer> map, int numPass) {
+            System.out.print("\nEnter the flight schedule ID > ");
+            int id = sc.nextInt();
+            Long fsId = new Long(id);
+            Integer index = map.get(fsId);
+            
+            FlightSchedule selectedFS = flightReservationSystemSessionBeanRemote.findFS(fsId);
+            String fsText = "*** Selected Flight Information *** \n\n";
+            FlightRoute fr = selectedFS.getFlightSchedulePlan().getFlight().getFlightRoute();
+            CabinClass cc = selectedFS.getFlightSchedulePlan().getFlight().getAircraftConfig().getCabinClassList().get(index);
+            Fare fare = selectedFS.getFlightSchedulePlan().getFare().get(index);
+            double total = fare.getFareAmount().doubleValue() * numPass;
+            fsText += "Flight " + selectedFS.getFlightSchedulePlan().getFlight().getFlightNumber() + " " + cc.getType() + " $" + fare.getFareAmount() + "x" + numPass + " = " +  total + "\n";
+            fsText += "Departing from " + fr.getOrigin().getCountry() + "("  + fr.getOrigin().getAirportCode() + ") on " + selectedFS.getDepartureTime() + "\n";
+            fsText += "Arriving at " + fr.getDestination().getCountry() + "(" + fr.getDestination().getAirportCode() + ") on " + selectedFS.getArrivalTime() + "\n\n";
+            fsText += "Enter 'Y' to proceed to select your seats > ";
+            
+            sc.nextLine();
+            System.out.print(fsText);
+            String ans = sc.nextLine().trim();
+            
+            if (ans.equals("Y")) {
+                viewSeats(fsId);
+            }
+    }
+    
+    
+    private static void handleOneWayFlight(List<List<FlightSchedule>> listofFSList, int tripType, String originCode, String destCode, Date startDate, int numPass, CabinClassType cabinType, HashMap<Long, Integer> map) {
+        for (int index = 0; index < listofFSList.size(); index++) {
+            List<FlightSchedule> fsList = listofFSList.get(index);
+            System.out.printf(ANSI_BLUE + "\n\n                                   == %d DAY(S) BEFORE REQUESTED DATE ==\n" + ANSI_RESET, index);
+            if (fsList.isEmpty()) {
+                System.out.println("No flights found.");
+            } else {
+                System.out.printf("%-4s %-10s %-10s %2s %4s %-40s %-27s %-15s\n", 
+                    "No", "Flight", "Cabin Class", "Single Fare", "Total Fare", "       Departure", "Arrival", "Duration");
+
+
+                for (FlightSchedule fs : fsList) {
+                    List<CabinClass> ccList = fs.getFlightSchedulePlan().getFlight().getAircraftConfig().getCabinClassList();
+                    for (int i = 0; i < ccList.size(); i++) {
+                        // Loop through to print out the preferred cabin class type first
+                        if (ccList.get(i).getType().equals(cabinType)) {
+                            String flightNumber = fs.getFlightSchedulePlan().getFlight().getFlightNumber();
+                            BigDecimal fareAmount = fs.getFlightSchedulePlan().getFare().get(i).getFareAmount();
+                            String departureTime = new SimpleDateFormat("EEE, MMM dd, yyyy, hh:mm a").format(fs.getDepartureTime());
+                            String arrivalTime = new SimpleDateFormat("EEE, MMM dd, yyyy, hh:mm a").format(fs.getArrivalTime());
+                            double durationInHours = fs.getFlightDuration();
+                            int hours = (int) durationInHours;
+                            int minutes = (int) ((durationInHours - hours) * 60);
+                            map.put(fs.getId(), i);
+                            CabinClass cc = fs.getFlightSchedulePlan().getFlight().getAircraftConfig().getCabinClassList().get(i);;
+                            double totalFare = fareAmount.doubleValue() * numPass;
+                            System.out.printf("%-4d %-12s %-10s $%8.2f $%8.2f      %-30s %-30s %d hrs %d mins\n", 
+                                fs.getId(), flightNumber, cc.getType(), fareAmount, totalFare, departureTime, arrivalTime, hours, minutes);
+                        }
+                    }
+
+                    // Loop again to print out the remaining cabin class types
+                    for (int i = 0; i < ccList.size(); i++) {
+                        // 
+                        if (!ccList.get(i).getType().equals(cabinType)) {
+                            String flightNumber = fs.getFlightSchedulePlan().getFlight().getFlightNumber();
+                            BigDecimal fareAmount = fs.getFlightSchedulePlan().getFare().get(i).getFareAmount();
+                            String departureTime = new SimpleDateFormat("EEE, MMM dd, yyyy, hh:mm a").format(fs.getDepartureTime());
+                            String arrivalTime = new SimpleDateFormat("EEE, MMM dd, yyyy, hh:mm a").format(fs.getArrivalTime());
+                            double durationInHours = fs.getFlightDuration();
+                            int hours = (int) durationInHours;
+                            int minutes = (int) ((durationInHours - hours) * 60);
+                            map.put(fs.getId(), i);
+                            CabinClass cc = fs.getFlightSchedulePlan().getFlight().getAircraftConfig().getCabinClassList().get(i);;
+                            double totalFare = fareAmount.doubleValue() * numPass;
+                            System.out.printf("%-2d %-10s %-15s $%-3.2f $%-3.2f %-20s %-20s %d hrs %d mins\n", fs.getId(), flightNumber, cc.getType(), fareAmount, totalFare, departureTime, arrivalTime, hours, minutes);
+                        }
+                    }
+                }
+            }
+        }
+
+    }
+       
+    
+    private static void viewSeats(Long fsId) {
+        List<CabinClass> ccList = fRSManagementSessionBeanRemote.viewSeatsInventory(new Long(fsId));
+        
+        for (CabinClass cc : ccList) {
+            System.out.println("\n\n\nCabin Class: " + cc.getType() + "");
+            System.out.println("Number of Available Seats: " + cc.getNumAvailableSeats());
+            System.out.println("Number of Reserved Seats: " + cc.getNumBalanceSeats());
+            System.out.println("Number of Balance Seats: " + cc.getNumReservedSeats() + "\n");
+            
+
+            List<Seat> seatList = cc.getSeatList(); 
+            printCabinClassSeats(cc);
+        }
+        
+    }
+    
+    private static void printCabinClassSeats(CabinClass cabinClass) {
+        String seatConfig = cabinClass.getSeatConfig(); // e.g., "3-3", "2-1-1", "2-2-2-2"
+        BigDecimal numRows = cabinClass.getNumRows();
+        List<Seat> seatList = cabinClass.getSeatList();
+
+        // Split the seat configuration and calculate the total seats per row including aisles
+        String[] parts = seatConfig.split("-");
+        int totalSeatsPerRow = 0;
+        for (String part : parts) {
+            totalSeatsPerRow += Integer.parseInt(part);
+        }
+
+        // Adding aisles to the total seats per row
+        totalSeatsPerRow += parts.length - 1;
+
+        // Generate the seat layout
+        for (int row = 1; row <= numRows.intValue(); row++) {
+            int seatCounter = 0;
+            for (int i = 0; i < totalSeatsPerRow; i++) {
+                if (isAisle(i, parts)) {
+                    System.out.print("   "); // Space for aisle
+                } else {
+                    String seatLabel = row + getSeatLabel(seatCounter, parts);
+                    Seat seat = findSeat(seatList, seatLabel);
+                    if (seat != null) {
+                        String formattedSeatLabel = formatSeatLabel(seatLabel, seat.getSeatStatus().getValue());
+                        System.out.print(formattedSeatLabel + " ");
+                    }
+                    seatCounter++;
+                }
+            }
+            System.out.println();
+        }
+    }
+
+    private static boolean isAisle(int position, String[] parts) {
+        int count = 0;
+        for (String part : parts) {
+            count += Integer.parseInt(part);
+            if (position == count) {
+                return true;
+            }
+            count++; // Adding aisle
+        }
+        return false;
+    }
+
+    private static String getSeatLabel(int seatNumber, String[] parts) {
+        char seatChar = 'A';
+        int count = 0;
+        for (String part : parts) {
+            int seats = Integer.parseInt(part);
+            if (seatNumber < count + seats) {
+                return "" + (char) (seatChar + seatNumber - count);
+            }
+            count += seats;
+            seatChar += seats;
+        }
+        return "";
+    }
+
+    private static Seat findSeat(List<Seat> seatList, String seatLabel) {
+        // Assuming Seat class has a method getLabel() to return the seat label (e.g., "1A", "2B")
+        return seatList.stream()
+                .filter(seat -> seat.getSeatID().equals(seatLabel))
+                .findFirst()
+                .orElse(null);
+    }
+    
+    private static String formatSeatLabel(String seatLabel, int status) {
+        // Assuming status 0 means available, and any other value means taken
+        if (status == 0) {
+            return ANSI_GREEN + seatLabel + ANSI_RESET; // Green for available
+        } else {
+            return ANSI_RED + seatLabel + ANSI_RESET; // Red for taken
+        }
     }
 
   }

@@ -51,8 +51,8 @@ public class FlightReservationSystemSessionBean implements FlightReservationSyst
         combinedList.add(fs1);
         List<FlightSchedule> fs2 = searchFlightsByDays(startDate, ccType, originCode, destCode, 2); // two day before
         combinedList.add(fs2);
-
-
+        List<FlightSchedule> fs3 = searchFlightsByDays(startDate, ccType, originCode, destCode, 3); // three day before
+        combinedList.add(fs3);
 
         return combinedList;
     }

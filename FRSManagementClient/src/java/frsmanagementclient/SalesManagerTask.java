@@ -26,7 +26,6 @@ public class SalesManagerTask {
     public static final String ANSI_GREEN = "\u001B[32m";
     public static final String ANSI_RED = "\u001B[31m";
     public static final String ANSI_BOLD = "\u001B[1m";
-    public static final String ANSI_UNDERLINE = "\u001B[4m";
 
     public SalesManagerTask(FRSManagementSessionBeanRemote FRSManagementSessionBeanRemote) {
         this.FRSManagementSessionBeanRemote = FRSManagementSessionBeanRemote;
@@ -120,7 +119,7 @@ public class SalesManagerTask {
             printCabinClassSeats(cc);
         }
         
-        System.out.println("\n" + ANSI_UNDERLINE + "Across all cabin classes --" + ANSI_RESET);
+        System.out.println("\n" + ANSI_BOLD + "Across all cabin classes --" + ANSI_RESET);
         System.out.print("Total Available Seats: " + totalAvailSeats);
         System.out.print("\nTotal Reserved Seats " + totalReservedSeats);
         System.out.print("\nTotal Balance Seats: " + totalBalanceSeats);

@@ -99,10 +99,10 @@ public class FRSManagementSessionBean implements FRSManagementSessionBeanRemote,
         List<Seat> seatList = new ArrayList<>();
         int numRows = cabinClass.getNumRows().intValue();
         String seatConfig = cabinClass.getSeatConfig();
+        int seatAbreast = cabinClass.getNumSeatAbreast().intValue();
 
         // Split the seat configuration to identify aisles
         String[] seatConfigParts = seatConfig.split("-");
-        int totalSeatsInRow = Arrays.stream(seatConfigParts).mapToInt(Integer::parseInt).sum();
 
         for (int row = 1; row <= numRows; row++) {
             int seatCounter = 0;
@@ -110,13 +110,12 @@ public class FRSManagementSessionBean implements FRSManagementSessionBeanRemote,
                 int seatsInPart = Integer.parseInt(seatConfigParts[part]);
                 for (int seat = 0; seat < seatsInPart; seat++) {
                     String seatName = row + charArr[seatCounter++];
-                    Seat seatObj = new Seat(seatName, 0); // Assuming constructor Seat(String, int)
+                    Seat seatObj = new Seat(seatName, 0); 
                     seatObj.setCabinClass(cabinClass);
                     seatEntitySessionBeanLocal.createNewSeat(seatObj);
                     seatList.add(seatObj);
                 }
                 if (part < seatConfigParts.length - 1) {
-                    // Add an aisle after each part except the last one
                     seatCounter++; 
                 }
             }
@@ -154,10 +153,7 @@ public class FRSManagementSessionBean implements FRSManagementSessionBeanRemote,
             if (processedRoutes.contains(directRoute.getId())) {
                 continue; // Skip if this route is already processed
             }
-
-            System.out.println(" directroute : " + directRoute.getId() + " : " + directRoute.getOrigin().getAirportCode() + " --> " + directRoute.getDestination().getAirportCode());
-
-            
+     
             Airport origin = directRoute.getOrigin();
             Airport destination = directRoute.getDestination();
 
@@ -173,7 +169,6 @@ public class FRSManagementSessionBean implements FRSManagementSessionBeanRemote,
 
                 Airport returnOrigin = potentialReturnRoute.getOrigin();
                 Airport returnDestination = potentialReturnRoute.getDestination();
-                System.out.println(" potentialReturnRoute : " + potentialReturnRoute.getId() + " : " + potentialReturnRoute.getOrigin().getAirportCode() + " --> " + potentialReturnRoute.getDestination().getAirportCode());
 
                 // Check if it's a return route
                 if (origin.equals(returnDestination) && destination.equals(returnOrigin)) {
@@ -183,10 +178,7 @@ public class FRSManagementSessionBean implements FRSManagementSessionBeanRemote,
                 }
             }
         }
-        System.out.println("in sortedRoutes ");
-        for (FlightRoute fr: sortedRoutes) {
-            System.out.println(fr.getId() + " : " + fr.getOrigin().getAirportCode() + " --> " + fr.getDestination().getAirportCode());
-        }
+
         return sortedRoutes;
     }
 
