@@ -105,9 +105,14 @@ public class FRSManagementSessionBean implements FRSManagementSessionBeanRemote,
 
         // Split the seat configuration to identify aisles
         String[] seatConfigParts = seatConfig.split("-");
+        FlightCabinClass newFCC = null;
         Long fccID = cabinClassSessionBeanLocal.createNewFlightCabinClass(fcc);
-        FlightCabinClass newFCC = cabinClassSessionBeanLocal.retrieveFlightCabinClassById(fccID);
-
+        if (fccID == null) {
+            System.out.println("fccID is null");
+        } else {
+            newFCC = cabinClassSessionBeanLocal.retrieveFlightCabinClassById(fccID);
+        }
+        
         for (int row = 1; row <= numRows; row++) {
             int seatCounter = 0;
             for (int part = 0; part < seatConfigParts.length; part++) {

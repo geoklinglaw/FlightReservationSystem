@@ -233,7 +233,7 @@ public class Main {
         Integer response = 0;
         Person person = personSessionBeanRemote.retrievePersonById(customerId);
         while (true) {
-            System.out.println("==== Menu Interface ====");
+            System.out.println("\n\n==== Menu Interface ====");
             System.out.println("You are logged in as " + person.getFirstName() + " " + person.getLastName() + " \n");
             System.out.println("1. Search for Flights");
             System.out.println("2. Reserve Flights");

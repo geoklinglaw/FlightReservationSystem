@@ -226,10 +226,15 @@ public class FlightReservationSystemSessionBean implements FlightReservationSyst
     public void bookSeats(List<String> seatNumList, Long fccId) {
         FlightCabinClass flightCabin = cabinClassSessionBeanLocal.retrieveFlightCabinClassById(fccId, true);
         int size = flightCabin.getSeatList().size();
+        List<Seat> seatList = flightCabin.getSeatList();
         
+
         for (String seatNum: seatNumList) {
-            Seat seat = (Seat) em.createQuery("SELECT s FROM Seat s WHERE s.seatID = :inSeatNum").setParameter("inSeatNum", seatNum).getSingleResult();
-            seat.setSeatStatus(SeatStatus.SELECTED);
+            for (Seat s: seatList) {
+                if (seatNum.equals(s.getSeatID())) {
+                    s.setSeatStatus(SeatStatus.SELECTED);
+                }
+            }
         }
     }
     
