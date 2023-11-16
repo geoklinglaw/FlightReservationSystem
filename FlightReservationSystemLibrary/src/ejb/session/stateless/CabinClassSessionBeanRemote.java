@@ -17,7 +17,7 @@ public interface CabinClassSessionBeanRemote {
     
     public void createNewCabinClass(CabinClass cc);
     
-    public void createNewFlightCabinClass(FlightCabinClass fcc);
+    public Long createNewFlightCabinClass(FlightCabinClass fcc);
     
     public FlightCabinClass retrieveFlightCabinClassById(Long id);
 

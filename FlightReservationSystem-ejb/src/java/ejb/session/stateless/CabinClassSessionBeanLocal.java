@@ -17,7 +17,7 @@ public interface CabinClassSessionBeanLocal {
     
     public void createNewCabinClass(CabinClass cc);
     
-    public void createNewFlightCabinClass(FlightCabinClass fcc);
+    public Long createNewFlightCabinClass(FlightCabinClass fcc);
     
     public CabinClass retrieveCabinClassById(Long id);
     

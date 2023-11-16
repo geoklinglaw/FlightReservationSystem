@@ -30,7 +30,7 @@ public interface FRSManagementSessionBeanLocal {
     
     public List<AircraftConfiguration> viewAllAircraftConfiguration();
     
-    public void createSeatsPerCabinClass(FlightCabinClass fcc);
+    public FlightCabinClass createSeatsPerCabinClass(FlightCabinClass fcc) ;
     
     public List<Airport> viewAllAirports();
     

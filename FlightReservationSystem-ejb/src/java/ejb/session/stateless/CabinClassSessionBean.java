@@ -27,8 +27,10 @@ public class CabinClassSessionBean implements CabinClassSessionBeanRemote, Cabin
     }
     
     
-    public void createNewFlightCabinClass(FlightCabinClass fcc) {
+    public Long createNewFlightCabinClass(FlightCabinClass fcc) {
         em.persist(fcc);
+        return fcc.getId();
+        
     }
     
     public CabinClass retrieveCabinClassById(Long id) {

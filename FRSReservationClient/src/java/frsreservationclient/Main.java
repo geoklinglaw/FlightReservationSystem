@@ -391,8 +391,6 @@ public class Main {
 
         if (startDate != null) {
             if (tripType == 1 && flightType == 1) {
-                System.out.print("trip 1 ");
-                System.out.print(startDate + " " + cabinType.getValue() + " " + originCode + " " + destCode);
 
                 List<List<FlightSchedule>> listofFSList = flightReservationSystemSessionBeanRemote.searchFlightsOneWay(startDate, cabinType, originCode, destCode);
                 handleOneWayFlight(listofFSList, tripType, originCode, destCode, startDate, numPass, cabinType, mapOne);
