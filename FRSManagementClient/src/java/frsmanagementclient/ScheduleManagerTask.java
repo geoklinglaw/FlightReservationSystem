@@ -235,13 +235,8 @@ public class ScheduleManagerTask {
     }
     
     private void createFlightSchedulePlan(Scanner sc) {
-//        sc.nextLine();
         System.out.println("\n\n*** Creating Flight Schedule Plan *** \n");
-//        System.out.println("Enter 'Y' if you would like to create a complementary flight schedule plan:");
-//        int num = 1;
-//        if (sc.nextLine().equals("Y")) {
-//            num = 2;
-//        }
+
 
         System.out.println("Select your preferred schedule type:");
         
@@ -264,9 +259,6 @@ public class ScheduleManagerTask {
                     Pair<Flight, List<Fare>> pair1 = handlingFSPCreation(flightNum, sc);
                     Flight sFlight = pair1.getKey();
                     List<Fare> fare1 = pair1.getValue();
-                    for (CabinClass cc: sFlight.getAircraftConfig().getCabinClassList()) {
-                        System.out.println("printing cc... " + cc.getType());
-                    }
                     createSingleFSP(sc, sFlight, sFlight.getAircraftConfig().getCabinClassList(), fare1);
                     System.out.println("Success!");
                     break;
@@ -326,7 +318,7 @@ public class ScheduleManagerTask {
     
     private void createSingleFSP(Scanner sc, Flight flight, List<CabinClass> ccList, List<Fare> fare) {
         System.out.print("FOR SINGLE SCHEDULE --- ");
-        System.out.print("Enter date of flight (yyyy-MM-dd) > ");
+        System.out.print("\nEnter date of flight (yyyy-MM-dd) > ");
         String singleDate = sc.nextLine().trim();
         System.out.print("Enter time of flight (HH:mm:ss) > ");
         String singleTime = sc.nextLine().trim();
@@ -342,7 +334,6 @@ public class ScheduleManagerTask {
 
         
         FlightSchedule flightSch = new FlightSchedule();
-//        flightSch.setCabinClass(ccList);
         flightSch.setDepartureTime(date);
         flightSch.setFlightDuration(duration);
         Date arrTime = computeArrivalTime(date,duration);
@@ -400,7 +391,6 @@ public class ScheduleManagerTask {
             Duration duration = Duration.ofSeconds(seconds);
 
             FlightSchedule flightSch = new FlightSchedule();
-//            flightSch.setCabinClass(ccList);
             flightSch.setDepartureTime(date);
             flightSch.setFlightDuration(duration);
             Date arrTime = computeArrivalTime(date,duration);
@@ -417,14 +407,9 @@ public class ScheduleManagerTask {
             fare.get(i).setFlightSchedulePlan(multipleFsp);
             fare.get(i).setCabinClass(ccList.get(i));
         }
+        multipleFsp.setFlightSchedule(fsList);
+        multipleFsp.setFare(fare);
         createPersistAll(fsList, multipleFsp, flight, fare, ccList);
-
-//        updateDatabaseOnFSPFS(fsList, multipleFsp, flight, fare);
-//        
-//        
-//        for (int i = 0; i < ccList.size(); i++) {
-//            createFareforEachCabinClass(flight, ccList.get(i), fare.get(i));
-//        }
 
     }
     
@@ -474,7 +459,6 @@ public class ScheduleManagerTask {
             index += 1;
 
             FlightSchedule flightSch = new FlightSchedule();
-//            flightSch.setCabinClass(ccList);
             flightSch.setDepartureTime(formattedDate);
             flightSch.setFlightDuration(duration);
             Date arrTime = computeArrivalTime(formattedDate,duration);
@@ -493,10 +477,6 @@ public class ScheduleManagerTask {
         recNFsp.setFlightSchedule(fsList);
         recNFsp.setFare(fare);
         createPersistAll(fsList, recNFsp, flight, fare, ccList);
-//        updateDatabaseOnFSPFS(fsList, recNFsp, flight, fare);
-//        for (int i = 0; i < ccList.size(); i++) {
-//            createFareforEachCabinClass(flight, ccList.get(i), fare.get(i));
-//        }
 
     }
     
@@ -545,7 +525,6 @@ public class ScheduleManagerTask {
             index += 1;
 
             FlightSchedule flightSch = new FlightSchedule();
-//            flightSch.setCabinClass(ccList);
             flightSch.setDepartureTime(formattedDate);
             flightSch.setFlightDuration(duration);
             Date arrTime = computeArrivalTime(formattedDate,duration);
@@ -567,11 +546,6 @@ public class ScheduleManagerTask {
         recWFsp.setFare(fare);
         recWFsp.setDayOfWeek(new BigDecimal(dayOfWeekInt));
         createPersistAll(fsList, recWFsp, flight, fare, ccList);
-        
-//        for (int i = 0; i < ccList.size(); i++) {
-//            createFareforEachCabinClass(flight, ccList.get(i), fare.get(i));
-//        }
-
     }
     
     private void createPersistAll(List<FlightSchedule> fsList, FlightSchedulePlan fsp, Flight flight, List<Fare> fareList, List<CabinClass> ccList) {
