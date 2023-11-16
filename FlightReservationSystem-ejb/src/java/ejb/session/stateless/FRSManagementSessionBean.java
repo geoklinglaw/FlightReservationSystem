@@ -320,7 +320,15 @@ public class FRSManagementSessionBean implements FRSManagementSessionBeanRemote,
             
         }
         
+        System.out.println("fsp: " + managedFlight.getFlightSchedulePlan().getId());
         
+        for (FlightSchedule fs: fsList) {
+            if (fs.getCabinClass().size() != 0){
+                for (CabinClass cc: fs.getCabinClass()) {
+                    System.out.print(cc.getType());
+                }
+            }
+        }
     }
     
     public List<CabinClass> viewSeatsInventory(String flightNum) {

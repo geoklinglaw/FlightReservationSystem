@@ -5,6 +5,7 @@
 package ejb.session.stateless;
 
 import entity.Airport;
+import entity.CabinClass;
 import entity.Flight;
 import entity.FlightRoute;
 import entity.FlightSchedule;
@@ -25,6 +26,9 @@ import util.enumeration.CabinClassType;
  */
 @Stateless
 public class FlightReservationSystemSessionBean implements FlightReservationSystemSessionBeanRemote, FlightReservationSystemSessionBeanLocal {
+
+    @EJB(name = "FlightSchedulePlanSessionBeanLocal")
+    private FlightSchedulePlanSessionBeanLocal flightSchedulePlanSessionBeanLocal;
 
     @EJB(name = "FlightRouteSessionBeanLocal")
     private FlightRouteSessionBeanLocal flightRouteSessionBeanLocal;
@@ -53,6 +57,68 @@ public class FlightReservationSystemSessionBean implements FlightReservationSyst
         return combinedList;
     }
     
+//    public List<FlightSchedule> searchFlightsByDays(Date startDate, CabinClassType ccType, String originCode, String destCode, int daysBefore) {
+//
+//        List <FlightRoute> routes = flightRouteSessionBeanLocal.viewAllFlightRoute();
+//        List <FlightRoute> selectedRoutes = new ArrayList<FlightRoute>();
+//        List <Flight> flightListWithFSP = new ArrayList<Flight>();
+//        System.out.println(startDate + " " + ccType + " " + originCode + " " + destCode + " " + daysBefore);
+//
+//        for (FlightRoute r: routes) {
+//            System.out.println("curr1: " + r.getOrigin().getAirportCode() + "  " + originCode);
+//            System.out.println("curr2: " + r.getDestination().getAirportCode() + "  " + destCode);
+//
+//            if (r.getOrigin().getAirportCode().equals(originCode) && r.getDestination().getAirportCode().equals(destCode)) {
+//                selectedRoutes.add(r);
+//                
+//                for (Flight f: r.getFlightList()) {
+//                    if (f.getFlightSchedulePlan() != null) {
+//                        System.out.println("flight " + f.getFlightNumber() + f.getFlightSchedulePlan().getId());
+//
+//                        System.out.println("selected  "  + f.getFlightNumber());
+//                        flightListWithFSP.add(f);
+//                    }
+//                }
+//            }
+//        }
+//        
+//        Calendar calendar = Calendar.getInstance();
+//        calendar.setTime(startDate);
+//        calendar.add(Calendar.DAY_OF_MONTH, -daysBefore);
+//        Date rangeStartDate = calendar.getTime();
+//        
+//        List<FlightSchedule> resultSchedules = new ArrayList<>();
+//
+//        for (Flight flight : flightListWithFSP) {
+//            System.out.println(flight.getFlightNumber() + " " + flight.getFlightRoute().getId());
+//            Query query = em.createQuery("SELECT fs FROM FlightSchedule fs WHERE fs.flightSchedulePlan.flight.id = :flightId AND fs.departureTime BETWEEN :rangeStartDate AND :endDate");
+//            query.setParameter("flightId", flight.getId());
+//            query.setParameter("rangeStartDate", rangeStartDate);
+//            query.setParameter("endDate", startDate);
+//            List<FlightSchedule> fsList = (List<FlightSchedule>) query.getResultList();
+//            
+//            for (FlightSchedule fs: fsList) {
+//                
+//                int size = fs.getCabinClass().size();
+//                System.out.println(fs.getId() + "  " + size);
+//                int size1 = fs.getFlightSchedulePlan().getFare().size();
+//                int size3 = fs.getCabinClass().size();
+//                if (fs.getCabinClass().size() != 0){
+//                    for (CabinClass cc: fs.getCabinClass()) {
+//                        System.out.print(cc.getType());
+//                    }
+//                } else {
+//                    System.out.print(" is 0");
+//                }
+//            }
+//            
+//            resultSchedules.addAll(fsList);
+//        }
+//
+//        return resultSchedules;
+//    }
+//}
+
     public List<FlightSchedule> searchFlightsByDays(Date startDate, CabinClassType ccType, String originCode, String destCode, int daysBefore) {
 
         List <FlightRoute> routes = flightRouteSessionBeanLocal.viewAllFlightRoute();
@@ -66,11 +132,14 @@ public class FlightReservationSystemSessionBean implements FlightReservationSyst
 
             if (r.getOrigin().getAirportCode().equals(originCode) && r.getDestination().getAirportCode().equals(destCode)) {
                 selectedRoutes.add(r);
-                
-                for (Flight f: r.getFlightList()) {
-                    System.out.println("flight " + f.getFlightNumber() + f.getFlightSchedulePlan().getId());
+                System.out.println("entered here selected routes");
 
+                
+                for (Flight flight: r.getFlightList()) {
+                    Flight f = em.find(Flight.class, flight.getId());
                     if (f.getFlightSchedulePlan() != null) {
+                        System.out.println("flight " + f.getFlightNumber() + f.getFlightSchedulePlan().getId());
+
                         System.out.println("selected  "  + f.getFlightNumber());
                         flightListWithFSP.add(f);
                     }
@@ -81,18 +150,17 @@ public class FlightReservationSystemSessionBean implements FlightReservationSyst
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(startDate);
         calendar.add(Calendar.DAY_OF_MONTH, -daysBefore);
-        Date rangeStartDate = calendar.getTime();
+        Date targetDate = calendar.getTime(); // This is the specific date we are interested in
+
         
         List<FlightSchedule> resultSchedules = new ArrayList<>();
-        
-        
-        
+
         for (Flight flight : flightListWithFSP) {
             System.out.println(flight.getFlightNumber() + " " + flight.getFlightRoute().getId());
-            Query query = em.createQuery("SELECT fs FROM FlightSchedule fs WHERE fs.flightSchedulePlan.flight.id = :flightId AND fs.departureTime BETWEEN :rangeStartDate AND :endDate");
+            Query query = em.createQuery("SELECT fs FROM FlightSchedule fs WHERE fs.flightSchedulePlan.flight.id = :flightId AND fs.departureTime >= :targetDateStart AND fs.departureTime < :targetDateEnd");
             query.setParameter("flightId", flight.getId());
-            query.setParameter("rangeStartDate", rangeStartDate);
-            query.setParameter("endDate", startDate);
+            query.setParameter("targetDateStart", getStartOfDay(targetDate));
+            query.setParameter("targetDateEnd", getStartOfNextDay(targetDate));
             List<FlightSchedule> fsList = (List<FlightSchedule>) query.getResultList();
             
             for (FlightSchedule fs: fsList) {
@@ -101,7 +169,13 @@ public class FlightReservationSystemSessionBean implements FlightReservationSyst
                 System.out.println(fs.getId() + "  " + size);
                 int size1 = fs.getFlightSchedulePlan().getFare().size();
                 int size3 = fs.getCabinClass().size();
-
+                if (fs.getCabinClass().size() != 0){
+                    for (CabinClass cc: fs.getCabinClass()) {
+                        System.out.print(cc.getType());
+                    }
+                } else {
+                    System.out.print(" is 0");
+                }
             }
             
             resultSchedules.addAll(fsList);
@@ -109,4 +183,28 @@ public class FlightReservationSystemSessionBean implements FlightReservationSyst
 
         return resultSchedules;
     }
+
+
+    private Date getStartOfDay(Date date) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+        return calendar.getTime();
+    }
+
+    private Date getStartOfNextDay(Date date) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.add(Calendar.DAY_OF_MONTH, 1);
+        return getStartOfDay(calendar.getTime());
+    }
+    
+    public FlightSchedule findFS(Long id) {
+        FlightSchedule fs = flightSchedulePlanSessionBeanLocal.retrieveFlightScheduleById(id);
+        return fs;
+    }
+    
 }

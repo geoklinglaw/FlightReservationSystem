@@ -22,4 +22,5 @@ public interface FlightSchedulePlanSessionBeanLocal {
     
     public List<FlightSchedulePlan> viewAllFlightSchedulePlan();
     
+    public FlightSchedule retrieveFlightScheduleById(Long id);
 }

@@ -21,7 +21,10 @@ public interface FlightSchedulePlanSessionBeanRemote {
     public void createNewFlightSchedule(FlightSchedule fs);
     
     public List<FlightSchedulePlan> viewAllFlightSchedulePlan();
+    
 
+
+    public FlightSchedule retrieveFlightScheduleById(Long id);
 
 
     
