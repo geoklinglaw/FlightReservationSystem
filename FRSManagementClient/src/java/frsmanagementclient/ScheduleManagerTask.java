@@ -484,7 +484,7 @@ public class ScheduleManagerTask {
             fsList.add(flightSch);
             flightSch.setFlightSchedulePlan(recNFsp);
             for (CabinClass cc: ccList) {
-                cc.setFlightSchedule(flightSch);
+                cc.getFlightSchedule().add(flightSch);
             }
         }
 

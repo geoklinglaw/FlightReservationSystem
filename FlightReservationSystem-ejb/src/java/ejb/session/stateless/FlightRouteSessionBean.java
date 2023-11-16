@@ -39,18 +39,9 @@ public class FlightRouteSessionBean implements FlightRouteSessionBeanRemote, Fli
         List<FlightRoute> flightRoutes = em.createNamedQuery("viewAllFlightRoutes").getResultList();
         List<FlightRoute> sortedFlightRoutes = flightRoutes;
         
-        System.out.println("before sorting in flightroute sb ");
-        for (FlightRoute fr: flightRoutes) {
-            System.out.println(fr.getId() + " : " + fr.getAirportList().get(0).getAirportCode() + " --> " + fr.getAirportList().get(1).getAirportCode());
-        }
-        
         // Sort the entire list based on the country of the origin airport
         sortedFlightRoutes.sort(Comparator.comparing(route -> route.getAirportList().get(0).getCountry()));
         
-        System.out.println("in flightroute sb ");
-        for (FlightRoute fr: sortedFlightRoutes) {
-            System.out.println(fr.getId() + " : " + fr.getAirportList().get(0).getAirportCode() + " --> " + fr.getAirportList().get(1).getAirportCode());
-        }
         return sortedFlightRoutes;
     }
 
