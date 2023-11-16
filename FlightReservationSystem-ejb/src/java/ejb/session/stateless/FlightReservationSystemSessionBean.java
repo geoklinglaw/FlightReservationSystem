@@ -210,7 +210,9 @@ public class FlightReservationSystemSessionBean implements FlightReservationSyst
     
     public FlightSchedule findFS(Long id) {
         FlightSchedule fs = flightSchedulePlanSessionBeanLocal.retrieveFlightScheduleById(id);
-        fs.getFlightSchedulePlan().getFlight().getAircraftConfig().getCabinClassList();
+        int size = fs.getFlightSchedulePlan().getFlight().getAircraftConfig().getCabinClassList().size();
+        int size2 = fs.getFlightSchedulePlan().getFare().size();
+        
         return fs;
     }
     

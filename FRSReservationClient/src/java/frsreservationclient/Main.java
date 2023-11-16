@@ -9,6 +9,7 @@ import ejb.session.stateless.FlightReservationSystemSessionBeanRemote;
 import ejb.session.stateless.PersonSessionBeanRemote;
 import entity.Airport;
 import entity.CabinClass;
+import entity.Fare;
 import entity.FlightRoute;
 import entity.FlightSchedule;
 import entity.Person;
@@ -199,12 +200,18 @@ public class Main {
             String fsText = "*** Selected Flight Information *** \n";
             FlightRoute fr = selectedFS.getFlightSchedulePlan().getFlight().getFlightRoute();
             CabinClass cc = selectedFS.getFlightSchedulePlan().getFlight().getAircraftConfig().getCabinClassList().get(index);
-            fsText += "Flight " + selectedFS.getFlightSchedulePlan().getFlight().getFlightNumber() + " " + cc + " " + selectedFS.getFlightSchedulePlan().getFare().get(index).getFareAmount() + "\n ";
-            fsText += "Departing from " + fr.getOrigin() + " on " + selectedFS.getDepartureTime() + "\n ";
-            fsText += "Arriving at " + fr.getDestination() + " on " + selectedFS.getArrivalTime() + "\n\n";
+            Fare fare = selectedFS.getFlightSchedulePlan().getFare().get(index);
+            fsText += "Flight " + selectedFS.getFlightSchedulePlan().getFlight().getFlightNumber() + " " + cc.getType() + " $" + fare.getFareAmount() + "\n";
+            fsText += "Departing from " + fr.getOrigin().getCountry() + "("  + fr.getOrigin().getAirportCode() + ") on " + selectedFS.getDepartureTime() + "\n";
+            fsText += "Arriving at " + fr.getDestination().getCountry() + "(" + fr.getOrigin().getAirportCode() + ") on " + selectedFS.getArrivalTime() + "\n\n";
             fsText += "Enter 'Y' to proceed to select your seats > ";
             
             System.out.print(fsText);
+            String ans = sc.nextLine().trim();
+            
+            if (ans.equals("Y")) {
+                
+            }
 
 
         }
