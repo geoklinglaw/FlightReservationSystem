@@ -18,4 +18,6 @@ public interface CabinClassSessionBeanLocal {
     
     public CabinClass retrieveCabinClassById(Long id);
     
+    public CabinClass retrieveCabinClassById(Long id, boolean needSeats);
+    
 }

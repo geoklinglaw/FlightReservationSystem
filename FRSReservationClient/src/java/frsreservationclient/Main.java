@@ -6,6 +6,7 @@ package frsreservationclient;
 
 import ejb.session.stateless.FRSManagementSessionBeanRemote;
 import ejb.session.stateless.FlightReservationSystemSessionBeanRemote;
+import ejb.session.stateless.FlightSessionBeanRemote;
 import ejb.session.stateless.PersonSessionBeanRemote;
 import entity.Airport;
 import entity.CabinClass;
@@ -31,6 +32,28 @@ import util.enumeration.PersonRoleType;
  */
 public class Main {
 
+    public static String ASCII_ART1 = "  __  __ _____ ____  _     ___ _   _ _____      _    ___ ____  _     ___ _   _ _____ ____  \n" +
+" |  \\/  | ____|  _ \\| |   |_ _| \\ | | ____|    / \\  |_ _|  _ \\| |   |_ _| \\ | | ____/ ___| \n" +
+" | |\\/| |  _| | |_) | |    | ||  \\| |  _|     / _ \\  | || |_) | |    | ||  \\| |  _| \\___ \\ \n" +
+" | |  | | |___|  _ <| |___ | || |\\  | |___   / ___ \\ | ||  _ <| |___ | || |\\  | |___ ___) |\n" +
+" |_|  |_|_____|_| \\_\\_____|___|_| \\_|_____| /_/   \\_\\___|_| \\_\\_____|___|_| \\_|_____|____/ \n" +
+"                                                                                           ";
+    
+    public static String ASCII_ART2 = "                                     _   _                                 _                 \n" +
+"  _ __ ___  ___  ___ _ ____   ____ _| |_(_) ___  _ __        ___ _   _ ___| |_ ___ _ __ ___  \n" +
+" | '__/ _ \\/ __|/ _ \\ '__\\ \\ / / _` | __| |/ _ \\| '_ \\      / __| | | / __| __/ _ \\ '_ ` _ \\ \n" +
+" | | |  __/\\__ \\  __/ |   \\ V / (_| | |_| | (_) | | | |     \\__ \\ |_| \\__ \\ ||  __/ | | | | |\n" +
+" |_|  \\___||___/\\___|_|    \\_/ \\__,_|\\__|_|\\___/|_| |_|     |___/\\__, |___/\\__\\___|_| |_| |_|\n" +
+"                                                                 |___/                       ";
+    
+    public static String PLANE_ART = " __\n" +
+" \\  \\     _ _\n" +
+"  \\**\\ ___\\/ \\\n" +
+"X*#####*+^^\\_\\\n" +
+"  o/\\  \\\n" +
+"     \\__\\";
+    
+    
     @EJB(name = "PersonSessionBeanRemote")
     private static PersonSessionBeanRemote personSessionBeanRemote;
 
@@ -52,7 +75,9 @@ public class Main {
         Integer response = 0;
 
         while (true) {
-            System.out.println("*** Welcome to Merlion Airlines Reservation System ***\n");
+            System.out.println(PLANE_ART);
+            System.out.println(ASCII_ART1);
+            System.out.println(ASCII_ART2);
             System.out.println("Select an action:");
             System.out.println("1. Login");
             System.out.println("2. Register as Customer");
@@ -197,13 +222,13 @@ public class Main {
             Integer index = map.get(fsId);
             
             FlightSchedule selectedFS = flightReservationSystemSessionBeanRemote.findFS(fsId);
-            String fsText = "*** Selected Flight Information *** \n";
+            String fsText = "*** Selected Flight Information *** \n\n";
             FlightRoute fr = selectedFS.getFlightSchedulePlan().getFlight().getFlightRoute();
             CabinClass cc = selectedFS.getFlightSchedulePlan().getFlight().getAircraftConfig().getCabinClassList().get(index);
             Fare fare = selectedFS.getFlightSchedulePlan().getFare().get(index);
             fsText += "Flight " + selectedFS.getFlightSchedulePlan().getFlight().getFlightNumber() + " " + cc.getType() + " $" + fare.getFareAmount() + "\n";
             fsText += "Departing from " + fr.getOrigin().getCountry() + "("  + fr.getOrigin().getAirportCode() + ") on " + selectedFS.getDepartureTime() + "\n";
-            fsText += "Arriving at " + fr.getDestination().getCountry() + "(" + fr.getOrigin().getAirportCode() + ") on " + selectedFS.getArrivalTime() + "\n\n";
+            fsText += "Arriving at " + fr.getDestination().getCountry() + "(" + fr.getDestination().getAirportCode() + ") on " + selectedFS.getArrivalTime() + "\n\n";
             fsText += "Enter 'Y' to proceed to select your seats > ";
             
             System.out.print(fsText);

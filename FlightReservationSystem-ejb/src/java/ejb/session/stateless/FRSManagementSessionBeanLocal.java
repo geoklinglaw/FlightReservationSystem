@@ -57,7 +57,9 @@ public interface FRSManagementSessionBeanLocal {
     
     public List<FlightSchedulePlan> viewAllFlightSchedulePlan();
     
-//    public List<CabinClass> viewSeatsInventory(String flightNum);
+    public List<CabinClass> viewSeatsInventory(Long fsId);
+    
+    public Flight retrieveFlightByNumber(String flightNum);
     
 
 }

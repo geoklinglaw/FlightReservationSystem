@@ -17,6 +17,27 @@ import util.exception.InvalidLoginCredentialException;
  */
 public class Main {
 
+    public static String ASCII_ART1 = "  __  __ _____ ____  _     ___ _   _ _____      _    ___ ____  _     ___ _   _ _____ ____  \n" +
+" |  \\/  | ____|  _ \\| |   |_ _| \\ | | ____|    / \\  |_ _|  _ \\| |   |_ _| \\ | | ____/ ___| \n" +
+" | |\\/| |  _| | |_) | |    | ||  \\| |  _|     / _ \\  | || |_) | |    | ||  \\| |  _| \\___ \\ \n" +
+" | |  | | |___|  _ <| |___ | || |\\  | |___   / ___ \\ | ||  _ <| |___ | || |\\  | |___ ___) |\n" +
+" |_|  |_|_____|_| \\_\\_____|___|_| \\_|_____| /_/   \\_\\___|_| \\_\\_____|___|_| \\_|_____|____/ \n" +
+"                                                                                           ";
+    
+    public static String ASCII_ART2 = "                                                              _                       _                 \n" +
+"  _ __ ___   __ _ _ __   __ _  __ _  ___ _ __ ___   ___ _ __ | |_       ___ _   _ ___| |_ ___ _ __ ___  \n" +
+" | '_ ` _ \\ / _` | '_ \\ / _` |/ _` |/ _ \\ '_ ` _ \\ / _ \\ '_ \\| __|     / __| | | / __| __/ _ \\ '_ ` _ \\ \n" +
+" | | | | | | (_| | | | | (_| | (_| |  __/ | | | | |  __/ | | | |_      \\__ \\ |_| \\__ \\ ||  __/ | | | | |\n" +
+" |_| |_| |_|\\__,_|_| |_|\\__,_|\\__, |\\___|_| |_| |_|\\___|_| |_|\\__|     |___/\\__, |___/\\__\\___|_| |_| |_|\n" +
+"                              |___/                                         |___/                       ";
+    
+    public static String PLANE_ART = " __\n" +
+" \\  \\     _ _\n" +
+"  \\**\\ ___\\/ \\\n" +
+"X*#####*+^^\\_\\\n" +
+"  o/\\  \\\n" +
+"     \\__\\";
+    
     @EJB(name = "EmployeeSessionBeanRemote")
     private static EmployeeSessionBeanRemote employeeSessionBeanRemote;
 
@@ -36,8 +57,11 @@ public class Main {
         Integer response = 0;
         
         while(true) {
-            System.out.println("*** Welcome to Merlin Airlines Management System ***\n");
-            System.out.println("1: Login");
+            System.out.println(PLANE_ART);
+            System.out.println(ASCII_ART1);
+            System.out.println(ASCII_ART2);
+
+            System.out.println("\n1: Login");
             System.out.println("2: Exit\n");
             response = 0;
             

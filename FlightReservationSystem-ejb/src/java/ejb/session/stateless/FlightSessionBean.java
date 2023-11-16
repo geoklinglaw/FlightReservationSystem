@@ -49,6 +49,7 @@ public class FlightSessionBean implements FlightSessionBeanRemote, FlightSession
             
     public Flight retrieveFlightByNumber(String flightNum) {
         Flight flight = (Flight) em.createNamedQuery("selectFlight").setParameter("inNum", flightNum).getSingleResult();
+        int size = flight.getFlightSchedulePlan().getFlightSchedule().size();
 
         return flight;
     }
