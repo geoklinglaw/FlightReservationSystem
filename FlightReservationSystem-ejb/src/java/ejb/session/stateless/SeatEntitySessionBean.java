@@ -23,5 +23,12 @@ public class SeatEntitySessionBean implements SeatEntitySessionBeanRemote, SeatE
     public void createNewSeat(Seat seat) {
         em.persist(seat);
     }
+    
+    public Seat retrieveSeatById(Long id) {
+        Seat seat = em.find(Seat.class, id);
+        
+        return seat;
+    }
+  
 
 }

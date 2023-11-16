@@ -325,11 +325,19 @@ public class FRSManagementSessionBean implements FRSManagementSessionBeanRemote,
         flightSchedulePlanSessionBeanLocal.createNewFlightSchedulePlan(fsp);
     }
     
-//    public List<CabinClass> viewSeatsInventory(String flightNum) {
-//        Flight flight = flightSessionBeanLocal.retrieveFlightByNumber(flightNum, true);
-////        List<CabinClass> ccList = flight.getFlightSchedulePlan().
-//        
-//    }
+    public List<CabinClass> viewSeatsInventory(String flightNum) {
+       Flight flight = flightSessionBeanLocal.retrieveFlightByNumber(flightNum, true);
+       int size1 = flight.getFlightSchedulePlan().getFlightSchedule().get(0).getCabinClass().size();
+       List<CabinClass> ccList = flight.getFlightSchedulePlan().getFlightSchedule().get(0).getCabinClass();
+       
+        for (CabinClass cc: ccList) {
+            CabinClass managedCC = cabinClassSessionBeanLocal.retrieveCabinClassById(cc.getId());
+            int size2 = managedCC.getSeatList().size();
+
+        }
+        
+        return ccList;
+    }
    
     
 }

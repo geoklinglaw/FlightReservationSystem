@@ -64,7 +64,7 @@ public class SalesManagerTask {
         
         String aircraftTypeText = "Enter Flight Number\n";
         String flightNum = sc.nextLine().trim();
-        Flight flight = flightSessionBeanRemote.retrieveFlightByNumber(flightNum, true);
+        List<CabinClass> ccList = FRSManagementSessionBeanRemote.vie
         
 
     }

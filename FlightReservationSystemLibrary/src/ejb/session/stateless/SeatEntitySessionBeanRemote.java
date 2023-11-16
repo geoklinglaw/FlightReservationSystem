@@ -16,4 +16,7 @@ public interface SeatEntitySessionBeanRemote {
     
     public void createNewSeat(Seat seat);
     
+    public Seat retrieveSeatById(Long id);
+
+    
 }
