@@ -9,6 +9,7 @@ import entity.CabinClass;
 import entity.Flight;
 import entity.FlightRoute;
 import entity.FlightSchedule;
+import entity.Seat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -19,6 +20,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import util.enumeration.CabinClassType;
+import util.enumeration.SeatStatus;
 
 /**
  *
@@ -26,6 +28,9 @@ import util.enumeration.CabinClassType;
  */
 @Stateless
 public class FlightReservationSystemSessionBean implements FlightReservationSystemSessionBeanRemote, FlightReservationSystemSessionBeanLocal {
+
+    @EJB(name = "CabinClassSessionBeanLocal")
+    private CabinClassSessionBeanLocal cabinClassSessionBeanLocal;
 
     @EJB(name = "FlightSchedulePlanSessionBeanLocal")
     private FlightSchedulePlanSessionBeanLocal flightSchedulePlanSessionBeanLocal;
@@ -215,5 +220,16 @@ public class FlightReservationSystemSessionBean implements FlightReservationSyst
         
         return fs;
     }
+   
+    public void bookSeats(List<String> seatNumList, Long ccId) {
+        CabinClass cabin = cabinClassSessionBeanLocal.retrieveCabinClassById(ccId, true);
+        int size = cabin.getSeatList().size();
+        
+        for (String seatNum: seatNumList) {
+            Seat seat = (Seat) em.createQuery("SELECT s FROM Seat s WHERE s.seatID = :inSeatNum").setParameter("inSeatNum", seatNum).getSingleResult();
+            seat.setSeatStatus(SeatStatus.SELECTED);
+        }
+    }
+    
     
 }

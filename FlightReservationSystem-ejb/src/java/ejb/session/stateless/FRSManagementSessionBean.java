@@ -344,8 +344,14 @@ public class FRSManagementSessionBean implements FRSManagementSessionBeanRemote,
        }
        
        return ccList;
-   }
-   
+    }
+
+    public CabinClass viewCabinClass(Long fsId, Long ccId) {
+       FlightSchedule fs = flightSchedulePlanSessionBeanLocal.retrieveFlightScheduleById(fsId);
+       CabinClass cc = cabinClassSessionBeanLocal.retrieveCabinClassById(ccId, true);
+       
+       return cc;
+    }
    
     public Flight retrieveFlightByNumber(String flightNum) {
         Flight flight = flightSessionBeanLocal.retrieveFlightByNumber(flightNum);
@@ -353,7 +359,6 @@ public class FRSManagementSessionBean implements FRSManagementSessionBeanRemote,
         return flight;
 
     }
-        
         
     
 }

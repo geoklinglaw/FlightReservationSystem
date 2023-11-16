@@ -61,6 +61,7 @@ public interface FRSManagementSessionBeanRemote {
     
     public Flight retrieveFlightByNumber(String flightNum);
 
+    public CabinClass viewCabinClass(Long fsId, Long ccId); 
 
 
 
