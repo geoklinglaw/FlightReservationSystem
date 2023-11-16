@@ -37,15 +37,11 @@ public class FlightRouteSessionBean implements FlightRouteSessionBeanRemote, Fli
     @Override
     public List<FlightRoute> viewAllFlightRoute() {
         List<FlightRoute> flightRoutes = em.createNamedQuery("viewAllFlightRoutes").getResultList();
-        List<FlightRoute> sortedFlightRoutes = flightRoutes;
-        
+
         // Sort the entire list based on the country of the origin airport
-        sortedFlightRoutes.sort(Comparator.comparing(route -> route.getAirportList().get(0).getCountry()));
-        
-        // Sort the entire list based on the country of the origin airport
-        sortedFlightRoutes.sort(Comparator.comparing(route -> route.getOrigin().getCountry()));
+        flightRoutes.sort(Comparator.comparing(route -> route.getOrigin().getCountry()));
       
-        return sortedFlightRoutes;
+        return flightRoutes;
     }
 
 

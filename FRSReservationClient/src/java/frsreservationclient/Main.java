@@ -172,9 +172,7 @@ public class Main {
 
 
                     for (FlightSchedule fs : fsList) {
-                        System.out.println(fs.getCabinClass().size() + fs.getFlightSchedulePlan().getFlight().getFlightNumber());
-
-                        for (int i = 0; i < fs.getCabinClass().size(); i++) {
+                        for (int i = 0; i < fs.getFlightSchedulePlan().getFlight().getAircraftConfig().getCabinClassList().size(); i++) {
                             String flightNumber = fs.getFlightSchedulePlan().getFlight().getFlightNumber();
                             BigDecimal fareAmount = fs.getFlightSchedulePlan().getFare().get(i).getFareAmount();
                             String departureTime = new SimpleDateFormat("EEE, MMM dd, yyyy, hh:mm a").format(fs.getDepartureTime());
@@ -183,15 +181,16 @@ public class Main {
                             int hours = (int) durationInHours;
                             int minutes = (int) ((durationInHours - hours) * 60);
                             map.put(fs.getId(), i);
+                            CabinClass cc = fs.getFlightSchedulePlan().getFlight().getAircraftConfig().getCabinClassList().get(i);;
 
-                            System.out.printf("%-2d %-10s %-15s $%-9.2f %-20s %-20s %d hrs %d mins\n", fs.getId(), flightNumber, fs.getCabinClass().get(i).getType(), fareAmount, departureTime, arrivalTime, hours, minutes);
+                            System.out.printf("%-2d %-10s %-15s $%-9.2f %-20s %-20s %d hrs %d mins\n", fs.getId(), flightNumber, cc.getType(), fareAmount, departureTime, arrivalTime, hours, minutes);
 
                         }
                     }
                 }
             }
             
-            System.out.print("Enter the flight schedule ID > ");
+            System.out.print("\nEnter the flight schedule ID > ");
             int id = sc.nextInt();
             Long fsId = new Long(id);
             Integer index = map.get(fsId);
@@ -199,7 +198,8 @@ public class Main {
             FlightSchedule selectedFS = flightReservationSystemSessionBeanRemote.findFS(fsId);
             String fsText = "*** Selected Flight Information *** \n";
             FlightRoute fr = selectedFS.getFlightSchedulePlan().getFlight().getFlightRoute();
-            fsText += "Flight " + selectedFS.getFlightSchedulePlan().getFlight().getFlightNumber() + " " + selectedFS.getCabinClass().get(index) + " " + selectedFS.getFlightSchedulePlan().getFare().get(index).getFareAmount() + "\n ";
+            CabinClass cc = selectedFS.getFlightSchedulePlan().getFlight().getAircraftConfig().getCabinClassList().get(index);
+            fsText += "Flight " + selectedFS.getFlightSchedulePlan().getFlight().getFlightNumber() + " " + cc + " " + selectedFS.getFlightSchedulePlan().getFare().get(index).getFareAmount() + "\n ";
             fsText += "Departing from " + fr.getOrigin() + " on " + selectedFS.getDepartureTime() + "\n ";
             fsText += "Arriving at " + fr.getDestination() + " on " + selectedFS.getArrivalTime() + "\n\n";
             fsText += "Enter 'Y' to proceed to select your seats > ";

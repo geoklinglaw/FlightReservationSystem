@@ -27,6 +27,7 @@ public class CabinClassSessionBean implements CabinClassSessionBeanRemote, Cabin
     
     public CabinClass retrieveCabinClassById(Long id) {
         CabinClass cc = em.find(CabinClass.class, id);
+        int size = cc.getFlightSchedule().size();
         
         return cc;
     }

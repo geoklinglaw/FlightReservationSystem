@@ -136,6 +136,7 @@ public class FlightReservationSystemSessionBean implements FlightReservationSyst
 
                 
                 for (Flight flight: r.getFlightList()) {
+                    System.out.println("get selected flight " + flight.getFlightNumber());
                     Flight f = em.find(Flight.class, flight.getId());
                     if (f.getFlightSchedulePlan() != null) {
                         System.out.println("flight " + f.getFlightNumber() + f.getFlightSchedulePlan().getId());
@@ -164,19 +165,24 @@ public class FlightReservationSystemSessionBean implements FlightReservationSyst
             List<FlightSchedule> fsList = (List<FlightSchedule>) query.getResultList();
             
             for (FlightSchedule fs: fsList) {
-                
-                int size = fs.getCabinClass().size();
-                System.out.println(fs.getId() + "  " + size);
-                int size1 = fs.getFlightSchedulePlan().getFare().size();
-                int size3 = fs.getCabinClass().size();
-                if (fs.getCabinClass().size() != 0){
-                    for (CabinClass cc: fs.getCabinClass()) {
-                        System.out.print(cc.getType());
-                    }
-                } else {
-                    System.out.print(" is 0");
-                }
+                int size = fs.getFlightSchedulePlan().getFlight().getAircraftConfig().getCabinClassList().size();
+                int size2 = fs.getFlightSchedulePlan().getFare().size();
             }
+            
+//            for (FlightSchedule fs: fsList) {
+//                
+//                int size = fs.getCabinClass().size();
+//                System.out.println(fs.getId() + "  " + size);
+//                int size1 = fs.getFlightSchedulePlan().getFare().size();
+//                int size3 = fs.getCabinClass().size();
+//                if (fs.getCabinClass().size() != 0){
+//                    for (CabinClass cc: fs.getCabinClass()) {
+//                        System.out.print(cc.getType());
+//                    }
+//                } else {
+//                    System.out.print(" is 0");
+//                }
+//            }
             
             resultSchedules.addAll(fsList);
         }
@@ -204,6 +210,7 @@ public class FlightReservationSystemSessionBean implements FlightReservationSyst
     
     public FlightSchedule findFS(Long id) {
         FlightSchedule fs = flightSchedulePlanSessionBeanLocal.retrieveFlightScheduleById(id);
+        fs.getFlightSchedulePlan().getFlight().getAircraftConfig().getCabinClassList();
         return fs;
     }
     

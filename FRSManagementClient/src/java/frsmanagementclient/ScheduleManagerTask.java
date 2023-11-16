@@ -342,7 +342,7 @@ public class ScheduleManagerTask {
 
         
         FlightSchedule flightSch = new FlightSchedule();
-        flightSch.setCabinClass(ccList);
+//        flightSch.setCabinClass(ccList);
         flightSch.setDepartureTime(date);
         flightSch.setFlightDuration(duration);
         Date arrTime = computeArrivalTime(date,duration);
@@ -400,7 +400,7 @@ public class ScheduleManagerTask {
             Duration duration = Duration.ofSeconds(seconds);
 
             FlightSchedule flightSch = new FlightSchedule();
-            flightSch.setCabinClass(ccList);
+//            flightSch.setCabinClass(ccList);
             flightSch.setDepartureTime(date);
             flightSch.setFlightDuration(duration);
             Date arrTime = computeArrivalTime(date,duration);
@@ -474,7 +474,7 @@ public class ScheduleManagerTask {
             index += 1;
 
             FlightSchedule flightSch = new FlightSchedule();
-            flightSch.setCabinClass(ccList);
+//            flightSch.setCabinClass(ccList);
             flightSch.setDepartureTime(formattedDate);
             flightSch.setFlightDuration(duration);
             Date arrTime = computeArrivalTime(formattedDate,duration);
@@ -482,9 +482,7 @@ public class ScheduleManagerTask {
             flightSch.setFlightDuration(duration);
             fsList.add(flightSch);
             flightSch.setFlightSchedulePlan(recNFsp);
-            for (CabinClass cc: ccList) {
-                cc.getFlightSchedule().add(flightSch);
-            }
+
         }
 
         for (int i = 0; i < fare.size(); i++) {
@@ -547,7 +545,7 @@ public class ScheduleManagerTask {
             index += 1;
 
             FlightSchedule flightSch = new FlightSchedule();
-            flightSch.setCabinClass(ccList);
+//            flightSch.setCabinClass(ccList);
             flightSch.setDepartureTime(formattedDate);
             flightSch.setFlightDuration(duration);
             Date arrTime = computeArrivalTime(formattedDate,duration);
@@ -555,11 +553,7 @@ public class ScheduleManagerTask {
             flightSch.setFlightDuration(duration);
             fsList.add(flightSch);
             flightSch.setFlightSchedulePlan(recWFsp);
-            
-            System.out.println("Checking for cabin class.. " + flightSch.getId());
-            for (CabinClass cc: flightSch.getCabinClass()) {
-                System.out.println(cc.getType());
-            }
+           
         }
         
         

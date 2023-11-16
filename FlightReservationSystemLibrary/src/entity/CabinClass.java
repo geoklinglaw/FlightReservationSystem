@@ -62,6 +62,7 @@ public class CabinClass implements Serializable {
     private List<FlightSchedule> flightSchedule;
     
     public CabinClass() {
+//        this.flightSchedule = new ArrayList<>()
     }
 
     public CabinClass(String type, BigDecimal seatingCapacity, BigDecimal numAisles, BigDecimal numRows, BigDecimal numSeatAbreast, String seatConfig) {

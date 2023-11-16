@@ -57,7 +57,7 @@ public interface FRSManagementSessionBeanRemote {
 
     public List<FlightSchedulePlan> viewAllFlightSchedulePlan();
     
-    public List<CabinClass> viewSeatsInventory(String flightNum);
+//    public List<CabinClass> viewSeatsInventory(String flightNum);
 
 
 

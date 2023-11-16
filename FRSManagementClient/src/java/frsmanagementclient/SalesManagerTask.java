@@ -75,12 +75,12 @@ public class SalesManagerTask {
         
         String aircraftTypeText = "Enter Flight Number\n";
         String flightNum = sc.nextLine().trim();
-        List<CabinClass> ccList = FRSManagementSessionBeanRemote.viewSeatsInventory(flightNum);
-        for (CabinClass cc: ccList) {
-            for (Seat seat: cc.getSeatList()) {
-                
-            }
-        }
+//        List<CabinClass> ccList = FRSManagementSessionBeanRemote.viewSeatsInventory(flightNum);
+//        for (CabinClass cc: ccList) {
+//            for (Seat seat: cc.getSeatList()) {
+//                
+//            }
+//        }
 //        
 
 

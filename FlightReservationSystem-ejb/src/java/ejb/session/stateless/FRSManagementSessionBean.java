@@ -155,8 +155,6 @@ public class FRSManagementSessionBean implements FRSManagementSessionBeanRemote,
                 continue; // Skip if this route is already processed
             }
 
-            
-
             System.out.println(" directroute : " + directRoute.getId() + " : " + directRoute.getOrigin().getAirportCode() + " --> " + directRoute.getDestination().getAirportCode());
 
             
@@ -293,7 +291,18 @@ public class FRSManagementSessionBean implements FRSManagementSessionBeanRemote,
         
         for (FlightSchedule fs: fsList) {
             flightSchedulePlanSessionBeanLocal.createNewFlightSchedule(fs);
-            
+//            int size = fs.getCabinClass().size();
+//            for (CabinClass cc: fs.getCabinClass()) {
+//                System.out.println(cc.getType());
+//                CabinClass managedCC = cabinClassSessionBeanLocal.retrieveCabinClassById(cc.getId());
+//                List<FlightSchedule> fslis = managedCC.getFlightSchedule();
+//                System.out.println(" WHERE IS THIS?????" + fslis.size());
+//                for (FlightSchedule f: fslis) {
+//                    System.out.println(f.getId());
+//                }
+//
+//                managedCC.getFlightSchedule().add(fs);
+//            }
         }
         
         flightSchedulePlanSessionBeanLocal.createNewFlightSchedulePlan(fsp);
@@ -306,6 +315,7 @@ public class FRSManagementSessionBean implements FRSManagementSessionBeanRemote,
             managedFareList.add(tempFare);
         }
         
+
         
         Flight managedFlight = flightSessionBeanLocal.retrieveFlightById(flight.getId());
         managedFlight.setFlightSchedulePlan(fsp);
@@ -314,36 +324,38 @@ public class FRSManagementSessionBean implements FRSManagementSessionBeanRemote,
             CabinClass tempCC = ccList.get(i);
             Fare tempFare = managedFareList.get(i);
             CabinClass cabinClass = cabinClassSessionBeanLocal.retrieveCabinClassById(tempCC.getId());
-            cabinClass.setFlightSchedule(tempCC.getFlightSchedule());
+//            cabinClass.setFlightSchedule(tempCC.getFlightSchedule());
             cabinClass.setFare(tempFare);
             tempFare.setCabinClass(cabinClass);
             
         }
         
+        
+        
         System.out.println("fsp: " + managedFlight.getFlightSchedulePlan().getId());
         
-        for (FlightSchedule fs: fsList) {
-            if (fs.getCabinClass().size() != 0){
-                for (CabinClass cc: fs.getCabinClass()) {
-                    System.out.print(cc.getType());
-                }
-            }
-        }
+//        for (FlightSchedule fs: fsList) {
+//            if (fs.getCabinClass().size() != 0){
+//                for (CabinClass cc: fs.getCabinClass()) {
+//                    System.out.print(cc.getType());
+//                }
+//            }
+//        }
     }
     
-    public List<CabinClass> viewSeatsInventory(String flightNum) {
-       Flight flight = flightSessionBeanLocal.retrieveFlightByNumber(flightNum, true);
-       int size1 = flight.getFlightSchedulePlan().getFlightSchedule().get(0).getCabinClass().size();
-       List<CabinClass> ccList = flight.getFlightSchedulePlan().getFlightSchedule().get(0).getCabinClass();
+//    public List<CabinClass> viewSeatsInventory(String flightNum) {
+//       Flight flight = flightSessionBeanLocal.retrieveFlightByNumber(flightNum, true);
+//       int size1 = flight.getFlightSchedulePlan().getFlightSchedule().get(0).getCabinClass().size();
+//       List<CabinClass> ccList = flight.getFlightSchedulePlan().getFlightSchedule().get(0).getCabinClass();
        
-        for (CabinClass cc: ccList) {
-            CabinClass managedCC = cabinClassSessionBeanLocal.retrieveCabinClassById(cc.getId());
-            int size2 = managedCC.getSeatList().size();
-
-        }
-        
-        return ccList;
-    }
+//        for (CabinClass cc: ccList) {
+//            CabinClass managedCC = cabinClassSessionBeanLocal.retrieveCabinClassById(cc.getId());
+//            int size2 = managedCC.getSeatList().size();
+//
+//        }
+//        
+//        return ccList;
+//    }
    
     
 }

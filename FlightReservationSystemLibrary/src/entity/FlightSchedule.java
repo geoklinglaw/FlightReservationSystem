@@ -11,6 +11,7 @@ import java.util.Date;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -44,19 +45,19 @@ public class FlightSchedule implements Serializable {
     @ManyToOne (optional = false)
     private FlightSchedulePlan flightSchedulePlan;
     
-    @ManyToMany (mappedBy = "flightSchedule")
-    private List<CabinClass> cabinClass;
+//    @ManyToMany (mappedBy = "flightSchedule") // , fetch = FetchType.EAGER
+//    private List<CabinClass> cabinClass;
     
     @OneToMany (mappedBy= "flightSchedule")
     private List<FlightBooking> flightBookings;
 
     public FlightSchedule() {
-        this.cabinClass = new ArrayList<>();
+//        this.cabinClass = new ArrayList<>();
     }
 
-    public FlightSchedule(FlightSchedulePlan flightSchedulePlan, List<CabinClass> cabinClassList) {
+    public FlightSchedule(FlightSchedulePlan flightSchedulePlan) {
         this.flightSchedulePlan = flightSchedulePlan;
-        this.cabinClass = cabinClassList;
+//        this.cabinClass = cabinClassList;
     }
     
     public Long getId() {
@@ -152,19 +153,19 @@ public class FlightSchedule implements Serializable {
         this.flightSchedulePlan = flightSchedulePlan;
     }
 
-    /**
-     * @return the cabinClass
-     */
-    public List<CabinClass> getCabinClass() {
-        return cabinClass;
-    }
-
-    /**
-     * @param cabinClass the cabinClass to set
-     */
-    public void setCabinClass(List<CabinClass> cabinClass) {
-        this.cabinClass = cabinClass;
-    }
+//    /**
+//     * @return the cabinClass
+//     */
+//    public List<CabinClass> getCabinClass() {
+//        return cabinClass;
+//    }
+//
+//    /**
+//     * @param cabinClass the cabinClass to set
+//     */
+//    public void setCabinClass(List<CabinClass> cabinClass) {
+//        this.cabinClass = cabinClass;
+//    }
 
     /**
      * @return the flightBookings
