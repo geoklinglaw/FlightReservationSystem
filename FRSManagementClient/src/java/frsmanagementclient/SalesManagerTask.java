@@ -25,6 +25,8 @@ public class SalesManagerTask {
     public static final String ANSI_RESET = "\u001B[0m";
     public static final String ANSI_GREEN = "\u001B[32m";
     public static final String ANSI_RED = "\u001B[31m";
+    public static final String ANSI_BOLD = "\u001B[1m";
+    public static final String ANSI_UNDERLINE = "\u001B[4m";
 
     public SalesManagerTask(FRSManagementSessionBeanRemote FRSManagementSessionBeanRemote) {
         this.FRSManagementSessionBeanRemote = FRSManagementSessionBeanRemote;
@@ -95,16 +97,33 @@ public class SalesManagerTask {
         int fsId = sc.nextInt();
         
         List <CabinClass> ccList = FRSManagementSessionBeanRemote.viewSeatsInventory(new Long(fsId));
+        int totalAvailSeats = 0;
+        int totalReservedSeats = 0;
+        int totalBalanceSeats = 0;
         
         
         for (CabinClass cc : ccList) {
-            System.out.println("\n\n\nCabin Class: " + cc.getType() + "\n");
+            System.out.println("\n\n\nCabin Class: " + cc.getType() + "");
+            System.out.println("Number of Available Seats: " + cc.getNumAvailableSeats());
+            System.out.println("Number of Reserved Seats: " + cc.getNumBalanceSeats());
+            System.out.println("Number of Balance Seats: " + cc.getNumReservedSeats() + "\n");
+            
+            totalAvailSeats += cc.getNumAvailableSeats().intValue();
+            totalReservedSeats += cc.getNumReservedSeats().intValue();
+            totalBalanceSeats += cc.getNumBalanceSeats().intValue();
+
+
             // Retrieve the seat list for each cabin class
             List<Seat> seatList = cc.getSeatList(); // Ensure this list is sorted as per the seat labels
 
             // Print the seat configuration for each cabin class
             printCabinClassSeats(cc);
         }
+        
+        System.out.println("\n" + ANSI_UNDERLINE + "Across all cabin classes --" + ANSI_RESET);
+        System.out.print("Total Available Seats: " + totalAvailSeats);
+        System.out.print("\nTotal Reserved Seats " + totalReservedSeats);
+        System.out.print("\nTotal Balance Seats: " + totalBalanceSeats);
 
     }
     
