@@ -38,4 +38,10 @@ public class FlightSchedulePlanSessionBean implements FlightSchedulePlanSessionB
         }
         return fspList;
     }
+    
+    public FlightSchedule retrieveFlightScheduleById(Long id) {
+        FlightSchedule fs = em.find(FlightSchedule.class, id);
+        
+        return fs;
+    }
 }

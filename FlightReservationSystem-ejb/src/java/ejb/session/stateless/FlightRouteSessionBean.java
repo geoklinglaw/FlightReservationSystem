@@ -42,6 +42,9 @@ public class FlightRouteSessionBean implements FlightRouteSessionBeanRemote, Fli
         // Sort the entire list based on the country of the origin airport
         sortedFlightRoutes.sort(Comparator.comparing(route -> route.getAirportList().get(0).getCountry()));
         
+        // Sort the entire list based on the country of the origin airport
+        sortedFlightRoutes.sort(Comparator.comparing(route -> route.getOrigin().getCountry()));
+      
         return sortedFlightRoutes;
     }
 

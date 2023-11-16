@@ -20,5 +20,8 @@ public interface FlightReservationSystemSessionBeanRemote {
     public List<List<FlightSchedule>> searchFlightsOneWay(Date startDate, CabinClassType ccType, String originCode, String destCode);
 
     public List<FlightSchedule> searchFlightsByDays(Date startDate, CabinClassType ccType, String originCode, String destCode, int daysBefore);
+    
+    public FlightSchedule findFS(Long id);
+
 
 }

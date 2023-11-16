@@ -9,12 +9,14 @@ import ejb.session.stateless.FlightReservationSystemSessionBeanRemote;
 import ejb.session.stateless.PersonSessionBeanRemote;
 import entity.Airport;
 import entity.CabinClass;
+import entity.FlightRoute;
 import entity.FlightSchedule;
 import entity.Person;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
 import javax.ejb.EJB;
@@ -61,7 +63,8 @@ public class Main {
             response = sc.nextInt();
             switch (response) {
                 case 1:
-                    doLogin();
+//                    doLogin();
+                      doMenuFeatures(sc);
                     break;
                 case 2:
                     doRegistration();
@@ -154,6 +157,7 @@ public class Main {
         sc.nextLine();
         String ccType = sc.nextLine().trim();
         CabinClassType cabinType = CabinClassType.fromValue(ccType);
+        HashMap<Long, Integer> map = new HashMap<Long, Integer>();
 
         if (startDate != null) {
             List<List<FlightSchedule>> listofFSList = flightReservationSystemSessionBeanRemote.searchFlightsOneWay(startDate, cabinType, originCode, destCode);
@@ -164,11 +168,11 @@ public class Main {
                 if (fsList.isEmpty()) {
                     System.out.println("No flights found.");
                 } else {
-                    System.out.printf("%-12s %-20s %-8s %-25s %-25s %-15s\n", "Flight", "Cabin Class", "Fare", "Departure", "Arrival", "Duration");
+                    System.out.printf("%-2s %-12s %-20s %-8s %-25s %-25s %-15s\n","No", "Flight", "Cabin Class", "Fare", "Departure", "Arrival", "Duration");
 
 
                     for (FlightSchedule fs : fsList) {
-                        System.out.println(fs.getCabinClass().size());
+                        System.out.println(fs.getCabinClass().size() + fs.getFlightSchedulePlan().getFlight().getFlightNumber());
 
                         for (int i = 0; i < fs.getCabinClass().size(); i++) {
                             String flightNumber = fs.getFlightSchedulePlan().getFlight().getFlightNumber();
@@ -178,25 +182,26 @@ public class Main {
                             double durationInHours = fs.getFlightDuration();
                             int hours = (int) durationInHours;
                             int minutes = (int) ((durationInHours - hours) * 60);
+                            map.put(fs.getId(), i);
 
-                            System.out.printf("%-5d %-10s %-15s $%-9.2f %-20s %-20s %d hrs %d mins\n", i, flightNumber, fs.getCabinClass().get(i).getType(), fareAmount, departureTime, arrivalTime, hours, minutes);
+                            System.out.printf("%-2d %-10s %-15s $%-9.2f %-20s %-20s %d hrs %d mins\n", fs.getId(), flightNumber, fs.getCabinClass().get(i).getType(), fareAmount, departureTime, arrivalTime, hours, minutes);
 
                         }
                     }
                 }
             }
             
-            System.out.print("Enter the number of days before requested date (0-3)> ");
-            int days = sc.nextInt();
-            System.out.print("Enter the section index > ");
-            int idx = sc.nextInt();
-
-            FlightSchedule selectedFS = listofFSList.get(days).get(idx);
+            System.out.print("Enter the flight schedule ID > ");
+            int id = sc.nextInt();
+            Long fsId = new Long(id);
+            Integer index = map.get(fsId);
+            
+            FlightSchedule selectedFS = flightReservationSystemSessionBeanRemote.findFS(fsId);
             String fsText = "*** Selected Flight Information *** \n";
-            List<Airport> airportList = selectedFS.getFlightSchedulePlan().getFlight().getFlightRoute().getAirportList();
-            fsText += "Flight " + selectedFS.getFlightSchedulePlan().getFlight().getFlightNumber() + " " + selectedFS.getCabinClass().get(idx) + "\n ";
-            fsText += "Departing from " + airportList.get(0) + " on " + selectedFS.getDepartureTime() + "\n ";
-            fsText += "Arriving at " + airportList.get(1) + " on " + selectedFS.getArrivalTime() + "\n ";
+            FlightRoute fr = selectedFS.getFlightSchedulePlan().getFlight().getFlightRoute();
+            fsText += "Flight " + selectedFS.getFlightSchedulePlan().getFlight().getFlightNumber() + " " + selectedFS.getCabinClass().get(index) + " " + selectedFS.getFlightSchedulePlan().getFare().get(index).getFareAmount() + "\n ";
+            fsText += "Departing from " + fr.getOrigin() + " on " + selectedFS.getDepartureTime() + "\n ";
+            fsText += "Arriving at " + fr.getDestination() + " on " + selectedFS.getArrivalTime() + "\n\n";
             fsText += "Enter 'Y' to proceed to select your seats > ";
             
             System.out.print(fsText);

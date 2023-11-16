@@ -31,7 +31,7 @@ public class Main {
 
     }
     
-    private static void runApp() {
+    public static void runApp() {
         Scanner scanner = new Scanner(System.in);
         Integer response = 0;
         

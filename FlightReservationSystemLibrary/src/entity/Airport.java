@@ -16,6 +16,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 
 /**
  *
@@ -50,8 +51,11 @@ public class Airport implements Serializable {
     @Column(nullable = false)
     private String country;
     
-    @ManyToMany 
-    private List<FlightRoute> flightRoute;
+    @OneToMany (mappedBy = "origin")
+    private List<FlightRoute> flightRouteOrigin;
+    
+    @OneToMany (mappedBy = "destination")
+    private List<FlightRoute> flightRouteDestination;
 
     public Airport() {
     }
@@ -62,7 +66,6 @@ public class Airport implements Serializable {
         this.city = city;
         this.state = state;
         this.country = country;
-        this.flightRoute = new ArrayList<FlightRoute>();
     }
     
 
@@ -170,17 +173,33 @@ public class Airport implements Serializable {
     }
 
     /**
-     * @return the flightRoute
+     * @return the flightRouteOrigin
      */
-    public List<FlightRoute> getFlightRoute() {
-        return flightRoute;
+    public List<FlightRoute> getFlightRouteOrigin() {
+        return flightRouteOrigin;
     }
 
     /**
-     * @param flightRoute the flightRoute to set
+     * @param flightRouteOrigin the flightRouteOrigin to set
      */
-    public void setFlightRoute(List<FlightRoute> flightRoute) {
-        this.flightRoute = flightRoute;
+    public void setFlightRouteOrigin(List<FlightRoute> flightRouteOrigin) {
+        this.flightRouteOrigin = flightRouteOrigin;
     }
+
+    /**
+     * @return the flightRouteDestination
+     */
+    public List<FlightRoute> getFlightRouteDestination() {
+        return flightRouteDestination;
+    }
+
+    /**
+     * @param flightRouteDestination the flightRouteDestination to set
+     */
+    public void setFlightRouteDestination(List<FlightRoute> flightRouteDestination) {
+        this.flightRouteDestination = flightRouteDestination;
+    }
+
+
     
 }
