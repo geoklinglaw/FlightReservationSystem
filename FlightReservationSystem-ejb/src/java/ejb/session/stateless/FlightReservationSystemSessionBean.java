@@ -7,6 +7,7 @@ package ejb.session.stateless;
 import entity.Airport;
 import entity.CabinClass;
 import entity.Flight;
+import entity.FlightCabinClass;
 import entity.FlightRoute;
 import entity.FlightSchedule;
 import entity.Seat;
@@ -49,6 +50,7 @@ public class FlightReservationSystemSessionBean implements FlightReservationSyst
     
     
     public List<List<FlightSchedule>> searchFlightsOneWay(Date startDate, CabinClassType ccType, String originCode, String destCode) {
+        System.out.println("entered searchFlightsOneWay");
         List<List<FlightSchedule>> combinedList = new ArrayList<List<FlightSchedule>>();
         List<FlightSchedule> fs0 = searchFlightsByDays(startDate, ccType, originCode, destCode, 0); // exact day
         combinedList.add(fs0);
@@ -221,9 +223,9 @@ public class FlightReservationSystemSessionBean implements FlightReservationSyst
         return fs;
     }
    
-    public void bookSeats(List<String> seatNumList, Long ccId) {
-        CabinClass cabin = cabinClassSessionBeanLocal.retrieveCabinClassById(ccId, true);
-        int size = cabin.getSeatList().size();
+    public void bookSeats(List<String> seatNumList, Long fccId) {
+        FlightCabinClass flightCabin = cabinClassSessionBeanLocal.retrieveFlightCabinClassById(fccId, true);
+        int size = flightCabin.getSeatList().size();
         
         for (String seatNum: seatNumList) {
             Seat seat = (Seat) em.createQuery("SELECT s FROM Seat s WHERE s.seatID = :inSeatNum").setParameter("inSeatNum", seatNum).getSingleResult();

@@ -5,6 +5,7 @@
 package ejb.session.stateless;
 
 import entity.CabinClass;
+import entity.FlightCabinClass;
 import javax.ejb.Local;
 
 /**
@@ -16,8 +17,12 @@ public interface CabinClassSessionBeanLocal {
     
     public void createNewCabinClass(CabinClass cc);
     
+    public void createNewFlightCabinClass(FlightCabinClass fcc);
+    
     public CabinClass retrieveCabinClassById(Long id);
     
-    public CabinClass retrieveCabinClassById(Long id, boolean needSeats);
+    public FlightCabinClass retrieveFlightCabinClassById(Long id);
+    
+    public FlightCabinClass retrieveFlightCabinClassById(Long id, boolean needSeats);
     
 }

@@ -9,6 +9,7 @@ import entity.Airport;
 import entity.CabinClass;
 import entity.Fare;
 import entity.Flight;
+import entity.FlightCabinClass;
 import entity.FlightRoute;
 import entity.FlightSchedule;
 import entity.FlightSchedulePlan;
@@ -29,7 +30,7 @@ public interface FRSManagementSessionBeanRemote {
     
     public List<AircraftConfiguration> viewAllAircraftConfiguration();
     
-    public List<Seat> createSeatsPerCabinClass(CabinClass cabinClass);
+    public void createSeatsPerCabinClass(FlightCabinClass fcc);
 
     public List<Airport> viewAllAirports();
     
@@ -51,17 +52,16 @@ public interface FRSManagementSessionBeanRemote {
     
     public Flight viewSpecificFlight(String flightNum);
 
-    public void createFareforEachCabinClass(CabinClass cc, String fareBasisCode);
-
-    public void createFlightScheduleAndPlan(List<FlightSchedule> fsList, FlightSchedulePlan fsp, Flight flight, List<Fare> fareList, List<CabinClass> ccList); 
+    public void createFlightScheduleAndPlan(List<FlightSchedule> fsList, FlightSchedulePlan fsp, Flight flight, List<Fare> fareList, List<FlightCabinClass> fccList);
 
     public List<FlightSchedulePlan> viewAllFlightSchedulePlan();
     
-    public List<CabinClass> viewSeatsInventory(Long fsId);
+    public List<FlightCabinClass> viewSeatsInventory(Long fsId);
     
     public Flight retrieveFlightByNumber(String flightNum);
 
-    public CabinClass viewCabinClass(Long fsId, Long ccId); 
+    public FlightCabinClass viewCabinClass(Long fsId, Long ccId);
+
 
 
 

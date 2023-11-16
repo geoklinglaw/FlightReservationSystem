@@ -41,25 +41,14 @@ public class CabinClass implements Serializable {
     @Column(nullable = false)
     private BigDecimal numSeatAbreast; 
     @Column(nullable = false)
-    private BigDecimal numAvailableSeats;
-    @Column(nullable = false)
-    private BigDecimal numReservedSeats;
-    @Column(nullable = false)
-    private BigDecimal numBalanceSeats;
-    @Column(nullable = false)
     private String seatConfig;
     
     @ManyToOne
     private AircraftConfiguration aircraftConfig;
     
-    @OneToMany (mappedBy = "cabinClass")
-    private List<Seat> seatList;
     
-    @OneToOne (mappedBy= "cabinClass") 
-    private Fare fare;
-    
-    @ManyToMany 
-    private List<FlightSchedule> flightSchedule;
+    @OneToOne(mappedBy = "cabinClass")
+    private FlightCabinClass flightCabinClass;
     
     public CabinClass() {
 //        this.flightSchedule = new ArrayList<>()
@@ -72,9 +61,6 @@ public class CabinClass implements Serializable {
         this.numRows = numRows;
         this.numSeatAbreast = numSeatAbreast;
         this.seatConfig = seatConfig;
-        this.numAvailableSeats = seatingCapacity;
-        this.numReservedSeats = seatingCapacity;
-        this.numBalanceSeats = seatingCapacity;
     }
 
 
@@ -201,67 +187,6 @@ public class CabinClass implements Serializable {
     }
 
     /**
-     * @return the fare
-     */
-
-    /**
-     * @return the numAvailableSeats
-     */
-    public BigDecimal getNumAvailableSeats() {
-        return numAvailableSeats;
-    }
-
-    /**
-     * @param numAvailableSeats the numAvailableSeats to set
-     */
-    public void setNumAvailableSeats(BigDecimal numAvailableSeats) {
-        this.numAvailableSeats = numAvailableSeats;
-    }
-
-    /**
-     * @return the numReservedSeats
-     */
-    public BigDecimal getNumReservedSeats() {
-        return numReservedSeats;
-    }
-
-    /**
-     * @param numReservedSeats the numReservedSeats to set
-     */
-    public void setNumReservedSeats(BigDecimal numReservedSeats) {
-        this.numReservedSeats = numReservedSeats;
-    }
-
-    /**
-     * @return the numBalanceSeats
-     */
-    public BigDecimal getNumBalanceSeats() {
-        return numBalanceSeats;
-    }
-
-    /**
-     * @param numBalanceSeats the numBalanceSeats to set
-     */
-    public void setNumBalanceSeats(BigDecimal numBalanceSeats) {
-        this.numBalanceSeats = numBalanceSeats;
-    }
-
-    /**
-     * @return the seatList
-     */
-    public List<Seat> getSeatList() {
-        return seatList;
-    }
-
-    /**
-     * @param seatList the seatList to set
-     */
-    public void setSeatList(List<Seat> seatList) {
-        this.seatList = seatList;
-    }
-
-
-    /**
      * @return the seatConfig
      */
     public String getSeatConfig() {
@@ -276,31 +201,17 @@ public class CabinClass implements Serializable {
     }
 
     /**
-     * @return the fare
+     * @return the flightCabinClass
      */
-    public Fare getFare() {
-        return fare;
+    public FlightCabinClass getFlightCabinClass() {
+        return flightCabinClass;
     }
 
     /**
-     * @param fare the fare to set
+     * @param flightCabinClass the flightCabinClass to set
      */
-    public void setFare(Fare fare) {
-        this.fare = fare;
-    }
-
-    /**
-     * @return the flightSchedule
-     */
-    public List<FlightSchedule> getFlightSchedule() {
-        return flightSchedule;
-    }
-
-    /**
-     * @param flightSchedule the flightSchedule to set
-     */
-    public void setFlightSchedule(List<FlightSchedule> flightSchedule) {
-        this.flightSchedule = flightSchedule;
+    public void setFlightCabinClass(FlightCabinClass flightCabinClass) {
+        this.flightCabinClass = flightCabinClass;
     }
 
     /**

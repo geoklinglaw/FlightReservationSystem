@@ -33,7 +33,7 @@ public class Fare implements Serializable {
     private BigDecimal fareAmount;
     
     @OneToOne 
-    private CabinClass cabinClass;
+    private FlightCabinClass flightCabinClass;
     
     @ManyToOne
     private FlightSchedulePlan flightSchedulePlan;
@@ -46,7 +46,6 @@ public class Fare implements Serializable {
         this.fareBasisCode = fareID;
         this.fareAmount = fareAmount;
     }
-    
     
 
     public Long getId() {
@@ -141,18 +140,19 @@ public class Fare implements Serializable {
     }
 
     /**
-     * @return the cabinClass
+     * @return the flightCabinClass
      */
-    public CabinClass getCabinClass() {
-        return cabinClass;
+    public FlightCabinClass getFlightCabinClass() {
+        return flightCabinClass;
     }
 
     /**
-     * @param cabinClass the cabinClass to set
+     * @param flightCabinClass the flightCabinClass to set
      */
-    public void setCabinClass(CabinClass cabinClass) {
-        this.cabinClass = cabinClass;
+    public void setFlightCabinClass(FlightCabinClass flightCabinClass) {
+        this.flightCabinClass = flightCabinClass;
     }
+
 
 
     

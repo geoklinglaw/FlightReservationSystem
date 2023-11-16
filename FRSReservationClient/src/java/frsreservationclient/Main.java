@@ -11,6 +11,7 @@ import ejb.session.stateless.PersonSessionBeanRemote;
 import entity.Airport;
 import entity.CabinClass;
 import entity.Fare;
+import entity.FlightCabinClass;
 import entity.FlightRoute;
 import entity.FlightSchedule;
 import entity.Person;
@@ -390,6 +391,9 @@ public class Main {
 
         if (startDate != null) {
             if (tripType == 1 && flightType == 1) {
+                System.out.print("trip 1 ");
+                System.out.print(startDate + " " + cabinType.getValue() + " " + originCode + " " + destCode);
+
                 List<List<FlightSchedule>> listofFSList = flightReservationSystemSessionBeanRemote.searchFlightsOneWay(startDate, cabinType, originCode, destCode);
                 handleOneWayFlight(listofFSList, tripType, originCode, destCode, startDate, numPass, cabinType, mapOne);
                 printSelectedFlightSchedule(sc, mapOne, numPass);
@@ -428,7 +432,7 @@ public class Main {
             String ans = sc.nextLine().trim();
             
             if (ans.equals("Y")) {
-                CabinClass cabinClass = viewSeats(fsId, cc.getId());
+                FlightCabinClass flightCabinClass = viewSeats(fsId, cc.getFlightCabinClass().getId());
                 System.out.print("Select " + numPass + " seat(s) by entering the seat number ('11A'): \n");
                 List<String> seatNumList = new ArrayList<>();
                 for (int i = 0; i < numPass; i++) {
@@ -437,7 +441,7 @@ public class Main {
                     seatNumList.add(seatNum);
                 }
                 
-                flightReservationSystemSessionBeanRemote.bookSeats(seatNumList, cabinClass.getId());
+                flightReservationSystemSessionBeanRemote.bookSeats(seatNumList, flightCabinClass.getId());
                 
                 String seatsSelectedText = "You have successfully booked seats ";
                 for (String seatNum: seatNumList) {
@@ -505,25 +509,24 @@ public class Main {
     }
        
     
-    private static CabinClass viewSeats(Long fsId, Long ccId) {
-        CabinClass cc = fRSManagementSessionBeanRemote.viewCabinClass(fsId, ccId);
+    private static FlightCabinClass viewSeats(Long fsId, Long fccId) {
+        FlightCabinClass fcc = fRSManagementSessionBeanRemote.viewCabinClass(fsId, fccId);
         
-        
-        System.out.println("\n\n\nCabin Class: " + cc.getType() + "");
-        System.out.println("Number of Available Seats: " + cc.getNumAvailableSeats());
-        System.out.println("Number of Reserved Seats: " + cc.getNumBalanceSeats());
-        System.out.println("Number of Balance Seats: " + cc.getNumReservedSeats() + "\n");
+        System.out.println("\n\n\nCabin Class: " + fcc.getCabinClass().getType() + "");
+        System.out.println("Number of Available Seats: " + fcc.getNumAvailableSeats());
+        System.out.println("Number of Reserved Seats: " + fcc.getNumBalanceSeats());
+        System.out.println("Number of Balance Seats: " + fcc.getNumReservedSeats() + "\n");
 
-        List<Seat> seatList = cc.getSeatList(); 
-        printCabinClassSeats(cc);
+        List<Seat> seatList = fcc.getSeatList(); 
+        printCabinClassSeats(fcc);
             
-        return cc;
+        return fcc;
     }
     
-    private static void printCabinClassSeats(CabinClass cabinClass) {
-        String seatConfig = cabinClass.getSeatConfig(); // e.g., "3-3", "2-1-1", "2-2-2-2"
-        BigDecimal numRows = cabinClass.getNumRows();
-        List<Seat> seatList = cabinClass.getSeatList();
+    private static void printCabinClassSeats(FlightCabinClass flightCabinClass) {
+        String seatConfig = flightCabinClass.getCabinClass().getSeatConfig(); // e.g., "3-3", "2-1-1", "2-2-2-2"
+        BigDecimal numRows = flightCabinClass.getCabinClass().getNumRows();
+        List<Seat> seatList = flightCabinClass.getSeatList();
 
         // Split the seat configuration and calculate the total seats per row including aisles
         String[] parts = seatConfig.split("-");

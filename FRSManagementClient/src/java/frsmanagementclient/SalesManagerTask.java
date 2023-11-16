@@ -8,6 +8,7 @@ import ejb.session.stateless.FRSManagementSessionBeanRemote;
 import ejb.session.stateless.FlightSessionBeanRemote;
 import entity.CabinClass;
 import entity.Flight;
+import entity.FlightCabinClass;
 import entity.FlightRoute;
 import entity.FlightSchedule;
 import entity.Seat;
@@ -43,7 +44,7 @@ public class SalesManagerTask {
             System.out.println("3: Delete Flight Route");
             System.out.println("To go back, please press '0'.");            
 
-            response = 0;
+            response = -1;
             
             while(response < 1 || response > 3) {
                 System.out.print("> ");
@@ -95,28 +96,28 @@ public class SalesManagerTask {
         System.out.print("\nEnter flight schedule ID for seat viewing >");
         int fsId = sc.nextInt();
         
-        List <CabinClass> ccList = FRSManagementSessionBeanRemote.viewSeatsInventory(new Long(fsId));
+        List <FlightCabinClass> fccList = FRSManagementSessionBeanRemote.viewSeatsInventory(new Long(fsId));
         int totalAvailSeats = 0;
         int totalReservedSeats = 0;
         int totalBalanceSeats = 0;
         
         
-        for (CabinClass cc : ccList) {
-            System.out.println("\n\n\nCabin Class: " + cc.getType() + "");
-            System.out.println("Number of Available Seats: " + cc.getNumAvailableSeats());
-            System.out.println("Number of Reserved Seats: " + cc.getNumBalanceSeats());
-            System.out.println("Number of Balance Seats: " + cc.getNumReservedSeats() + "\n");
+        for (FlightCabinClass fcc : fccList) {
+            System.out.println("\n\n\nCabin Class: " + fcc.getCabinClass().getType() + "");
+            System.out.println("Number of Available Seats: " + fcc.getNumAvailableSeats());
+            System.out.println("Number of Reserved Seats: " + fcc.getNumBalanceSeats());
+            System.out.println("Number of Balance Seats: " + fcc.getNumReservedSeats() + "\n");
             
-            totalAvailSeats += cc.getNumAvailableSeats().intValue();
-            totalReservedSeats += cc.getNumReservedSeats().intValue();
-            totalBalanceSeats += cc.getNumBalanceSeats().intValue();
+            totalAvailSeats += fcc.getNumAvailableSeats().intValue();
+            totalReservedSeats += fcc.getNumReservedSeats().intValue();
+            totalBalanceSeats += fcc.getNumBalanceSeats().intValue();
 
 
             // Retrieve the seat list for each cabin class
-            List<Seat> seatList = cc.getSeatList(); // Ensure this list is sorted as per the seat labels
+            List<Seat> seatList = fcc.getSeatList(); // Ensure this list is sorted as per the seat labels
 
             // Print the seat configuration for each cabin class
-            printCabinClassSeats(cc);
+            printCabinClassSeats(fcc);
         }
         
         System.out.println("\n" + ANSI_BOLD + "Across all cabin classes --" + ANSI_RESET);
@@ -127,10 +128,10 @@ public class SalesManagerTask {
     }
     
     
-    private void printCabinClassSeats(CabinClass cabinClass) {
-        String seatConfig = cabinClass.getSeatConfig(); // e.g., "3-3", "2-1-1", "2-2-2-2"
-        BigDecimal numRows = cabinClass.getNumRows();
-        List<Seat> seatList = cabinClass.getSeatList();
+    private void printCabinClassSeats(FlightCabinClass flightCabinClass) {
+        String seatConfig = flightCabinClass.getCabinClass().getSeatConfig(); // e.g., "3-3", "2-1-1", "2-2-2-2"
+        BigDecimal numRows = flightCabinClass.getCabinClass().getNumRows();
+        List<Seat> seatList = flightCabinClass.getSeatList();
 
         // Split the seat configuration and calculate the total seats per row including aisles
         String[] parts = seatConfig.split("-");

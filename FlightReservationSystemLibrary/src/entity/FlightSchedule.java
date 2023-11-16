@@ -45,8 +45,8 @@ public class FlightSchedule implements Serializable {
     @ManyToOne (optional = false)
     private FlightSchedulePlan flightSchedulePlan;
     
-//    @ManyToMany (mappedBy = "flightSchedule") // , fetch = FetchType.EAGER
-//    private List<CabinClass> cabinClass;
+    @OneToMany (mappedBy= "flightSchedule")
+    private List<FlightCabinClass> flightCabinClass;
     
     @OneToMany (mappedBy= "flightSchedule")
     private List<FlightBooking> flightBookings;
@@ -179,6 +179,20 @@ public class FlightSchedule implements Serializable {
      */
     public void setFlightBookings(List<FlightBooking> flightBookings) {
         this.flightBookings = flightBookings;
+    }
+
+    /**
+     * @return the flightCabinClass
+     */
+    public List<FlightCabinClass> getFlightCabinClass() {
+        return flightCabinClass;
+    }
+
+    /**
+     * @param flightCabinClass the flightCabinClass to set
+     */
+    public void setFlightCabinClass(List<FlightCabinClass> flightCabinClass) {
+        this.flightCabinClass = flightCabinClass;
     }
    
     

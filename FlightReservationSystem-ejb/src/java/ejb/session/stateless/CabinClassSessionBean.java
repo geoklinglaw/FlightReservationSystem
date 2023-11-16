@@ -5,6 +5,7 @@
 package ejb.session.stateless;
 
 import entity.CabinClass;
+import entity.FlightCabinClass;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -25,14 +26,25 @@ public class CabinClassSessionBean implements CabinClassSessionBeanRemote, Cabin
         em.persist(cc);
     }
     
+    
+    public void createNewFlightCabinClass(FlightCabinClass fcc) {
+        em.persist(fcc);
+    }
+    
     public CabinClass retrieveCabinClassById(Long id) {
         CabinClass cc = em.find(CabinClass.class, id);
         
         return cc;
     }
+    
+    public FlightCabinClass retrieveFlightCabinClassById(Long id) {
+        FlightCabinClass fcc = em.find(FlightCabinClass.class, id);
+        
+        return fcc;
+    }
 
-    public CabinClass retrieveCabinClassById(Long id, boolean needSeats) {
-        CabinClass cc = em.find(CabinClass.class, id);
+    public FlightCabinClass retrieveFlightCabinClassById(Long id, boolean needSeats) {
+        FlightCabinClass cc = em.find(FlightCabinClass.class, id);
         int size = cc.getSeatList().size();
         
         return cc;
