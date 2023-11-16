@@ -8,6 +8,7 @@ import ejb.session.stateless.FRSManagementSessionBeanRemote;
 import ejb.session.stateless.FlightSessionBeanRemote;
 import entity.CabinClass;
 import entity.Flight;
+import entity.Seat;
 import java.util.List;
 import java.util.Scanner;
 import javax.ejb.EJB;
@@ -75,8 +76,13 @@ public class SalesManagerTask {
         String aircraftTypeText = "Enter Flight Number\n";
         String flightNum = sc.nextLine().trim();
         List<CabinClass> ccList = FRSManagementSessionBeanRemote.viewSeatsInventory(flightNum);
-        
-        
+        for (CabinClass cc: ccList) {
+            for (Seat seat: cc.getSeatList()) {
+                
+            }
+        }
+//        
+
 
     }
 }
