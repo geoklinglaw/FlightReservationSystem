@@ -45,7 +45,7 @@ public class FlightSchedule implements Serializable {
     @ManyToOne (optional = false)
     private FlightSchedulePlan flightSchedulePlan;
     
-    @OneToMany (mappedBy= "flightSchedule")
+    @OneToMany (mappedBy= "flightSchedule", fetch = FetchType.EAGER)
     private List<FlightCabinClass> flightCabinClass;
     
     @OneToMany (mappedBy= "flightSchedule")

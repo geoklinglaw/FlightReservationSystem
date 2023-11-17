@@ -14,6 +14,8 @@ import entity.FlightCabinClass;
 import entity.FlightRoute;
 import entity.FlightSchedule;
 import entity.FlightSchedulePlan;
+import entity.RecurrentPlan;
+import entity.RecurrentWeeklyPlan;
 import entity.Seat;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -322,67 +324,49 @@ public class FRSManagementSessionBean implements FRSManagementSessionBeanRemote,
         return flight;
     }
     
-
-    
-    public void createFlightScheduleAndPlan(List<FlightSchedule> fsList, FlightSchedulePlan fsp, Flight flight, List<Fare> fareList, List<FlightCabinClass> fccList) {
-        
-        List<FlightCabinClass> newFCCList = new ArrayList<FlightCabinClass>();
+    public void createFlightCabinClassSeats(List<FlightCabinClass> fccList) {
         for (FlightCabinClass fcc: fccList) {
             FlightCabinClass managedFCC = createSeatsPerCabinClass(fcc);
-            newFCCList.add(managedFCC);
         }
+    }
+    
+    public void createFlightScheduleAndPlan(List<FlightSchedule> fsList, FlightSchedulePlan fsp, Flight flight, List<Fare> fareList, List<List<FlightCabinClass>> fccList) {
         
-        for (FlightSchedule fs: fsList) {
-            flightSchedulePlanSessionBeanLocal.createNewFlightSchedule(fs);
-            for (FlightCabinClass fcc: newFCCList) {
-                System.out.println(fcc.getId() + "fcc");
-                FlightCabinClass managedFCC = cabinClassSessionBeanLocal.retrieveFlightCabinClassById(fcc.getId());
-                managedFCC.setFlightSchedule(fs);
+//        if (fsp instanceof RecurrentWeeklyPlan || fsp instanceof RecurrentPlan) {
+            for (List<FlightCabinClass> fccs: fccList) {
+                createFlightCabinClassSeats(fccs);
             }
-        }
+
+            for (int i = 0; i < fsList.size(); i++) {
+                FlightSchedule fs = fsList.get(i);
+                flightSchedulePlanSessionBeanLocal.createNewFlightSchedule(fs);
+
+                for (int j = 0; j < fccList.size(); j++) {
+                    fs.setFlightCabinClass(fccList.get(i));
+
+                    for (int k = 0; k < fccList.get(i).size(); k++) { // individual flightcabinclass
+                        Long id = fareEntitySessionBeanLocal.createNewFare(fareList.get(k));
+                        fareList.get(k).setFlightCabinClass(fccList.get(j).get(k));
+                        fccList.get(j).get(k).setFlightSchedule(fs);
+                        fccList.get(j).get(k).setFare(fareList.get(k));
+                    }
+                }
+            }
+//        } 
         
         flightSchedulePlanSessionBeanLocal.createNewFlightSchedulePlan(fsp);
-        
-        List<Fare> managedFareList = new ArrayList<>();
-        for (Fare f: fareList) {
-            Long id = fareEntitySessionBeanLocal.createNewFare(f);
-            Fare tempFare = fareEntitySessionBeanLocal.retrieveFareById(id);
-            
-            managedFareList.add(tempFare);
-        }
-        
-
-        
         Flight managedFlight = flightSessionBeanLocal.retrieveFlightById(flight.getId());
         managedFlight.setFlightSchedulePlan(fsp);
         
-        for (int i = 0; i < fccList.size(); i++) {
-            FlightCabinClass tempFCC = fccList.get(i);
-            Fare tempFare = managedFareList.get(i);
-            FlightCabinClass flightCabinClass = cabinClassSessionBeanLocal.retrieveFlightCabinClassById(tempFCC.getId());
-//            cabinClass.setFlightSchedule(tempCC.getFlightSchedule());
-            flightCabinClass.setFare(tempFare);
-            tempFare.setFlightCabinClass(flightCabinClass);
-            
-        }
-        
         for (FlightSchedule fs: fsList) {
-            FlightSchedule managedFS = flightSchedulePlanSessionBeanLocal.retrieveFlightScheduleById(fs.getId());
-            managedFS.setFlightCabinClass(newFCCList);
+            fs.setFlightSchedulePlan(fsp);
         }
-
+        fsp.setFlightSchedule(fsList);
         
+        for (Fare f: fareList) {
+            f.setFlightSchedulePlan(fsp);
+        }
         
-        
-        System.out.println("fsp: " + managedFlight.getFlightSchedulePlan().getId());
-        
-//        for (FlightSchedule fs: fsList) {
-//            if (fs.getCabinClass().size() != 0){
-//                for (CabinClass cc: fs.getCabinClass()) {
-//                    System.out.print(cc.getType());
-//                }
-//            }
-//        }
     }
     
     public List<FlightCabinClass> viewSeatsInventory(Long fsId) {

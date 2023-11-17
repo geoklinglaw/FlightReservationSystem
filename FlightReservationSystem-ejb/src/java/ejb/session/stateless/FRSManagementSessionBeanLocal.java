@@ -52,7 +52,9 @@ public interface FRSManagementSessionBeanLocal {
     
     public Flight viewSpecificFlight(String flightNum);
     
-    public void createFlightScheduleAndPlan(List<FlightSchedule> fsList, FlightSchedulePlan fsp, Flight flight, List<Fare> fareList, List<FlightCabinClass> fccList);
+    public void createFlightCabinClassSeats(List<FlightCabinClass> fccList);
+
+    public void createFlightScheduleAndPlan(List<FlightSchedule> fsList, FlightSchedulePlan fsp, Flight flight, List<Fare> fareList, List<List<FlightCabinClass>> fccList);
     
     public List<FlightSchedulePlan> viewAllFlightSchedulePlan();
     
@@ -61,5 +63,8 @@ public interface FRSManagementSessionBeanLocal {
     public Flight retrieveFlightByNumber(String flightNum);
     
     public FlightCabinClass viewCabinClass(Long fsId, Long ccId);
+    
+    
+
 
 }

@@ -342,6 +342,8 @@ public class ScheduleManagerTask {
         long seconds = totalMinutes * 60;
         Duration duration = Duration.ofSeconds(seconds);
         
+        List<List<FlightCabinClass>> flightccList = new ArrayList<List<FlightCabinClass>>();
+
         List<FlightCabinClass> fccList = new ArrayList<FlightCabinClass>();
         for (CabinClass cc: ccList) {
             BigDecimal maxSeats = cc.getSeatingCapacity();
@@ -356,23 +358,19 @@ public class ScheduleManagerTask {
         Date arrTime = computeArrivalTime(date,duration);
         flightSch.setArrivalTime(arrTime);
         flightSch.setFlightDuration(duration);
-        flightSch.setFlightCabinClass(fccList);
         
         FlightSchedulePlan singleFsp = new SinglePlan();
         singleFsp.setType(FlightScheduleStatus.ACTIVE);
         singleFsp.setFlight(flight);
         List<FlightSchedule> fsList = new ArrayList<FlightSchedule>();
         fsList.add(flightSch);
-        singleFsp.setFlightSchedule(fsList);
-        flightSch.setFlightSchedulePlan(singleFsp);
-        singleFsp.setFare(fare);
+//        singleFsp.setFlightSchedule(fsList);
+//        flightSch.setFlightSchedulePlan(singleFsp);
+//        singleFsp.setFare(fare);
         
-        for (int i = 0; i < fare.size(); i++) {
-            fare.get(i).setFlightSchedulePlan(singleFsp);
-            fare.get(i).setFlightCabinClass(fccList.get(i));
-        }
+
         
-        createPersistAll(fsList, singleFsp, flight, fare, fccList);
+        createPersistAll(fsList, singleFsp, flight, fare, flightccList);
     }
     
     private void createMultipleFSP(Scanner sc, Flight flight, List<CabinClass> ccList, List<Fare> fare) {
@@ -385,14 +383,7 @@ public class ScheduleManagerTask {
         multipleFsp.setType(FlightScheduleStatus.ACTIVE);
         multipleFsp.setFlight(flight);
         
-        List<FlightCabinClass> fccList = new ArrayList<FlightCabinClass>();
-        for (CabinClass cc: ccList) {
-            BigDecimal maxSeats = cc.getSeatingCapacity();
-            FlightCabinClass fcc = new FlightCabinClass(maxSeats, maxSeats, maxSeats);
-            fcc.setCabinClass(cc);
-            fccList.add(fcc);
-        }
-        
+        List<List<FlightCabinClass>> flightccList = new ArrayList<List<FlightCabinClass>>();
         for (int i = 0; i < num; i ++) {
             if (i > 0) {
                 System.out.println(); 
@@ -411,41 +402,29 @@ public class ScheduleManagerTask {
             long seconds = totalMinutes * 60;
             Duration duration = Duration.ofSeconds(seconds);
 
+            List<FlightCabinClass> fccList = new ArrayList<FlightCabinClass>();
+            for (CabinClass cc: ccList) {
+                BigDecimal maxSeats = cc.getSeatingCapacity();
+                FlightCabinClass fcc = new FlightCabinClass(maxSeats, maxSeats, maxSeats);
+                fcc.setCabinClass(cc);
+                fccList.add(fcc);
+            }
+            
+            flightccList.add(fccList);
             FlightSchedule flightSch = new FlightSchedule();
             flightSch.setDepartureTime(date);
             flightSch.setFlightDuration(duration);
             Date arrTime = computeArrivalTime(date,duration);
             flightSch.setArrivalTime(arrTime);
             flightSch.setFlightDuration(duration);
-            flightSch.setFlightCabinClass(fccList);
             fsList.add(flightSch);
-            flightSch.setFlightSchedulePlan(multipleFsp);
         }
 
-        multipleFsp.setFlightSchedule(fsList);
-        multipleFsp.setFare(fare);
-        
-        for (int i = 0; i < fare.size(); i++) {
-            fare.get(i).setFlightSchedulePlan(multipleFsp);
-            fare.get(i).setFlightCabinClass(fccList.get(i));
-        }
-        
-        multipleFsp.setFlightSchedule(fsList);
-        multipleFsp.setFare(fare);
-        createPersistAll(fsList, multipleFsp, flight, fare, fccList);
-
+        createPersistAll(fsList, multipleFsp, flight, fare, new ArrayList<>(flightccList));
     }
     
 
     private void createRecurrentNFSP(Scanner sc, Flight flight, List<CabinClass> ccList, List<Fare> fare) {
-        
-        List<FlightCabinClass> fccList = new ArrayList<FlightCabinClass>();
-        for (CabinClass cc: ccList) {
-            BigDecimal maxSeats = cc.getSeatingCapacity();
-            FlightCabinClass fcc = new FlightCabinClass(maxSeats, maxSeats, maxSeats);
-            fcc.setCabinClass(cc);
-            fccList.add(fcc);
-        }
         
         System.out.print("FOR RECURRENT N SCHEDULE --- ");
         System.out.print("\nEnter frequency > ");
@@ -481,6 +460,7 @@ public class ScheduleManagerTask {
         recNFsp.setEndDate(endFormattedDate);
         
         List<FlightSchedule> fsList = new ArrayList<FlightSchedule>();
+        List<List<FlightCabinClass>> flightccList = new ArrayList<List<FlightCabinClass>>();
             
         int index = 1;
         System.out.println("\n\nFlight Routes created: ");
@@ -489,39 +469,30 @@ public class ScheduleManagerTask {
             Date formattedDate = Date.from(dateTime.atZone(ZoneId.systemDefault()).toInstant());
             System.out.println(index + ": "+ dateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
             index += 1;
-
+            
+            List<FlightCabinClass> fccList = new ArrayList<FlightCabinClass>();
+            for (CabinClass cc: ccList) {
+                BigDecimal maxSeats = cc.getSeatingCapacity();
+                FlightCabinClass fcc = new FlightCabinClass(maxSeats, maxSeats, maxSeats);
+                fcc.setCabinClass(cc);
+                fccList.add(fcc);
+            }
+            
+            flightccList.add(fccList);
             FlightSchedule flightSch = new FlightSchedule();
             flightSch.setDepartureTime(formattedDate);
             flightSch.setFlightDuration(duration);
             Date arrTime = computeArrivalTime(formattedDate,duration);
             flightSch.setArrivalTime(arrTime);
             flightSch.setFlightDuration(duration);
-            flightSch.setFlightCabinClass(fccList);
             fsList.add(flightSch);
-            flightSch.setFlightSchedulePlan(recNFsp);
-
-        }
-
-        for (int i = 0; i < fare.size(); i++) {
-            fare.get(i).setFlightSchedulePlan(recNFsp);
-            fare.get(i).setFlightCabinClass(fccList.get(i));
+           
         }
         
-        recNFsp.setFlightSchedule(fsList);
-        recNFsp.setFare(fare);
-        createPersistAll(fsList, recNFsp, flight, fare, fccList);
-
+        createPersistAll(fsList, recNFsp, flight, fare, flightccList);
     }
     
     private void createRecurrentWeeklyFSP(Scanner sc, Flight flight, List<CabinClass> ccList, List<Fare> fare) {
-        
-        List<FlightCabinClass> fccList = new ArrayList<FlightCabinClass>();
-        for (CabinClass cc: ccList) {
-            BigDecimal maxSeats = cc.getSeatingCapacity();
-            FlightCabinClass fcc = new FlightCabinClass(maxSeats, maxSeats, maxSeats);
-            fcc.setCabinClass(cc);
-            fccList.add(fcc);
-        }
         
         System.out.print("FOR RECURRENT WEEKLY SCHEDULE --- ");
         System.out.print("\nEnter dayOfWeek (1=Monday, 7=Sunday) > ");
@@ -557,6 +528,7 @@ public class ScheduleManagerTask {
         recWFsp.setEndDate(endFormattedDate);
         
         List<FlightSchedule> fsList = new ArrayList<FlightSchedule>();
+        List<List<FlightCabinClass>> flightccList = new ArrayList<List<FlightCabinClass>>();
             
         int index = 1;
         System.out.println("\n\nFlight Routes created: ");
@@ -566,31 +538,31 @@ public class ScheduleManagerTask {
             System.out.println("DateTime: " + dateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
             index += 1;
 
+            List<FlightCabinClass> fccList = new ArrayList<FlightCabinClass>();
+            for (CabinClass cc: ccList) {
+                BigDecimal maxSeats = cc.getSeatingCapacity();
+                FlightCabinClass fcc = new FlightCabinClass(maxSeats, maxSeats, maxSeats);
+                fcc.setCabinClass(cc);
+                fccList.add(fcc);
+            }
+            
+            flightccList.add(fccList);
             FlightSchedule flightSch = new FlightSchedule();
             flightSch.setDepartureTime(formattedDate);
             flightSch.setFlightDuration(duration);
             Date arrTime = computeArrivalTime(formattedDate,duration);
             flightSch.setArrivalTime(arrTime);
             flightSch.setFlightDuration(duration);
-            flightSch.setFlightCabinClass(fccList);
             fsList.add(flightSch);
-            flightSch.setFlightSchedulePlan(recWFsp);
            
         }
         
-        for (int i = 0; i < fare.size(); i++) {
-            fare.get(i).setFlightSchedulePlan(recWFsp);
-            fare.get(i).setFlightCabinClass(fccList.get(i));
-        }
-        
-        recWFsp.setFlightSchedule(fsList);
-        recWFsp.setFare(fare);
         recWFsp.setDayOfWeek(new BigDecimal(dayOfWeekInt));
-        createPersistAll(fsList, recWFsp, flight, fare, fccList);
+        createPersistAll(fsList, recWFsp, flight, fare, flightccList);
     }
     
-    private void createPersistAll(List<FlightSchedule> fsList, FlightSchedulePlan fsp, Flight flight, List<Fare> fareList, List<FlightCabinClass> fccList) {
-        FRSManagementSessionBeanRemote.createFlightScheduleAndPlan(fsList, fsp, flight, fareList, fccList);
+    private void createPersistAll(List<FlightSchedule> fsList, FlightSchedulePlan fsp, Flight flight, List<Fare> fareList, List<List<FlightCabinClass>>  FCCList) {
+        FRSManagementSessionBeanRemote.createFlightScheduleAndPlan(fsList, fsp, flight, fareList, FCCList);
     }
     
     

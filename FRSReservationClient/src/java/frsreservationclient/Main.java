@@ -441,7 +441,7 @@ public class Main {
             }
             System.out.println("SELECTED FCC ID" + fcc.getId());
             
-            Fare fare = selectedFS.getFlightSchedulePlan().getFare().get(index);
+            Fare fare = fcc.getFare();
             double total = fare.getFareAmount().doubleValue() * numPass;
             fsText += "Flight " + selectedFS.getFlightSchedulePlan().getFlight().getFlightNumber() + " " + cabinType.name() + " $" + fare.getFareAmount() + "x" + numPass + " = " +  total + "\n";
             fsText += "Departing from " + fr.getOrigin().getCountry() + "("  + fr.getOrigin().getAirportCode() + ") on " + selectedFS.getDepartureTime() + "\n";
@@ -487,12 +487,12 @@ public class Main {
 
 
                 for (FlightSchedule fs : fsList) {
-                    List<CabinClass> ccList = fs.getFlightSchedulePlan().getFlight().getAircraftConfig().getCabinClassList();
-                    for (int i = 0; i < ccList.size(); i++) {
+                    List<FlightCabinClass> fccList = fs.getFlightCabinClass();
+                    for (int i = 0; i < fccList.size(); i++) {
                         // Loop through to print out the preferred cabin class type first
-                        if (ccList.get(i).getType().equals(cabinType)) {
+                        if (fccList.get(i).getCabinClass().getType().equals(cabinType)) {
                             String flightNumber = fs.getFlightSchedulePlan().getFlight().getFlightNumber();
-                            BigDecimal fareAmount = fs.getFlightSchedulePlan().getFare().get(i).getFareAmount();
+                            BigDecimal fareAmount = fccList.get(i).getFare().getFareAmount();
                             String departureTime = new SimpleDateFormat("EEE, MMM dd, yyyy, hh:mm a").format(fs.getDepartureTime());
                             String arrivalTime = new SimpleDateFormat("EEE, MMM dd, yyyy, hh:mm a").format(fs.getArrivalTime());
                             double durationInHours = fs.getFlightDuration();
@@ -508,9 +508,9 @@ public class Main {
                     }
 
                     // Loop again to print out the remaining cabin class types
-                    for (int i = 0; i < ccList.size(); i++) {
+                    for (int i = 0; i < fccList.size(); i++) {
                         // 
-                        if (!ccList.get(i).getType().equals(cabinType)) {
+                        if (!fccList.get(i).getCabinClass().getType().equals(cabinType)) {
                             String flightNumber = fs.getFlightSchedulePlan().getFlight().getFlightNumber();
                             BigDecimal fareAmount = fs.getFlightSchedulePlan().getFare().get(i).getFareAmount();
                             String departureTime = new SimpleDateFormat("EEE, MMM dd, yyyy, hh:mm a").format(fs.getDepartureTime());
