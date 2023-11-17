@@ -393,12 +393,15 @@ public class Main {
             if (tripType == 1 && flightType == 1) {
 
                 List<List<FlightSchedule>> listofFSList = flightReservationSystemSessionBeanRemote.searchFlightsOneWay(startDate, cabinType, originCode, destCode);
+                System.out.printf(ANSI_BLUE + "\n\n                                              FROM " + originCode + " TO " + destCode + ANSI_RESET);
                 handleOneWayFlight(listofFSList, tripType, originCode, destCode, startDate, numPass, cabinType, mapOne);
                 printSelectedFlightSchedule(sc, mapOne, numPass);
             } else if (tripType == 2 && flightType == 1) {
                 List<List<FlightSchedule>> listofFSList = flightReservationSystemSessionBeanRemote.searchFlightsOneWay(startDate, cabinType, originCode, destCode);
+                System.out.printf(ANSI_BLUE + "\n\n                                              FROM " + originCode + " TO " + destCode + ANSI_RESET);
                 handleOneWayFlight(listofFSList, tripType, originCode, destCode, startDate, numPass, cabinType, mapOne);
                 printSelectedFlightSchedule(sc, mapOne, numPass);
+                System.out.printf(ANSI_BLUE + "\n\n                                              FROM " + destCode + " TO " + originCode + ANSI_RESET);
                 handleOneWayFlight(listofFSList, tripType, destCode, originCode, endDate, numPass, cabinType, mapTwo);
                 printSelectedFlightSchedule(sc, mapTwo, numPass);
             }
