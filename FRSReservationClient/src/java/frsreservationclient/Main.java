@@ -414,26 +414,44 @@ public class Main {
             int id = sc.nextInt();
             Long fsId = new Long(id);
             Integer index = map.get(fsId);
-            
+            System.out.print("\n");
+
+            for (CabinClassType cabinClass : CabinClassType.values()) {
+                System.out.println(cabinClass + " " + cabinClass.getValue());
+            }
+            sc.nextLine();
+            System.out.print("Select Cabin Class > ");
+            String ccType = sc.nextLine().trim();
+            CabinClassType cabinType = CabinClassType.fromValue(ccType);
+
             FlightSchedule selectedFS = flightReservationSystemSessionBeanRemote.findFS(fsId);
             String fsText = "\n*** Selected Flight Information *** \n";
             FlightRoute fr = selectedFS.getFlightSchedulePlan().getFlight().getFlightRoute();
             CabinClass cc = selectedFS.getFlightSchedulePlan().getFlight().getAircraftConfig().getCabinClassList().get(index);
+            
+            List<FlightCabinClass> fccList = selectedFS.getFlightCabinClass(); // size is 0?
+            FlightCabinClass fcc = null;
+            for (int i = 0; i < fccList.size(); i++) {
+                FlightCabinClass tempFCC = fccList.get(i);
+                if (tempFCC.getCabinClass().getType().equals(cabinType)) {
+                    fcc = tempFCC;
+
+                }
+            }
+            
             Fare fare = selectedFS.getFlightSchedulePlan().getFare().get(index);
             double total = fare.getFareAmount().doubleValue() * numPass;
-            fsText += "Flight " + selectedFS.getFlightSchedulePlan().getFlight().getFlightNumber() + " " + cc.getType() + " $" + fare.getFareAmount() + "x" + numPass + " = " +  total + "\n";
+            fsText += "Flight " + selectedFS.getFlightSchedulePlan().getFlight().getFlightNumber() + " " + cabinType.name() + " $" + fare.getFareAmount() + "x" + numPass + " = " +  total + "\n";
             fsText += "Departing from " + fr.getOrigin().getCountry() + "("  + fr.getOrigin().getAirportCode() + ") on " + selectedFS.getDepartureTime() + "\n";
             fsText += "Arriving at " + fr.getDestination().getCountry() + "(" + fr.getDestination().getAirportCode() + ") on " + selectedFS.getArrivalTime() + "\n";
             fsText += "**************************************";
             
             fsText += "\n\nEnter 'Y' to proceed to select your seats > ";
             System.out.print(fsText);
-            
-            sc.nextLine();
             String ans = sc.nextLine().trim();
             
             if (ans.equals("Y")) {
-                FlightCabinClass flightCabinClass = viewSeats(fsId, cc.getFlightCabinClass().getId());
+                FlightCabinClass flightCabinClass = viewSeats(fsId, fcc.getId());
                 System.out.print("Select " + numPass + " seat(s) by entering the seat number ('11A'): \n");
                 List<String> seatNumList = new ArrayList<>();
                 for (int i = 0; i < numPass; i++) {
@@ -460,10 +478,10 @@ public class Main {
             List<FlightSchedule> fsList = listofFSList.get(index);
             System.out.printf(ANSI_BLUE + "\n\n                                   == %d DAY(S) BEFORE REQUESTED DATE ==\n" + ANSI_RESET, index);
             if (fsList.isEmpty()) {
-                System.out.println("No flights found.");
+                System.out.println("No flights found ! \n");
             } else {
-                System.out.printf("%-4s %-10s %-10s %2s %4s %-40s %-27s %-15s\n", 
-                    "No", "Flight", "Cabin Class", "Single Fare", "Total Fare", "       Departure", "Arrival", "Duration");
+                System.out.printf("%-4s %-12s %-16s %5s %10s %-30s %-30s %-15s\n", 
+                    "No", "Flight", "Cabin Class", "$$/pax", "Total $$", "     Departure", "Arrival", "Duration");
 
 
                 for (FlightSchedule fs : fsList) {
@@ -481,8 +499,9 @@ public class Main {
                             map.put(fs.getId(), i);
                             CabinClass cc = fs.getFlightSchedulePlan().getFlight().getAircraftConfig().getCabinClassList().get(i);;
                             double totalFare = fareAmount.doubleValue() * numPass;
-                            System.out.printf("%-4d %-12s %-10s $%8.2f $%8.2f      %-30s %-30s %d hrs %d mins\n", 
-                                fs.getId(), flightNumber, cc.getType(), fareAmount, totalFare, departureTime, arrivalTime, hours, minutes);
+                            System.out.printf("%-4d %-12s %-16s $%7.2f $%7.2f %-30s %-30s %d hrs %d mins\n", 
+                                fs.getId(), flightNumber, cc.getType().toString(), fareAmount, totalFare, departureTime, arrivalTime, hours, minutes);
+
                         }
                     }
 
@@ -500,7 +519,8 @@ public class Main {
                             map.put(fs.getId(), i);
                             CabinClass cc = fs.getFlightSchedulePlan().getFlight().getAircraftConfig().getCabinClassList().get(i);;
                             double totalFare = fareAmount.doubleValue() * numPass;
-                            System.out.printf("%-2d %-10s %-15s $%-3.2f $%-3.2f %-20s %-20s %d hrs %d mins\n", fs.getId(), flightNumber, cc.getType(), fareAmount, totalFare, departureTime, arrivalTime, hours, minutes);
+                            System.out.printf("%-4d %-12s %-16s $%7.2f $%7.2f %-30s %-30s %d hrs %d mins\n", 
+                                fs.getId(), flightNumber, cc.getType().toString(), fareAmount, totalFare, departureTime, arrivalTime, hours, minutes);
                         }
                     }
                 }

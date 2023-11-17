@@ -47,8 +47,8 @@ public class CabinClass implements Serializable {
     private AircraftConfiguration aircraftConfig;
     
     
-    @OneToOne(mappedBy = "cabinClass")
-    private FlightCabinClass flightCabinClass;
+    @OneToMany(mappedBy = "cabinClass")
+    private List<FlightCabinClass> flightCabinClass;
     
     public CabinClass() {
 //        this.flightSchedule = new ArrayList<>()
@@ -203,16 +203,18 @@ public class CabinClass implements Serializable {
     /**
      * @return the flightCabinClass
      */
-    public FlightCabinClass getFlightCabinClass() {
+    public List<FlightCabinClass> getFlightCabinClass() {
         return flightCabinClass;
     }
 
     /**
      * @param flightCabinClass the flightCabinClass to set
      */
-    public void setFlightCabinClass(FlightCabinClass flightCabinClass) {
+    public void setFlightCabinClass(List<FlightCabinClass> flightCabinClass) {
         this.flightCabinClass = flightCabinClass;
     }
+
+
 
     /**
      * @return the fare

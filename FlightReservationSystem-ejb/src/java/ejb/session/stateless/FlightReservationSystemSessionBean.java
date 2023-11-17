@@ -48,7 +48,8 @@ public class FlightReservationSystemSessionBean implements FlightReservationSyst
     @EJB
     private FareEntitySessionBeanLocal fareEntitySessionBean;
     
-    
+
+    @Override
     public List<List<FlightSchedule>> searchFlightsOneWay(Date startDate, CabinClassType ccType, String originCode, String destCode) {
         System.out.println("entered searchFlightsOneWay");
         List<List<FlightSchedule>> combinedList = new ArrayList<List<FlightSchedule>>();
@@ -129,6 +130,14 @@ public class FlightReservationSystemSessionBean implements FlightReservationSyst
     public List<FlightSchedule> searchFlightsByDays(Date startDate, CabinClassType ccType, String originCode, String destCode, int daysBefore) {
 
         List <FlightRoute> routes = flightRouteSessionBeanLocal.viewAllFlightRoute();
+        
+        for (FlightRoute r: routes) {
+            System.out.println("printing flight ");
+            for (Flight f: r.getFlightList()){ 
+                System.out.println("printing flight " + f.getFlightNumber());
+
+            }
+        }
         List <FlightRoute> selectedRoutes = new ArrayList<FlightRoute>();
         List <Flight> flightListWithFSP = new ArrayList<Flight>();
         System.out.println(startDate + " " + ccType + " " + originCode + " " + destCode + " " + daysBefore);
@@ -139,7 +148,9 @@ public class FlightReservationSystemSessionBean implements FlightReservationSyst
 
             if (r.getOrigin().getAirportCode().equals(originCode) && r.getDestination().getAirportCode().equals(destCode)) {
                 selectedRoutes.add(r);
-                System.out.println("entered here selected routes");
+                System.out.println("entered here selected routes");                
+                System.out.println("FLIGHT " + r.getFlightList().size());
+
 
                 
                 for (Flight flight: r.getFlightList()) {
@@ -159,7 +170,7 @@ public class FlightReservationSystemSessionBean implements FlightReservationSyst
         calendar.setTime(startDate);
         calendar.add(Calendar.DAY_OF_MONTH, -daysBefore);
         Date targetDate = calendar.getTime(); // This is the specific date we are interested in
-
+            
         
         List<FlightSchedule> resultSchedules = new ArrayList<>();
 
@@ -170,6 +181,9 @@ public class FlightReservationSystemSessionBean implements FlightReservationSyst
             query.setParameter("targetDateStart", getStartOfDay(targetDate));
             query.setParameter("targetDateEnd", getStartOfNextDay(targetDate));
             List<FlightSchedule> fsList = (List<FlightSchedule>) query.getResultList();
+            
+            System.out.println("fs list size " + fsList.size());
+
             
             for (FlightSchedule fs: fsList) {
                 int size = fs.getFlightSchedulePlan().getFlight().getAircraftConfig().getCabinClassList().size();
@@ -219,6 +233,8 @@ public class FlightReservationSystemSessionBean implements FlightReservationSyst
         FlightSchedule fs = flightSchedulePlanSessionBeanLocal.retrieveFlightScheduleById(id);
         int size = fs.getFlightSchedulePlan().getFlight().getAircraftConfig().getCabinClassList().size();
         int size2 = fs.getFlightSchedulePlan().getFare().size();
+        int size3 = fs.getFlightCabinClass().size();
+        System.out.println("flight cabin class size " + size3);
         
         return fs;
     }

@@ -94,19 +94,60 @@ public class FRSManagementSessionBean implements FRSManagementSessionBeanRemote,
         return aircraftConfigList;
     }
     
+//    @Override
+//    public FlightCabinClass createSeatsPerCabinClass(FlightCabinClass fcc) {
+//        
+//        String[] charArr = new String[]{"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L"};
+//        List<Seat> seatList = new ArrayList<>();
+//        int numRows = fcc.getCabinClass().getNumRows().intValue();
+//        int numAisle = fcc.getCabinClass().getNumAisles().intValue();
+//
+//        String seatConfig = fcc.getCabinClass().getSeatConfig();
+//        int seatAbreast = fcc.getCabinClass().getNumSeatAbreast().intValue();
+//
+//        // Split the seat configuration to identify aisles
+//        String[] seatConfigParts = seatConfig.split("-");
+//        FlightCabinClass newFCC = null;
+//        Long fccID = cabinClassSessionBeanLocal.createNewFlightCabinClass(fcc);
+//        
+//        if (fccID == null) {
+//            System.out.println("fccID is null");
+//        } else {
+//            newFCC = cabinClassSessionBeanLocal.retrieveFlightCabinClassById(fccID);
+//        }
+//        
+//        for (int row = 1; row <= numRows; row++) {
+//            int seatCounter = 0;
+//            for (int part = 0; part < seatConfigParts.length; part++) {
+//                int seatsInPart = Integer.parseInt(seatConfigParts[part]);
+//                for (int seat = 0; seat < seatsInPart; seat++) {
+//                    String seatName = row + charArr[seatCounter++];
+//                    Seat seatObj = new Seat(seatName, 0); 
+//                    seatObj.setFlightCabinClass(newFCC);
+//                    seatEntitySessionBeanLocal.createNewSeat(seatObj);
+//                    seatList.add(seatObj);
+//                }
+//                if (part < seatConfigParts.length - 1) {
+//                    seatCounter++; 
+//                }
+//            }
+//        }
+//        
+//        newFCC.setSeatList(seatList);
+//        return newFCC;
+//    }
+    
     @Override
     public FlightCabinClass createSeatsPerCabinClass(FlightCabinClass fcc) {
-        
         String[] charArr = new String[]{"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L"};
         List<Seat> seatList = new ArrayList<>();
         int numRows = fcc.getCabinClass().getNumRows().intValue();
         String seatConfig = fcc.getCabinClass().getSeatConfig();
-        int seatAbreast = fcc.getCabinClass().getNumSeatAbreast().intValue();
 
         // Split the seat configuration to identify aisles
         String[] seatConfigParts = seatConfig.split("-");
-        FlightCabinClass newFCC = null;
         Long fccID = cabinClassSessionBeanLocal.createNewFlightCabinClass(fcc);
+        FlightCabinClass newFCC = null;
         if (fccID == null) {
             System.out.println("fccID is null");
         } else {
@@ -114,25 +155,25 @@ public class FRSManagementSessionBean implements FRSManagementSessionBeanRemote,
         }
         
         for (int row = 1; row <= numRows; row++) {
-            int seatCounter = 0;
-            for (int part = 0; part < seatConfigParts.length; part++) {
-                int seatsInPart = Integer.parseInt(seatConfigParts[part]);
+            int seatCounter = 0; // Reset seat counter for each row
+            for (String seatsInPartStr : seatConfigParts) {
+                int seatsInPart = Integer.parseInt(seatsInPartStr);
                 for (int seat = 0; seat < seatsInPart; seat++) {
                     String seatName = row + charArr[seatCounter++];
-                    Seat seatObj = new Seat(seatName, 0); 
+                    Seat seatObj = new Seat(seatName, 0);
                     seatObj.setFlightCabinClass(newFCC);
                     seatEntitySessionBeanLocal.createNewSeat(seatObj);
                     seatList.add(seatObj);
                 }
-                if (part < seatConfigParts.length - 1) {
-                    seatCounter++; 
-                }
+                // Increase the seatCounter to skip the aisle
+                seatCounter = Math.min(seatCounter, charArr.length - 1); // Prevent going out of bounds
             }
         }
-        
+
         newFCC.setSeatList(seatList);
         return newFCC;
     }
+
 
     
     public List<Airport> viewAllAirports() {
@@ -322,6 +363,12 @@ public class FRSManagementSessionBean implements FRSManagementSessionBeanRemote,
             tempFare.setFlightCabinClass(flightCabinClass);
             
         }
+        
+        for (FlightSchedule fs: fsList) {
+            FlightSchedule managedFS = flightSchedulePlanSessionBeanLocal.retrieveFlightScheduleById(fs.getId());
+            managedFS.setFlightCabinClass(newFCCList);
+        }
+
         
         
         

@@ -36,7 +36,7 @@ public class FlightCabinClass implements Serializable {
     @Column(nullable = false)
     private BigDecimal numBalanceSeats;
     
-    @OneToOne
+    @ManyToOne
     private CabinClass cabinClass;
     
     @ManyToOne 
