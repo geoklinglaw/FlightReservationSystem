@@ -15,7 +15,7 @@ import javax.ejb.Remote;
 @Remote
 public interface FlightSessionBeanRemote {
     
-    public void createNewFlight(Flight flight);
+    public Long createNewFlight(Flight flight);
     
     public List<Flight> viewAllFlight();
     

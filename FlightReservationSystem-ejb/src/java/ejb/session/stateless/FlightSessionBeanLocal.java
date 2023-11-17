@@ -15,7 +15,7 @@ import javax.ejb.Local;
 @Local
 public interface FlightSessionBeanLocal {
     
-    public void createNewFlight(Flight flight);
+    public Long createNewFlight(Flight flight);
     
     public List<Flight> viewAllFlight();
     

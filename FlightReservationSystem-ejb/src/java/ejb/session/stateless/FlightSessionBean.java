@@ -29,8 +29,10 @@ public class FlightSessionBean implements FlightSessionBeanRemote, FlightSession
     private EntityManager em;
 
     @Override
-    public void createNewFlight(Flight flight) {
+    public Long createNewFlight(Flight flight) {
         em.persist(flight);
+        em.flush();
+        return flight.getId();
     }
     
     public List<Flight> viewAllFlight() {

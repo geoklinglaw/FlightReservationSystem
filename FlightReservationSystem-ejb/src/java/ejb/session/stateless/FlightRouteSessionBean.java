@@ -52,6 +52,7 @@ public class FlightRouteSessionBean implements FlightRouteSessionBeanRemote, Fli
     
     public FlightRoute retrieveFlightRouteById(Long id) {
         FlightRoute route = em.find(FlightRoute.class, id);
+        int size = route.getFlightList().size();
         
         return route;
     }

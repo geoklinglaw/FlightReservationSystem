@@ -430,14 +430,16 @@ public class Main {
             CabinClass cc = selectedFS.getFlightSchedulePlan().getFlight().getAircraftConfig().getCabinClassList().get(index);
             
             List<FlightCabinClass> fccList = selectedFS.getFlightCabinClass(); // size is 0?
+            System.out.println("FCC size" + fccList.size());
+
             FlightCabinClass fcc = null;
             for (int i = 0; i < fccList.size(); i++) {
                 FlightCabinClass tempFCC = fccList.get(i);
                 if (tempFCC.getCabinClass().getType().equals(cabinType)) {
                     fcc = tempFCC;
-
                 }
             }
+            System.out.println("SELECTED FCC ID" + fcc.getId());
             
             Fare fare = selectedFS.getFlightSchedulePlan().getFare().get(index);
             double total = fare.getFareAmount().doubleValue() * numPass;

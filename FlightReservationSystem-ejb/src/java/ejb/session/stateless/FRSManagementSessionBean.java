@@ -269,7 +269,9 @@ public class FRSManagementSessionBean implements FRSManagementSessionBeanRemote,
         flight.setFlightRoute(route);
         flight.setAircraftConfig(config);
         
-        flightSessionBeanLocal.createNewFlight(flight);
+        Long flightID = flightSessionBeanLocal.createNewFlight(flight);
+        Flight managedFlight = flightSessionBeanLocal.retrieveFlightById(flightID);
+        route.getFlightList().add(managedFlight);
         
 
     }
@@ -396,7 +398,7 @@ public class FRSManagementSessionBean implements FRSManagementSessionBeanRemote,
     }
 
     public FlightCabinClass viewCabinClass(Long fsId, Long fccId) {
-       FlightSchedule fs = flightSchedulePlanSessionBeanLocal.retrieveFlightScheduleById(fsId);
+//       FlightSchedule fs = flightSchedulePlanSessionBeanLocal.retrieveFlightScheduleById(fsId);
        FlightCabinClass managedFCC = cabinClassSessionBeanLocal.retrieveFlightCabinClassById(fccId, true);
        int size = managedFCC.getSeatList().size();
        
