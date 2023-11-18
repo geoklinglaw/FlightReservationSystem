@@ -30,7 +30,7 @@ import util.enumeration.AircraftName;
 @NamedQueries({
     @NamedQuery(
         name = "viewAllAircraftConfigurations",
-        query = "SELECT acc FROM AircraftConfiguration acc"
+        query = "SELECT acc FROM AircraftConfiguration acc ORDER BY acc.name, acc.aircraftType.name ASC"
     )
 
 })
