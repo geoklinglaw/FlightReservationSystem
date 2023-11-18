@@ -46,7 +46,6 @@ public interface FRSManagementSessionBeanLocal {
 
     public List<Flight> viewAllFlight();
     
-    public Flight updateFlight(String flightNum, int routeId, int configId);
     
     public void deleteFlight(String flightNum);
     
@@ -72,10 +71,23 @@ public interface FRSManagementSessionBeanLocal {
     
     public List<Flight> checkComplementaryFlightExistence(Airport origin, Airport destination, Long configId);
     
+    public FlightSchedulePlan updateFaresFSP(FlightSchedulePlan fsp, List<Fare> newFarelist);
     
 
+    public FlightSchedulePlan retrieveFlightSchedulePlan(Long id);
     
+    public FlightSchedule MakeNewFS(FlightSchedulePlan fsp, FlightSchedule fs, List<FlightCabinClass> fccList, List<Fare> fareList);
     
-
+    public FlightSchedule retrieveFlightScheduleById(Long id);
+    
+    public Flight changeFlightNumber(Flight chosenFlight, String oldFNum);
+    
+    public Flight updateFlight(Flight chosenFlight, String oldFNum, int routeId);
+    
+    public Flight updateFlight(Flight chosenFlight, String oldFNum, int routeId, int configId);
+    
+    public FlightSchedule updateFlightSchedule(FlightSchedule oldFs);
+    
+    public void deleteFS(Long id);
 
 }

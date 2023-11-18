@@ -23,6 +23,9 @@ public interface FlightSchedulePlanSessionBeanRemote {
     public List<FlightSchedulePlan> viewAllFlightSchedulePlan();
 
     public FlightSchedule retrieveFlightScheduleById(Long id);
+    
+    public void deleteFlightSchedule(FlightSchedule fs);
+
 
 
     

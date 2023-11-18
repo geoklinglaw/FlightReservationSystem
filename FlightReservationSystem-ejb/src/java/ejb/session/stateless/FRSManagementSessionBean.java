@@ -255,24 +255,6 @@ public class FRSManagementSessionBean implements FRSManagementSessionBeanRemote,
         return fspList;
     }
     
-    public Flight updateFlight(String flightNum, int routeId, int configId) {
-        
-        Flight managedFlight = flightSessionBeanLocal.retrieveFlightByNumber(flightNum);
-        
-        if (routeId != 0) {
-            Long routeID = new Long(routeId);
-            FlightRoute route = flightRouteSessionBeanLocal.retrieveFlightRouteById(routeID);
-            managedFlight.setFlightRoute(route);
-        }
-        
-        if (configId != 0) {
-            Long configID = new Long(configId);
-            AircraftConfiguration config = aircraftConfigurationSessionBean.retrieveAircraftConfigurationById(configID);
-            managedFlight.setAircraftConfig(config);
-        }
-        
-        return managedFlight;
-    }
     
     public void deleteFlight(String flightNum) {
         Flight managedFlight = flightSessionBeanLocal.retrieveFlightByNumber(flightNum);
@@ -489,5 +471,132 @@ public class FRSManagementSessionBean implements FRSManagementSessionBeanRemote,
         return selectedFlights;
     }
     
+    public Flight changeFlightNumber(Flight chosenFlight, String oldFNum) {
+        Flight flight = flightSessionBeanLocal.retrieveFlightByNumber(oldFNum);
+        flight.setFlightNumber(chosenFlight.getFlightNumber());
+        
+        return flight;
+    }
+    
+    public Flight updateFlight(Flight chosenFlight, String oldFNum, int routeId) {
+        Flight managedFlight = flightSessionBeanLocal.retrieveFlightByNumber(oldFNum);
+        
+        Long routeID = new Long(routeId);
+        FlightRoute route = flightRouteSessionBeanLocal.retrieveFlightRouteById(routeID);
+        managedFlight.setFlightRoute(route);
+        managedFlight.setFlightNumber(chosenFlight.getFlightNumber());
+        
+        return managedFlight;
+    }
+       
+    public Flight updateFlight(Flight chosenFlight, String oldFNum, int routeId, int configId) {
+        Flight managedFlight = flightSessionBeanLocal.retrieveFlightByNumber(oldFNum);
+        Long routeID = new Long(routeId);
+        FlightRoute route = flightRouteSessionBeanLocal.retrieveFlightRouteById(routeID);
+        managedFlight.setFlightRoute(route);
+        managedFlight.setFlightNumber(chosenFlight.getFlightNumber());
+        
+        return managedFlight;
+        
+    }
+    
+    public FlightSchedulePlan retrieveFaresFSP(FlightSchedulePlan fsp) {
+        FlightSchedulePlan newFSP = flightSchedulePlanSessionBeanLocal.retrieveFlightSchedulePlanById(fsp.getId());
+        int size = newFSP.getFare().size();
+        int size1 = newFSP.getFlightSchedule().size();
+        int size2 = newFSP.getFlightSchedule().get(0).getFlightCabinClass().size();
 
+        return newFSP; 
+    }
+
+
+    public FlightSchedulePlan updateFaresFSP(FlightSchedulePlan fsp, List<Fare> newFarelist) {
+        FlightSchedulePlan newFSP = flightSchedulePlanSessionBeanLocal.retrieveFlightSchedulePlanById(fsp.getId());
+        int size = newFSP.getFare().size();
+        int size1 = newFSP.getFlightSchedule().size();
+        
+        List<FlightSchedule> fsList = newFSP.getFlightSchedule();
+        List<FlightSchedule> newFSList = new ArrayList<FlightSchedule>();
+        
+        for (int i = 0; i < fsList.size(); i++) {
+            flightSchedulePlanSessionBeanLocal.retrieveFlightScheduleById(fsList.get(i).getId());
+            List<FlightCabinClass> fccList = fsList.get(i).getFlightCabinClass();
+            for (int j = 0; j < fccList.size(); j++) { 
+                System.out.println(newFarelist.get(j));
+                cabinClassSessionBeanLocal.retrieveFlightCabinClassById(fccList.get(j).getId());
+                fareEntitySessionBeanLocal.retrieveFareById(newFarelist.get(j).getId());
+                fccList.get(j).setFare(newFarelist.get(j));
+                newFarelist.get(j).setFlightCabinClass(fccList.get(j));
+            }  
+        }
+        
+        newFSP.setFare(newFarelist);
+        return newFSP; 
+    }
+    
+    
+    public FlightSchedulePlan retrieveFlightSchedulePlan(Long id) {
+        FlightSchedulePlan fsp = flightSchedulePlanSessionBeanLocal.retrieveFlightSchedulePlanById(id);
+        int size = fsp.getFlightSchedule().size();
+        int size1 = fsp.getFare().size();
+        return fsp;
+    }
+    
+    public FlightSchedule updateFlightSchedule(FlightSchedule oldFs) {
+        FlightSchedule managedFS = flightSchedulePlanSessionBeanLocal.retrieveFlightScheduleById(oldFs.getId());
+        
+        managedFS.setArrivalTime(oldFs.getArrivalTime());
+        managedFS.setDepartureTime(oldFs.getDepartureTime());
+        managedFS.setFlightDuration(Duration.ofSeconds((long)oldFs.getFlightDuration()));
+        
+        return managedFS;
+    }
+    
+    public FlightSchedule MakeNewFS(FlightSchedulePlan fsp, FlightSchedule fs, List<FlightCabinClass> fccList, List<Fare> fareList) {
+
+        createFlightCabinClassSeats(fccList);
+        
+        flightSchedulePlanSessionBeanLocal.createNewFlightSchedule(fs);
+
+        fs.setFlightCabinClass(fccList);
+
+        for (int k = 0; k < fccList.size(); k++) { // individual flightcabinclass
+            Long id = fareEntitySessionBeanLocal.createNewFare(fareList.get(k));
+            fareList.get(k).setFlightCabinClass(fccList.get(k));
+            fccList.get(k).setFlightSchedule(fs);
+            fccList.get(k).setFare(fareList.get(k));
+        }
+
+        Long fspID = flightSchedulePlanSessionBeanLocal.createNewFlightSchedulePlan(fsp);
+        fs.setFlightSchedulePlan(fsp);
+        fsp.getFlightSchedule().add(fs);
+        
+        for (Fare f: fareList) {
+            f.setFlightSchedulePlan(fsp);
+        }
+        
+        return fs;
+    }
+    
+    public FlightSchedule retrieveFlightScheduleById(Long id) {
+        return flightSchedulePlanSessionBeanLocal.retrieveFlightScheduleById(id);
+        
+    }
+    
+    public void deleteFS(Long id) {
+        FlightSchedule fs = flightSchedulePlanSessionBeanLocal.retrieveFlightScheduleById(id);
+        if (fs.getFlightBookings().size() != 0) {
+            fs.setFlightBookings(new ArrayList<>());
+            List<FlightCabinClass> fcclist = fs.getFlightCabinClass();
+            for (FlightCabinClass fcc: fcclist) {
+                fcc.setFlightSchedule(null);
+            }
+            
+            fs.setFlightCabinClass(new ArrayList<>());
+            FlightSchedulePlan fsp = fs.getFlightSchedulePlan();
+            
+            flightSchedulePlanSessionBeanLocal.deleteFlightSchedule(fs);
+            
+        }
+    }
 }

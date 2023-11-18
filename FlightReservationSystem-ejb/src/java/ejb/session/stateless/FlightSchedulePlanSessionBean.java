@@ -55,4 +55,8 @@ public class FlightSchedulePlanSessionBean implements FlightSchedulePlanSessionB
         
         return fsp;
     }
+    
+    public void deleteFlightSchedule(FlightSchedule fs) {
+        em.remove(fs);
+    }
 }

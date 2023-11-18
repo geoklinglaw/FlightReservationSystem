@@ -30,9 +30,11 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
 import javafx.util.Pair;
+import util.enumeration.CabinClassType;
 import util.enumeration.FlightScheduleStatus;
 
 /**
@@ -67,6 +69,7 @@ public class ScheduleManagerTask {
             System.out.println("8: View all Flight Plan Details");
             System.out.println("9: Update Flight Schedule Plan");
             System.out.println("10: Delete Flight Schedule Plan");
+            System.out.println("To go back, please press '0'.");
 
             response = -1;
             
@@ -98,6 +101,13 @@ public class ScheduleManagerTask {
                 }                
                 else if (response == 8){
                     viewFlightSchedulePlanDetails(scanner);
+                } 
+                else if (response == 9) {
+                    updateFlightSchedulePlan(scanner);
+                }
+                
+                else if (response == 10){
+                    
                 } 
                 else if (response == 0) {
                     goBack();
@@ -187,7 +197,7 @@ public class ScheduleManagerTask {
     
     private void updateFlight(Scanner sc) {
         System.out.println("\n\n*** Updating Flight *** \n");
-        System.out.print("Select the fields that you want to update (enter '0' if there are no changes)! ");
+        System.out.print("Select the fields that you want to update (leave blank if there are no changes)! ");
         List<Flight> flights = FRSManagementSessionBeanRemote.viewAllFlight();
         String flightText = "\nList of Flight:\n";
         int idx = 1;
@@ -195,11 +205,21 @@ public class ScheduleManagerTask {
             flightText += idx + ": " + flight.getFlightNumber() + " (" + flight.getAircraftConfig().getName() + ")\n";
             idx += 1;
         }
+        
         System.out.print(flightText);
-        System.out.print("\nEnter Flight Number to be changed:\n> ");
+        
+        
+        System.out.print("\nEnter the Flight to change > ");
+        int response = sc.nextInt();
+        Flight chosenFlight = flights.get(response - 1);
+        String oldFNum = chosenFlight.getFlightNumber();
+        
+        System.out.print("\nEnter new Flight Number > ");
         sc.nextLine();
         String flightNum = sc.nextLine().trim();
-
+        if (flightNum.length() > 0) {
+            chosenFlight.setFlightNumber(flightNum);
+        }
    
         Pair<List<FlightRoute>, List<AircraftConfiguration>> pair = FRSManagementSessionBeanRemote.enquireFlightRequirements();
         List<FlightRoute> routeList = pair.getKey();
@@ -212,9 +232,12 @@ public class ScheduleManagerTask {
             index += 1;
         }
         System.out.print(routeText);
-        System.out.print("\nEnter Flight Route ID: \n> ");
-        int routeId = sc.nextInt();
-
+        
+        System.out.print("\nEnter new Flight Route ID >");
+        String routeId = sc.nextLine().trim();
+        if (routeId.length() > 0) {
+            Integer.parseInt(routeId);
+        }
         
         String acConfigText = "List of Aircraft Configuration:";
         for (AircraftConfiguration config: acConfiglist) {
@@ -224,10 +247,23 @@ public class ScheduleManagerTask {
             }
         }
         System.out.print(acConfigText);
-        System.out.print("\nEnter Aircraft Configuration ID: \n> ");
-        int configId = sc.nextInt();
         
-        Flight updatedFlight = FRSManagementSessionBeanRemote.updateFlight(flightNum, routeId, configId);
+        System.out.print("\nEnter new Aircraft Configuration ID > ");
+        String configId = sc.nextLine().trim();
+        
+        
+        Flight updatedFlight = chosenFlight;
+        if (configId.length() == 0 && routeId.length() == 0) {
+            updatedFlight = FRSManagementSessionBeanRemote.changeFlightNumber(chosenFlight, oldFNum);
+        } else if (configId.length() == 0 && routeId.length() > 0) {
+            int rID = Integer.parseInt(routeId);
+            updatedFlight = FRSManagementSessionBeanRemote.updateFlight(chosenFlight, oldFNum, rID);
+        } else {
+            int cID = Integer.parseInt(configId);
+            int rID = Integer.parseInt(routeId);
+            updatedFlight = FRSManagementSessionBeanRemote.updateFlight(chosenFlight, oldFNum, rID, cID);
+        }
+        
         
         String flightDetails = "-- Updated Flight Details -- \n";
         flightDetails += "Flight Number: " + updatedFlight.getFlightNumber() + "\n";
@@ -789,5 +825,340 @@ public class ScheduleManagerTask {
         }
 
         System.out.println(fspDetails);
+    }
+    
+    private void updateFlightSchedulePlan(Scanner sc) {
+        List<FlightSchedulePlan> fspList = viewFlightSchedulePlan();
+        System.out.print("Select which flight schedule plan details you would like to update:\n> ");
+        int response = sc.nextInt();
+        FlightSchedulePlan fsp = fspList.get(response - 1);
+
+        String fspDetails = "-- Flight Schedule Plan Details -- \n";
+        fspDetails += "Flight Number: " + fsp.getFlight().getFlightNumber() + "\n";
+        if (fsp instanceof SinglePlan) {
+            fspDetails += "Plan Type: Single Plan \n";
+        } else if (fsp instanceof MultiplePlan) {
+            fspDetails += "Plan Type: Multiple Plan \n";
+        } else if (fsp instanceof MultiplePlan) {
+            fspDetails += "Plan Type: Recurrent N Plan \n";
+        } else {
+            fspDetails += "Plan Type: Recurrent Weekly Plan \n";
+        }
+
+        fspDetails += "| List of flight schedules | \n";
+        int index = 1;
+        List<FlightSchedule> sortedFS = fsp.getFlightSchedule();
+        sortedFS.sort((fs1, fs2) -> fs1.getDepartureTime().compareTo(fs2.getDepartureTime()));
+
+        for (FlightSchedule fs: sortedFS) {
+            fspDetails += index + ": " + fs.getDepartureTime() + " --> " + fs.getArrivalTime() + "\n";
+            index += 1;
+        }
+
+        System.out.println(fspDetails);
+        
+        
+        sc.nextLine();
+        System.out.print("\n*** Updating Flight Schedule Plan *** ");
+        System.out.println("You may update flight, fares and flight schedules. ");
+
+        
+        System.out.print("\nEnter 'Y' to update Flight (blank if no change)> ");
+        String flightOpt = sc.nextLine().trim();
+        if(flightOpt.equals("Y")) {
+            updateFlightWithFSP(sc, fsp);
+        }
+        
+        System.out.print("Enter 'Y' to update fares (blank if no change)> ");
+        String fareOpt = sc.nextLine().trim();
+        if(fareOpt.equals("Y")) {
+            updateFare(fsp);
+        }
+        
+        System.out.print("Enter 'Y' to update Flight Schedule (blank if no change)> ");
+        String flightSch = sc.nextLine().trim();
+        if(flightSch.equals("Y")) {
+            updateFlightSchedule(sortedFS, fsp);
+        }
+        
+        FlightSchedulePlan newFSP = FRSManagementSessionBeanRemote.retrieveFlightSchedulePlan(fsp.getId());
+        
+        String fspDetails2 = "-- Flight Schedule Plan Details -- \n";
+        fspDetails += "Flight Number: " + newFSP.getFlight().getFlightNumber() + "\n";
+        if (fsp instanceof SinglePlan) {
+            fspDetails += "Plan Type: Single Plan \n";
+        } else if (fsp instanceof MultiplePlan) {
+            fspDetails += "Plan Type: Multiple Plan \n";
+        } else if (fsp instanceof MultiplePlan) {
+            fspDetails += "Plan Type: Recurrent N Plan \n";
+        } else {
+            fspDetails += "Plan Type: Recurrent Weekly Plan \n";
+        }
+        
+        fspDetails2 += "| List of flight schedules | \n";
+        int index2 = 1;
+        List<FlightSchedule> sortedFS2 = newFSP.getFlightSchedule();
+        sortedFS.sort((fs1, fs2) -> fs1.getDepartureTime().compareTo(fs2.getDepartureTime()));
+
+        for (FlightSchedule fs: sortedFS) {
+            fspDetails2 += index + ": " + fs.getDepartureTime() + " --> " + fs.getArrivalTime() + "\n";
+            index2 += 1;
+        }
+
+        System.out.println(fspDetails2);
+    }
+    
+    private void updateFlightSchedule(List<FlightSchedule> sortedFS, FlightSchedulePlan fsp) {
+        Scanner sc = new Scanner(System.in);
+        String output = "Select the flight schedules that you would like to change: \n";
+        List<Integer> fsidList = new ArrayList<Integer>();
+        for (FlightSchedule fs: sortedFS) {
+            output += fs.getId() + ": " + fs.getDepartureTime() + " --> " + fs.getArrivalTime() + "\n";
+
+        }
+        
+        output += "Enter the number of flight schedules you would like to change >";
+        System.out.print(output);
+        int num = sc.nextInt();
+        
+        for (int i = 0; i < num; i++) {
+            System.out.print("Enter flight schedule id > ");
+            fsidList.add(new Integer(sc.nextInt()));
+        }
+        
+        
+        for (Integer id: fsidList) {
+            System.out.print("For flight schedule ID " + id + ", enter ");
+            System.out.print("1: Create New Flight Schedule \n");
+            System.out.print("2: Delete Flight Schedule \n");
+            System.out.print("3: Make chanfes to a Flight Schedule \n");
+            
+            int response = sc.nextInt();
+            
+            switch(response){
+                case 1:
+                    createNewFS(fsp, sc);
+                    break;
+                case 2:
+                    deleteFS(Long.parseLong(String.valueOf(id)), sc);
+                    break;
+                case 3:
+                    makeChangesToFS(Long.parseLong(String.valueOf(id)), sc);
+                    break;
+                   
+            }
+        }
+    }
+    
+    private void deleteFS(Long fsID, Scanner sc) {
+        
+        
+    }
+    
+    private void createNewFS(FlightSchedulePlan fsp, Scanner sc) {
+        System.out.print("\nEnter date of flight (yyyy-MM-dd) > ");
+        String singleDate = sc.nextLine().trim();
+        System.out.print("Enter time of flight (HH:mm:ss) > ");
+        String singleTime = sc.nextLine().trim();
+        String dateTimeInput= singleDate + " " + singleTime;
+        Date date = formatDate(dateTimeInput);
+        System.out.print("Enter flight duration in terms of HOURS > ");
+        int hours = Integer.parseInt(sc.nextLine());
+        System.out.print("Enter flight duration in terms of MINUTES > ");
+        int minutes = Integer.parseInt(sc.nextLine());
+        int totalMinutes = (hours * 60) + minutes;
+        long seconds = totalMinutes * 60;
+        Duration duration = Duration.ofSeconds(seconds);
+        
+        List<List<FlightCabinClass>> flightccList = new ArrayList<List<FlightCabinClass>>();
+        Flight flight = fsp.getFlight();
+
+        List<FlightCabinClass> fccList = fsp.getFlightSchedule().get(0).getFlightCabinClass();
+        List<Fare> fareList = new ArrayList<Fare>();
+        
+        for (int i = 0; i < fccList.size(); i++) {
+            FlightCabinClass cc = fccList.get(i);
+            BigDecimal maxSeats = cc.getNumAvailableSeats();
+            FlightCabinClass fcc = new FlightCabinClass(maxSeats, maxSeats, maxSeats);
+            fcc.setCabinClass(cc.getCabinClass());
+            fccList.add(fcc);
+            
+            Fare fare = new Fare();
+            fare.setFareAmount(cc.getFare().getFareAmount());
+            fare.setFareBasisCode(cc.getFare().getFareBasisCode());
+            fare.setFareID(cc.getFare().getFareID());
+            fareList.add(fare);
+            
+        }
+        
+        FlightSchedule flightSch = new FlightSchedule();
+        flightSch.setDepartureTime(date);
+        flightSch.setFlightDuration(duration);
+        Date arrTime = computeArrivalTime(date,duration);
+        flightSch.setArrivalTime(arrTime);
+        flightSch.setFlightDuration(duration);
+        
+        FlightSchedulePlan singleFsp = new SinglePlan();
+        singleFsp.setType(FlightScheduleStatus.ACTIVE);
+        singleFsp.setFlight(flight);
+        List<FlightSchedule> fsList = new ArrayList<FlightSchedule>();
+        fsList.add(flightSch);
+        
+        FRSManagementSessionBeanRemote.MakeNewFS(fsp, flightSch, fccList, fareList); 
+    }
+    
+    private void makeChangesToFS(Long id, Scanner sc) {
+        FlightSchedule fs = FRSManagementSessionBeanRemote.retrieveFlightScheduleById(id);
+        
+        Date date = fs.getDepartureTime();
+        Duration duration = Duration.ofSeconds((long) fs.getFlightDuration());
+
+        // Change Departure Date and Time
+        System.out.print("Enter new departure date (dd-MM-yy) (blank if no change)> ");
+        String deptDateInput = sc.nextLine().trim();
+        if (!deptDateInput.isEmpty()) {
+            System.out.print("Enter time of flight (HH:mm:ss) > ");
+            String deptTimeInput = sc.nextLine().trim();
+            String dateTimeInput = deptDateInput + " " + deptTimeInput;
+            date = formatDate(dateTimeInput); // Assuming formatDate method exists and returns a Date object
+            fs.setDepartureTime(date);
+        }
+
+        // Change Duration
+        System.out.print("Enter 'Y' to change duration (blank if no change)> ");
+        String durText = sc.nextLine().trim();
+        if (durText.equalsIgnoreCase("Y")) {
+            System.out.print("Enter flight duration in terms of HOURS > ");
+            int hours = Integer.parseInt(sc.nextLine());
+            System.out.print("Enter flight duration in terms of MINUTES > ");
+            int minutes = Integer.parseInt(sc.nextLine());
+            int totalMinutes = (hours * 60) + minutes;
+            long seconds = totalMinutes * 60;
+            duration = Duration.ofSeconds(seconds);
+            fs.setFlightDuration(duration);
+        }
+        
+        Date arrTime = computeArrivalTime(date, duration);
+        fs.setArrivalTime(arrTime);
+        
+//        System.out.print("Add new cabin class (blank if no change)> ");
+//        String cabin = sc.nextLine().trim();
+//        if(cabin.equals("Y")) {
+//            for (CabinClassType cabinClass : CabinClassType.values()) {
+//                System.out.println(cabinClass + " " + cabinClass.getValue());
+//            }
+//            System.out.print("Enter cabin class type > ");
+//            String newCC = sc.nextLine().trim();
+//            fs.setFlightCabinClass(flightCabinClass);
+//        }
+
+        FlightSchedule newFS = FRSManagementSessionBeanRemote.updateFlightSchedule(fs);
+    }
+    
+    private FlightSchedulePlan updateFare(FlightSchedulePlan fsp) {
+        Scanner sc = new Scanner(System.in);
+        FlightSchedulePlan newFSP = FRSManagementSessionBeanRemote.retrieveFlightSchedulePlan(fsp.getId());
+        
+        HashMap<Integer, Fare> hashmap = new HashMap<Integer, Fare>();
+        List<Fare> newFareList = new ArrayList<Fare>();
+        
+        String output = "\n\nCabin Class and Corresponding Fares: \n";
+        for (int i = 0; i < newFSP.getFare().size(); i++) {
+            CabinClassType ccType = newFSP.getFare().get(i).getFlightCabinClass().getCabinClass().getType();
+            output += i + ": " + ccType + " -- $" + newFSP.getFare().get(i).getFareAmount() + "\n";
+            hashmap.put(new Integer(i), newFSP.getFare().get(i));
+        }
+        System.out.print(output);
+        
+        System.out.print("How many fares would you like to change? > ");
+        int num = sc.nextInt();
+        sc.nextLine();
+        
+        for (int i = 0; i < num; i++) {
+            System.out.print("Enter the index of the fare you would like to change > ");
+            Fare fare = hashmap.get(sc.nextInt());
+            newFareList.add(fare);
+        }
+        
+        
+        FlightSchedulePlan updatedFSP = FRSManagementSessionBeanRemote.updateFaresFSP(newFSP, newFareList);
+        return updatedFSP;
+    }
+    
+    private void updateFlightWithFSP(Scanner sc, FlightSchedulePlan fsp) {
+        System.out.println("\n\n*** Updating Flight *** \n");
+        System.out.print("Select the fields that you want to update (leave blank if there are no changes)! ");
+        List<Flight> flights = FRSManagementSessionBeanRemote.viewAllFlight();
+        String flightText = "\nList of Flight:\n";
+        int idx = 1;
+        for (Flight flight: flights) {
+            flightText += idx + ": " + flight.getFlightNumber() + " (" + flight.getAircraftConfig().getName() + ")\n";
+            idx += 1;
+        }
+        
+        System.out.print(flightText);
+        
+        
+        System.out.print("\nEnter the Flight to change > ");
+        int response = sc.nextInt();
+        Flight chosenFlight = flights.get(response - 1);
+        String oldFNum = chosenFlight.getFlightNumber();
+        
+        System.out.print("\nEnter new Flight Number > ");
+        sc.nextLine();
+        String flightNum = sc.nextLine().trim();
+        if (flightNum.length() > 0) {
+            chosenFlight.setFlightNumber(flightNum);
+        }
+   
+        Pair<List<FlightRoute>, List<AircraftConfiguration>> pair = FRSManagementSessionBeanRemote.enquireFlightRequirements();
+        List<FlightRoute> routeList = pair.getKey();
+        List<AircraftConfiguration> acConfiglist = pair.getValue();
+
+        String routeText = "\nList of Flight Routes: \n";
+        int index = 1;
+        for (FlightRoute route: routeList) {
+            routeText += index + ": " + route.getOrigin().getCountry() + " --> " + route.getDestination().getCountry() +"\n";
+            index += 1;
+        }
+        System.out.print(routeText);
+        
+        System.out.print("\nEnter new Flight Route ID >");
+        String routeId = sc.nextLine().trim();
+        if (routeId.length() > 0) {
+            Integer.parseInt(routeId);
+        }
+        
+        String acConfigText = "List of Aircraft Configuration:";
+        for (AircraftConfiguration config: acConfiglist) {
+            acConfigText += "\n(" + config.getId() + ") " + config.getName() + ": ";
+            for (CabinClass cc: config.getCabinClassList()) {
+                acConfigText += cc.getType() + ", ";
+            }
+        }
+        System.out.print(acConfigText);
+        
+        System.out.print("\nEnter new Aircraft Configuration ID > ");
+        String configId = sc.nextLine().trim();
+        
+        
+        Flight updatedFlight = chosenFlight;
+        if (configId.length() == 0 && routeId.length() == 0) {
+            updatedFlight = FRSManagementSessionBeanRemote.changeFlightNumber(chosenFlight, oldFNum);
+        } else if (configId.length() == 0 && routeId.length() > 0) {
+            int rID = Integer.parseInt(routeId);
+            updatedFlight = FRSManagementSessionBeanRemote.updateFlight(chosenFlight, oldFNum, rID);
+        } else {
+            int cID = Integer.parseInt(configId);
+            int rID = Integer.parseInt(routeId);
+            updatedFlight = FRSManagementSessionBeanRemote.updateFlight(chosenFlight, oldFNum, rID, cID);
+        }
+        
+        String flightDetails = "-- Updated Flight Details -- \n";
+        flightDetails += "Flight Number: " + updatedFlight.getFlightNumber() + "\n";
+        flightDetails += "Aircraft Configuration: " + updatedFlight.getAircraftConfig().getName() + "\n";
+        FlightRoute flightRoute = updatedFlight.getFlightRoute();
+        flightDetails += "Flight Route: " + flightRoute.getOrigin().getCountry() + " --> " + flightRoute.getDestination().getCountry();
+        System.out.println(flightDetails);
     }
 }

@@ -25,4 +25,6 @@ public interface FlightSchedulePlanSessionBeanLocal {
     public FlightSchedule retrieveFlightScheduleById(Long id);
     
     public FlightSchedulePlan retrieveFlightSchedulePlanById(Long id);
+    
+    public void deleteFlightSchedule(FlightSchedule fs);
 }
