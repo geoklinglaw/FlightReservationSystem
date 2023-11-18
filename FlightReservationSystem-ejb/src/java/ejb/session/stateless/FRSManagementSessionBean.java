@@ -21,6 +21,9 @@ import entity.Seat;
 import entity.SinglePlan;
 import java.math.BigDecimal;
 import java.time.Duration;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -335,12 +338,13 @@ public class FRSManagementSessionBean implements FRSManagementSessionBeanRemote,
     }
     
     @Override
-    public void createComplementaryFSP(Long fspID, Long flightID) {
+    public void createComplementaryFSP(Long fspID, Long flightID, int layover) {
         
         FlightSchedulePlan fsp = flightSchedulePlanSessionBeanLocal.retrieveFlightSchedulePlanById(fspID);
       
         
-        List<Fare> newFareList = fsp.getFare();
+        List<Fare> oldFareList = fsp.getFare();
+        List<Fare> newFareList = new ArrayList<Fare>();
         Flight originalFlight = fsp.getFlight();
         Flight compFlight = flightSessionBeanLocal.retrieveFlightById(flightID);
         
@@ -359,12 +363,14 @@ public class FRSManagementSessionBean implements FRSManagementSessionBeanRemote,
                 CabinClass cabin = fccList.get(i).getCabinClass();
                 BigDecimal maxSeats = fccList.get(i).getNumAvailableSeats();
                 FlightCabinClass newFCC = new FlightCabinClass(maxSeats, maxSeats, maxSeats);
+                
                 newFCC.setCabinClass(cabin);
                 newFCCList.add(newFCC);
                 
                 Fare fare = new Fare();
-                fare.setFareAmount(newFareList.get(i).getFareAmount());
-                fare.setFareBasisCode(newFareList.get(i).getFareBasisCode());
+                fare.setFareAmount(oldFareList.get(i).getFareAmount());
+                fare.setFareBasisCode(compFlight.getFlightNumber() + cabin.getType());
+//                fare.setFlightCabinClass(newFCC);
                 newFareList.add(fare);
                 
             }
@@ -372,9 +378,10 @@ public class FRSManagementSessionBean implements FRSManagementSessionBeanRemote,
             FlightSchedule flightSch = new FlightSchedule();
             FlightRoute flightroute = fs.getFlightSchedulePlan().getFlight().getFlightRoute();
             
-            flightSch.setDepartureTime(addLayoverDuration(fs.getDepartureTime()));
+            flightSch.setDepartureTime(addLayoverDuration(fs.getArrivalTime(), layover));
             flightSch.setFlightDuration(Duration.ofSeconds((long) fs.getFlightDuration()));
-            flightSch.setArrivalTime(addLayoverDuration(fs.getArrivalTime()));
+            Date initialArrivalTime = computeArrivalTime(addLayoverDuration(fs.getArrivalTime(), layover), Duration.ofSeconds((long) fs.getFlightDuration()));
+            flightSch.setArrivalTime(initialArrivalTime);
             newFSList.add(flightSch);
             
             
@@ -407,15 +414,25 @@ public class FRSManagementSessionBean implements FRSManagementSessionBeanRemote,
         createFlightScheduleAndPlan(newFSList, complementaryFSP, compFlight, newFareList, combinedFCCList);
     }
     
-    private Date addLayoverDuration(Date date) {
+    private Date addLayoverDuration(Date date, int layover) {
         
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
 
-        calendar.add(Calendar.DAY_OF_MONTH, 10);
+        calendar.add(Calendar.HOUR_OF_DAY, layover);
 
         Date tenDaysLater = calendar.getTime();
         return tenDaysLater;
+    }
+
+    private Date computeArrivalTime(Date departureTime, Duration flightDuration) {
+        Instant departureInstant = departureTime.toInstant();
+        LocalDateTime departureDateTime = LocalDateTime.ofInstant(departureInstant, ZoneId.systemDefault());
+        LocalDateTime arrivalDateTime = departureDateTime.plus(flightDuration);
+        Instant arrivalInstant = arrivalDateTime.atZone(ZoneId.systemDefault()).toInstant();
+        Date arrivalTime = Date.from(arrivalInstant);
+    
+        return arrivalTime;
     }
     
     public FlightRoute viewFlightRoute(Airport origin, Airport destination) {

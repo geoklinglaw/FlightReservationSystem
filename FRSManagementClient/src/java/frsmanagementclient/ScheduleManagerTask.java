@@ -285,7 +285,9 @@ public class ScheduleManagerTask {
                 Long id1 = checkForComplementaryFlight(sFlight.getFlightRoute().getId(), sFlight.getAircraftConfig().getId(), sc);
 
                 if (id1 != null) {
-                    createComplementaryReturnFSP(sfspID, id1);
+                    System.out.print("Enter the number of layover hours > ");
+                    int layover = sc.nextInt();                    
+                    createComplementaryReturnFSP(sfspID, id1, layover);
                     System.out.print("\n created Complementary Flight Schedule Plan!");
                 } else {
                     System.out.print("\n Alright, no complementary flight schedule plan is created.");
@@ -303,7 +305,9 @@ public class ScheduleManagerTask {
                  // check if flight has comp flight route 
                 Long id2 = checkForComplementaryFlight(mFlight.getFlightRoute().getId(), mFlight.getAircraftConfig().getId(), sc);
                 if (id2 != null) {
-                    createComplementaryReturnFSP(mfspID, id2);
+                    System.out.print("Enter the number of layover hours > ");
+                    int layover = sc.nextInt();                    
+                    createComplementaryReturnFSP(mfspID, id2, layover);
                     System.out.print("\n created Complementary Flight Schedule Plan!");
 
                 } else {
@@ -321,7 +325,9 @@ public class ScheduleManagerTask {
                 // check if flight has comp flight route 
                 Long id3 = checkForComplementaryFlight(rNFlight.getFlightRoute().getId(), rNFlight.getAircraftConfig().getId(), sc);
                 if (id3 != null) {
-                    createComplementaryReturnFSP(rnfspID, id3);
+                    System.out.print("Enter the number of layover hours > ");
+                    int layover = sc.nextInt();
+                    createComplementaryReturnFSP(rnfspID, id3, layover);
                     System.out.print("\n created Complementary Flight Schedule Plan!");
 
                 } else {
@@ -339,7 +345,9 @@ public class ScheduleManagerTask {
                  // check if flight has comp flight route 
                 Long id4 = checkForComplementaryFlight(rWFlight.getFlightRoute().getId(), rWFlight.getAircraftConfig().getId(), sc);
                 if (id4 != null) {
-                    createComplementaryReturnFSP(rwfspID, id4);
+                    System.out.print("Enter the number of layover hours > ");
+                    int layover = sc.nextInt();
+                    createComplementaryReturnFSP(rwfspID, id4, layover);
                     System.out.print("\n created Complementary Flight Schedule Plan!");
 
                 } else {
@@ -388,7 +396,7 @@ public class ScheduleManagerTask {
 
             System.out.print("There are existing complementary flights.\nEnter 'Y' if you would like to create a complementary flight route > ");
             if (sc.nextLine().equals("Y")) {
-
+                
                 String flightText = "\n Select which flight you want to create complementary FSP for: \n";
                 for (Flight f: selectedFlights) {
                     flightText += f.getId() + ": " +  f.getFlightNumber() + "\n";
@@ -424,8 +432,8 @@ public class ScheduleManagerTask {
         
 
     
-    private void createComplementaryReturnFSP(Long fspID, Long flightID) {
-        FRSManagementSessionBeanRemote.createComplementaryFSP(fspID, flightID);
+    private void createComplementaryReturnFSP(Long fspID, Long flightID, int layover) {
+        FRSManagementSessionBeanRemote.createComplementaryFSP(fspID, flightID, layover);
     }
     
     

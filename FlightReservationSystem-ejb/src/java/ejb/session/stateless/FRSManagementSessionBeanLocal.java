@@ -68,7 +68,7 @@ public interface FRSManagementSessionBeanLocal {
     
     public FlightRoute retrieveFlightRouteById(Long id);
     
-    public void createComplementaryFSP(Long fspID, Long flightID);
+    public void createComplementaryFSP(Long fspID, Long flightID, int layover);
     
     public List<Flight> checkComplementaryFlightExistence(Airport origin, Airport destination, Long configId);
     
