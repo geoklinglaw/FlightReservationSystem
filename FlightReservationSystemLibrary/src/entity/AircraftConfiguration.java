@@ -44,7 +44,8 @@ public class AircraftConfiguration implements Serializable {
     private String name;
     @Column(nullable = false)
     private BigDecimal maxSeatCapacity;
-    
+    @Column(nullable = false)
+    private String aircraftStyle;
     @OneToMany (mappedBy = "aircraftConfig")
     private List<CabinClass> cabinClassList;
     
@@ -59,11 +60,12 @@ public class AircraftConfiguration implements Serializable {
     public AircraftConfiguration() {
     }
     
-    public AircraftConfiguration(AircraftType type) {
+    public AircraftConfiguration(AircraftType type, String aircraftStyle) {
         this.name = type.getName();
         this.cabinClassList = new ArrayList<CabinClass>();
         this.aircraftType = type;
         this.flight = new ArrayList<Flight>();
+        this.aircraftStyle = aircraftStyle;
 
         
     }    
@@ -169,6 +171,20 @@ public class AircraftConfiguration implements Serializable {
      */
     public void setMaxSeatCapacity(BigDecimal maxSeatCapacity) {
         this.maxSeatCapacity = maxSeatCapacity;
+    }
+
+    /**
+     * @return the aircraftStyle
+     */
+    public String getAircraftStyle() {
+        return aircraftStyle;
+    }
+
+    /**
+     * @param aircraftStyle the aircraftStyle to set
+     */
+    public void setAircraftStyle(String aircraftStyle) {
+        this.aircraftStyle = aircraftStyle;
     }
     
 }

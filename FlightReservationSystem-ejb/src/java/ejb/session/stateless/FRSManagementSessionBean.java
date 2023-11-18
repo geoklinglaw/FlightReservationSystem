@@ -18,8 +18,11 @@ import entity.RecurrentPlan;
 import entity.RecurrentWeeklyPlan;
 import entity.Seat;
 import java.math.BigDecimal;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -73,11 +76,11 @@ public class FRSManagementSessionBean implements FRSManagementSessionBeanRemote,
     }
     
     @Override
-    public void createAircraftConfiguration(int aircraftType, int maxSeats, List<CabinClass> ccList) {
+    public void createAircraftConfiguration(String style, int aircraftType, int maxSeats, List<CabinClass> ccList) {
         
         AircraftType acType = aircraftTypeSessionBeanLocal.retrieveAircraftTypeByValue(aircraftType);
         
-        AircraftConfiguration aircraftConfig = new AircraftConfiguration(acType);
+        AircraftConfiguration aircraftConfig = new AircraftConfiguration(acType, style);
         aircraftConfig.setAircraftType(acType);
         aircraftConfig.setCabinClassList(ccList);
         aircraftConfig.setMaxSeatCapacity(new BigDecimal(maxSeats));
@@ -95,49 +98,7 @@ public class FRSManagementSessionBean implements FRSManagementSessionBeanRemote,
         
         return aircraftConfigList;
     }
-    
-//    @Override
-//    public FlightCabinClass createSeatsPerCabinClass(FlightCabinClass fcc) {
-//        
-//        String[] charArr = new String[]{"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L"};
-//        List<Seat> seatList = new ArrayList<>();
-//        int numRows = fcc.getCabinClass().getNumRows().intValue();
-//        int numAisle = fcc.getCabinClass().getNumAisles().intValue();
-//
-//        String seatConfig = fcc.getCabinClass().getSeatConfig();
-//        int seatAbreast = fcc.getCabinClass().getNumSeatAbreast().intValue();
-//
-//        // Split the seat configuration to identify aisles
-//        String[] seatConfigParts = seatConfig.split("-");
-//        FlightCabinClass newFCC = null;
-//        Long fccID = cabinClassSessionBeanLocal.createNewFlightCabinClass(fcc);
-//        
-//        if (fccID == null) {
-//            System.out.println("fccID is null");
-//        } else {
-//            newFCC = cabinClassSessionBeanLocal.retrieveFlightCabinClassById(fccID);
-//        }
-//        
-//        for (int row = 1; row <= numRows; row++) {
-//            int seatCounter = 0;
-//            for (int part = 0; part < seatConfigParts.length; part++) {
-//                int seatsInPart = Integer.parseInt(seatConfigParts[part]);
-//                for (int seat = 0; seat < seatsInPart; seat++) {
-//                    String seatName = row + charArr[seatCounter++];
-//                    Seat seatObj = new Seat(seatName, 0); 
-//                    seatObj.setFlightCabinClass(newFCC);
-//                    seatEntitySessionBeanLocal.createNewSeat(seatObj);
-//                    seatList.add(seatObj);
-//                }
-//                if (part < seatConfigParts.length - 1) {
-//                    seatCounter++; 
-//                }
-//            }
-//        }
-//        
-//        newFCC.setSeatList(seatList);
-//        return newFCC;
-//    }
+   
     
     @Override
     public FlightCabinClass createSeatsPerCabinClass(FlightCabinClass fcc) {
@@ -183,7 +144,7 @@ public class FRSManagementSessionBean implements FRSManagementSessionBeanRemote,
         return airportList;
     }
     
-    public void createFlightRoute(Long originId, Long destId) {
+    public FlightRoute createFlightRoute(Long originId, Long destId) {
         Airport origin = airportEntitySessionBeanLocal.retrieveAirport(originId);
         Airport destination = airportEntitySessionBeanLocal.retrieveAirport(destId);
        
@@ -192,6 +153,8 @@ public class FRSManagementSessionBean implements FRSManagementSessionBeanRemote,
         flightRouteSessionBeanLocal.createNewFlightRoute(flightRoute);
         origin.getFlightRouteOrigin().add(flightRoute);
         destination.getFlightRouteDestination().add(flightRoute);
+        
+        return flightRoute;
     }
     
     public List<FlightRoute> viewAllFlightRoutes() {
@@ -369,6 +332,72 @@ public class FRSManagementSessionBean implements FRSManagementSessionBeanRemote,
         
     }
     
+    @Override
+    public void createComplementaryFSP(FlightSchedulePlan newFSP, FlightSchedulePlan fsp) {
+        
+        List<Fare> newFareList = fsp.getFare();
+        Flight newFlight = fsp.getFlight();
+        
+        List<FlightSchedule> flightschList = fsp.getFlightSchedule();        
+        List<FlightSchedule> newFSList = new ArrayList<FlightSchedule>();
+        List<List<FlightCabinClass>> combinedFCCList = new ArrayList<List<FlightCabinClass>>();
+
+
+        int numOfFS = flightschList.size();
+        
+        for (FlightSchedule fs: flightschList) {
+            
+            List<FlightCabinClass> newFCCList = new ArrayList<FlightCabinClass>();
+            List<FlightCabinClass> fccList = fs.getFlightCabinClass();
+            for (int i = 0; i < fccList.size(); i++) {
+                CabinClass cabin = fccList.get(i).getCabinClass();
+                BigDecimal maxSeats = fccList.get(i).getNumAvailableSeats();
+                FlightCabinClass newFCC = new FlightCabinClass(maxSeats, maxSeats, maxSeats);
+                newFCC.setCabinClass(cabin);
+                newFCCList.add(newFCC);
+                
+                Fare fare = new Fare();
+                fare.setFareAmount(newFareList.get(i).getFareAmount());
+                fare.setFareBasisCode(newFareList.get(i).getFareBasisCode());
+                newFareList.add(fare);
+                
+            }
+            
+            FlightSchedule flightSch = new FlightSchedule();
+            FlightRoute flightroute = fs.getFlightSchedulePlan().getFlight().getFlightRoute();
+            
+            flightSch.setDepartureTime(addLayoverDuration(fs.getDepartureTime()));
+            flightSch.setFlightDuration(Duration.ofSeconds((long) fs.getFlightDuration()));
+            flightSch.setArrivalTime(addLayoverDuration(fs.getArrivalTime()));
+            newFSList.add(flightSch);
+            
+            
+            combinedFCCList.add(newFCCList);
+            
+            
+        }
+        
+        newFSP.setType(fsp.getType());
+        createFlightScheduleAndPlan(newFSList, newFSP, newFlight, newFareList, combinedFCCList);
+        System.out.println("newly created comp fsp" + newFSP.getId());
+    }
+    
+    private Date addLayoverDuration(Date date) {
+        
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+
+        calendar.add(Calendar.DAY_OF_MONTH, 10);
+
+        Date tenDaysLater = calendar.getTime();
+        return tenDaysLater;
+    }
+    
+    public FlightRoute viewFlightRoute(Airport origin, Airport destination) {
+        FlightRoute route = flightRouteSessionBeanLocal.findSpecificFlightRoute(origin, destination);
+        return route;
+    }
+    
     public List<FlightCabinClass> viewSeatsInventory(Long fsId) {
        FlightSchedule fs = flightSchedulePlanSessionBeanLocal.retrieveFlightScheduleById(fsId);
        List<FlightCabinClass> fccList = fs.getFlightCabinClass();
@@ -394,6 +423,10 @@ public class FRSManagementSessionBean implements FRSManagementSessionBeanRemote,
         int size = flight.getFlightSchedulePlan().getFlightSchedule().size();
         return flight;
 
+    }
+    
+    public FlightRoute retrieveFlightRouteById(Long id) {
+        return flightRouteSessionBeanLocal.retrieveFlightRouteById(id);
     }
         
     

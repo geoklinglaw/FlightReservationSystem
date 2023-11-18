@@ -64,16 +64,16 @@ public class RoutePlannerTask {
         }
     }
     
-    private void createFlightRoute(Scanner sc) {
+    public void createFlightRoute(Scanner sc) {
         sc.nextLine();
         System.out.println("\n\n*** Creating Flight Route *** \n");
         int num = 1;
-        System.out.println("Enter 'Y' if you would like to create a complementary flight route > ");
+        System.out.print("Enter 'Y' if you would like to create a complementary flight route > ");
         if (sc.nextLine().equals("Y")) {
             num = 2;
         }
         
-        System.out.println("List of Airports:");
+        System.out.println("\n\nList of Airports:");
         
         List<Airport> airportList =  FRSManagementSessionBeanRemote.viewAllAirports();
         String airportText = "";

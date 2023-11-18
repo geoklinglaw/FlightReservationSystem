@@ -4,6 +4,7 @@
  */
 package ejb.session.stateless;
 
+import entity.Airport;
 import entity.FlightRoute;
 import java.util.List;
 import javax.ejb.Remote;
@@ -21,5 +22,6 @@ public interface FlightRouteSessionBeanRemote {
     
     public FlightRoute retrieveFlightRouteById(Long id);
     
-    
+    public FlightRoute findSpecificFlightRoute(Airport origin, Airport destination);
+
 }

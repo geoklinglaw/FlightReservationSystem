@@ -20,10 +20,13 @@ import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 import javax.ejb.EJB;
 import javax.ejb.EJBTransactionRolledbackException;
 import util.enumeration.CabinClassType;
@@ -61,6 +64,7 @@ public class Main {
     public static final String ANSI_GREEN = "\u001B[32m";
     public static final String ANSI_RED = "\u001B[31m";
     public static final String ANSI_BLUE = "\u001B[34m";
+    public static final String ANSI_CYAN = "\u001B[36m";
     
     @EJB(name = "PersonSessionBeanRemote")
     private static PersonSessionBeanRemote personSessionBeanRemote;
@@ -430,7 +434,6 @@ public class Main {
             CabinClass cc = selectedFS.getFlightSchedulePlan().getFlight().getAircraftConfig().getCabinClassList().get(index);
             
             List<FlightCabinClass> fccList = selectedFS.getFlightCabinClass(); // size is 0?
-            System.out.println("FCC size" + fccList.size());
 
             FlightCabinClass fcc = null;
             for (int i = 0; i < fccList.size(); i++) {
@@ -439,11 +442,10 @@ public class Main {
                     fcc = tempFCC;
                 }
             }
-            System.out.println("SELECTED FCC ID" + fcc.getId());
             
             Fare fare = fcc.getFare();
             double total = fare.getFareAmount().doubleValue() * numPass;
-            fsText += "Flight " + selectedFS.getFlightSchedulePlan().getFlight().getFlightNumber() + " " + cabinType.name() + " $" + fare.getFareAmount() + "x" + numPass + " = " +  total + "\n";
+            fsText += "Flight " + selectedFS.getFlightSchedulePlan().getFlight().getFlightNumber() + " " + cabinType.name() + " $" + fare.getFareAmount() + "x" + numPass + " = $" +  total + "\n";
             fsText += "Departing from " + fr.getOrigin().getCountry() + "("  + fr.getOrigin().getAirportCode() + ") on " + selectedFS.getDepartureTime() + "\n";
             fsText += "Arriving at " + fr.getDestination().getCountry() + "(" + fr.getDestination().getAirportCode() + ") on " + selectedFS.getArrivalTime() + "\n";
             fsText += "**************************************";
@@ -464,13 +466,13 @@ public class Main {
                 
                 flightReservationSystemSessionBeanRemote.bookSeats(seatNumList, flightCabinClass.getId());
                 
-                String seatsSelectedText = "You have successfully booked seats ";
+                String seatsSelectedText = "\nYou have successfully booked seats ";
                 for (String seatNum: seatNumList) {
                     seatsSelectedText += seatNum + " ";
                 }
-                seatsSelectedText += "!";
+                seatsSelectedText += "!\n\n";
                 System.out.print(seatsSelectedText);
-               
+                
             }
     }
     
@@ -478,6 +480,19 @@ public class Main {
     private static void handleOneWayFlight(List<List<FlightSchedule>> listofFSList, int tripType, String originCode, String destCode, Date startDate, int numPass, CabinClassType cabinType, HashMap<Long, Integer> map) {
         for (int index = 0; index < listofFSList.size(); index++) {
             List<FlightSchedule> fsList = listofFSList.get(index);
+            
+            fsList = fsList.stream()
+                .filter(fs -> fs.getFlightCabinClass().stream()
+                    .anyMatch(cc -> cc.getFare() != null && cc.getFare().getFareAmount() != null))
+                .sorted(Comparator.comparing(fs -> fs.getFlightCabinClass().stream()
+                    .map(FlightCabinClass::getFare)
+                    .filter(Objects::nonNull)
+                    .map(Fare::getFareAmount)
+                    .min(Comparator.naturalOrder())
+                    .get())) // This will throw if no fare is present, but we've already filtered those cases
+                .collect(Collectors.toList());
+
+            
             System.out.printf(ANSI_BLUE + "\n\n                                   == %d DAY(S) BEFORE REQUESTED DATE ==\n" + ANSI_RESET, index);
             if (fsList.isEmpty()) {
                 System.out.println("No flights found ! \n");
@@ -508,11 +523,12 @@ public class Main {
                     }
 
                     // Loop again to print out the remaining cabin class types
+
                     for (int i = 0; i < fccList.size(); i++) {
                         // 
                         if (!fccList.get(i).getCabinClass().getType().equals(cabinType)) {
                             String flightNumber = fs.getFlightSchedulePlan().getFlight().getFlightNumber();
-                            BigDecimal fareAmount = fs.getFlightSchedulePlan().getFare().get(i).getFareAmount();
+                            BigDecimal fareAmount = fccList.get(i).getFare().getFareAmount();
                             String departureTime = new SimpleDateFormat("EEE, MMM dd, yyyy, hh:mm a").format(fs.getDepartureTime());
                             String arrivalTime = new SimpleDateFormat("EEE, MMM dd, yyyy, hh:mm a").format(fs.getArrivalTime());
                             double durationInHours = fs.getFlightDuration();

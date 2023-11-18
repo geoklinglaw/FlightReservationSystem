@@ -18,6 +18,7 @@ import javafx.util.Pair;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 
 /**
  *
@@ -27,7 +28,8 @@ import javax.persistence.PersistenceContext;
 public class FlightRouteSessionBean implements FlightRouteSessionBeanRemote, FlightRouteSessionBeanLocal {
 
     @PersistenceContext(unitName = "FlightReservationSystem-ejbPU")
-    private EntityManager em;
+    private EntityManager em; 
+
 
     @Override
     public void createNewFlightRoute(FlightRoute flightRoute) {
@@ -36,6 +38,7 @@ public class FlightRouteSessionBean implements FlightRouteSessionBeanRemote, Fli
     
     @Override
     public List<FlightRoute> viewAllFlightRoute() {
+        em.setProperty ("javax.persistence.cache.storeMode", "REFRESH"); 
         List<FlightRoute> flightRoutes = em.createNamedQuery("viewAllFlightRoutes").getResultList();
 
         // Sort the entire list based on the country of the origin airport
@@ -56,6 +59,18 @@ public class FlightRouteSessionBean implements FlightRouteSessionBeanRemote, Fli
         
         return route;
     }
+    
+    public FlightRoute findSpecificFlightRoute(Airport origin, Airport destination) {
+        String iataO = origin.getAirportCode();
+        String iataD = destination.getAirportCode();
+
+        Query query = em.createQuery("SELECT fr FROM FlightRoute fr WHERE fr.origin.airportCode = :inOrigin AND fr.destination.airportCode = :inDestination")
+                    .setParameter("inOrigin", iataO)
+                    .setParameter("inDestination", iataD);
+
+        return (FlightRoute) query.getSingleResult();
+    }
+
 
 
 

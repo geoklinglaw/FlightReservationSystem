@@ -6,6 +6,7 @@ package entity;
 
 import java.io.Serializable;
 import java.util.List;
+import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -23,6 +24,7 @@ import util.enumeration.FlightRouteStatus;
  *
  * @author apple
  */
+//@Cacheable(false)
 @Entity
 @NamedQueries({
     @NamedQuery(
@@ -31,6 +33,7 @@ import util.enumeration.FlightRouteStatus;
     )
 
 })
+
 public class FlightRoute implements Serializable {
 
     private static final long serialVersionUID = 1L;

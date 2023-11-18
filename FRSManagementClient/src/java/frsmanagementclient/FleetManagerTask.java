@@ -79,6 +79,9 @@ public class FleetManagerTask {
 
         System.out.print("Enter Aircraft Type \n> ");
         int type = sc.nextInt();
+        System.out.print("Enter aircraft style \n> ");
+        sc.nextLine();
+        String style = sc.nextLine().trim();
         System.out.print("Enter number of cabin classes \n> ");
         int num = sc.nextInt();
         System.out.print("Enter maximum seat capacity \n> ");
@@ -115,7 +118,7 @@ public class FleetManagerTask {
             
         }
         
-        FRSManagementSessionBeanRemote.createAircraftConfiguration(type, maxSeats, cabinClasses);
+        FRSManagementSessionBeanRemote.createAircraftConfiguration(style, type, maxSeats, cabinClasses);
         
         String msg;
         msg = type == 0 ? "Boeing 737" : "Boeing 747";
@@ -144,7 +147,7 @@ public class FleetManagerTask {
         int index = 1;
         
         for (AircraftConfiguration acConfig: aircraftConfigList) {
-            acListString += index + ": " + acConfig.getName() + " (" + acConfig.getMaxSeatCapacity() + ")\n";
+            acListString += index + ": " + acConfig.getName() + " (" + acConfig.getName()+ " " + acConfig.getMaxSeatCapacity() + ")\n";
             index += 1; 
         }
         

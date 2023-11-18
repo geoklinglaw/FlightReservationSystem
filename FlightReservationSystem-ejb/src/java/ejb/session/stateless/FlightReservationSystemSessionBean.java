@@ -11,6 +11,7 @@ import entity.FlightCabinClass;
 import entity.FlightRoute;
 import entity.FlightSchedule;
 import entity.Seat;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -252,6 +253,10 @@ public class FlightReservationSystemSessionBean implements FlightReservationSyst
                 }
             }
         }
+        
+        flightCabin.setNumReservedSeats(new BigDecimal(flightCabin.getNumReservedSeats().intValue() + seatList.size()));
+        flightCabin.setNumReservedSeats(flightCabin.getNumAvailableSeats().subtract(flightCabin.getNumBalanceSeats()));
+
     }
     
     

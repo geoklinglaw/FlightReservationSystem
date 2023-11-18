@@ -26,7 +26,7 @@ import javax.ejb.Local;
 @Local
 public interface FRSManagementSessionBeanLocal {
     
-    public void createAircraftConfiguration(int aircraftType, int maxSeats, List<CabinClass> ccList);
+    public void createAircraftConfiguration(String style, int aircraftType, int maxSeats, List<CabinClass> ccList);
     
     public List<AircraftConfiguration> viewAllAircraftConfiguration();
     
@@ -34,7 +34,7 @@ public interface FRSManagementSessionBeanLocal {
     
     public List<Airport> viewAllAirports();
     
-    public void createFlightRoute(Long originId, Long destId);
+    public FlightRoute createFlightRoute(Long originId, Long destId);
     
     public List<FlightRoute> viewAllFlightRoutes();
     
@@ -63,6 +63,13 @@ public interface FRSManagementSessionBeanLocal {
     public Flight retrieveFlightByNumber(String flightNum);
     
     public FlightCabinClass viewCabinClass(Long fsId, Long ccId);
+    
+    public void createComplementaryFSP(FlightSchedulePlan newFSP, FlightSchedulePlan fsp);
+    
+    public FlightRoute viewFlightRoute(Airport origin, Airport destination);
+    
+    public FlightRoute retrieveFlightRouteById(Long id);
+
     
     
 
