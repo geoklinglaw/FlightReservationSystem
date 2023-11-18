@@ -14,9 +14,11 @@ import entity.FlightCabinClass;
 import entity.FlightRoute;
 import entity.FlightSchedule;
 import entity.FlightSchedulePlan;
+import entity.MultiplePlan;
 import entity.RecurrentPlan;
 import entity.RecurrentWeeklyPlan;
 import entity.Seat;
+import entity.SinglePlan;
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.util.ArrayList;
@@ -227,7 +229,7 @@ public class FRSManagementSessionBean implements FRSManagementSessionBeanRemote,
     }
     
     
-    public void createFlight(String flightNum, Long routeId, Long configId) {
+    public Flight createFlight(String flightNum, Long routeId, Long configId) {
         AircraftConfiguration config = aircraftConfigurationSessionBean.retrieveAircraftConfigurationById(configId);
         FlightRoute route = flightRouteSessionBeanLocal.retrieveFlightRouteById(routeId);
         Flight flight = new Flight(flightNum, 1);
@@ -237,8 +239,7 @@ public class FRSManagementSessionBean implements FRSManagementSessionBeanRemote,
         Long flightID = flightSessionBeanLocal.createNewFlight(flight);
         Flight managedFlight = flightSessionBeanLocal.retrieveFlightById(flightID);
         route.getFlightList().add(managedFlight);
-        
-
+        return flight;
     }
 
     public List<Flight> viewAllFlight() {
@@ -293,7 +294,7 @@ public class FRSManagementSessionBean implements FRSManagementSessionBeanRemote,
         }
     }
     
-    public void createFlightScheduleAndPlan(List<FlightSchedule> fsList, FlightSchedulePlan fsp, Flight flight, List<Fare> fareList, List<List<FlightCabinClass>> fccList) {
+    public Long createFlightScheduleAndPlan(List<FlightSchedule> fsList, FlightSchedulePlan fsp, Flight flight, List<Fare> fareList, List<List<FlightCabinClass>> fccList) {
         
 //        if (fsp instanceof RecurrentWeeklyPlan || fsp instanceof RecurrentPlan) {
             for (List<FlightCabinClass> fccs: fccList) {
@@ -317,7 +318,7 @@ public class FRSManagementSessionBean implements FRSManagementSessionBeanRemote,
             }
 //        } 
         
-        flightSchedulePlanSessionBeanLocal.createNewFlightSchedulePlan(fsp);
+        Long fspID = flightSchedulePlanSessionBeanLocal.createNewFlightSchedulePlan(fsp);
         Flight managedFlight = flightSessionBeanLocal.retrieveFlightById(flight.getId());
         managedFlight.setFlightSchedulePlan(fsp);
         
@@ -330,20 +331,39 @@ public class FRSManagementSessionBean implements FRSManagementSessionBeanRemote,
             f.setFlightSchedulePlan(fsp);
         }
         
+        return fspID;
     }
     
     @Override
-    public void createComplementaryFSP(FlightSchedulePlan newFSP, FlightSchedulePlan fsp) {
+    public void createComplementaryFSP(Long fspID, Long flightID) {
+        
+        FlightSchedulePlan fsp = flightSchedulePlanSessionBeanLocal.retrieveFlightSchedulePlanById(fspID);
+        
+        FlightSchedulePlan complementaryFSP;
+        
+        if (fsp instanceof SinglePlan) {
+            complementaryFSP = new SinglePlan();
+            
+        } else if (fsp instanceof MultiplePlan) {
+            complementaryFSP = new MultiplePlan();
+            
+        } else if (fsp instanceof RecurrentPlan) {
+            complementaryFSP = new RecurrentPlan();
+            
+        } else {
+            complementaryFSP = new RecurrentWeeklyPlan();
+        }
         
         List<Fare> newFareList = fsp.getFare();
-        Flight newFlight = fsp.getFlight();
+        Flight originalFlight = fsp.getFlight();
+        Flight compFlight = flightSessionBeanLocal.retrieveFlightById(flightID);
         
         List<FlightSchedule> flightschList = fsp.getFlightSchedule();        
         List<FlightSchedule> newFSList = new ArrayList<FlightSchedule>();
         List<List<FlightCabinClass>> combinedFCCList = new ArrayList<List<FlightCabinClass>>();
 
+        System.out.println("checking for fsp complementary " + fsp.getFlight().getFlightNumber() + fsp.getId());
 
-        int numOfFS = flightschList.size();
         
         for (FlightSchedule fs: flightschList) {
             
@@ -373,13 +393,11 @@ public class FRSManagementSessionBean implements FRSManagementSessionBeanRemote,
             
             
             combinedFCCList.add(newFCCList);
-            
-            
         }
         
-        newFSP.setType(fsp.getType());
-        createFlightScheduleAndPlan(newFSList, newFSP, newFlight, newFareList, combinedFCCList);
-        System.out.println("newly created comp fsp" + newFSP.getId());
+        complementaryFSP.setType(fsp.getType());
+        complementaryFSP.setFlight(compFlight);
+        createFlightScheduleAndPlan(newFSList, complementaryFSP, compFlight, newFareList, combinedFCCList);
     }
     
     private Date addLayoverDuration(Date date) {
@@ -395,6 +413,7 @@ public class FRSManagementSessionBean implements FRSManagementSessionBeanRemote,
     
     public FlightRoute viewFlightRoute(Airport origin, Airport destination) {
         FlightRoute route = flightRouteSessionBeanLocal.findSpecificFlightRoute(origin, destination);
+        int size = route.getFlightList().size();
         return route;
     }
     
@@ -427,6 +446,22 @@ public class FRSManagementSessionBean implements FRSManagementSessionBeanRemote,
     
     public FlightRoute retrieveFlightRouteById(Long id) {
         return flightRouteSessionBeanLocal.retrieveFlightRouteById(id);
+    }
+    
+    public List<Flight> checkComplementaryFlightExistence(Airport origin, Airport destination, Long configId) {
+        FlightRoute route = flightRouteSessionBeanLocal.findSpecificFlightRoute(origin, destination);
+        int size = route.getFlightList().size();
+        
+        List<Flight> selectedFlights = new ArrayList<Flight>();
+        AircraftConfiguration acConfig = aircraftConfigurationSessionBean.retrieveAircraftConfigurationById(configId);
+        
+        for (Flight f: route.getFlightList()) {
+            if (f.getAircraftConfig().getAircraftStyle().equals(acConfig.getAircraftStyle()) && f.getAircraftConfig().getName().equals(acConfig.getName())) {
+                selectedFlights.add(f);
+            }
+        }
+        
+        return selectedFlights;
     }
         
     

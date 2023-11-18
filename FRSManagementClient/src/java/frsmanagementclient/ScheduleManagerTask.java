@@ -249,12 +249,9 @@ public class ScheduleManagerTask {
     
     private void createFlightSchedulePlan(Scanner sc) {
         System.out.println("\n\n*** Creating Flight Schedule Plan *** \n");
-
+        
+        sc.nextLine();
         int num = 1;
-        System.out.print("Enter 'Y' if you would like to create a complementary flight route > ");
-        if (sc.nextLine().equals("Y")) {
-            num = 2;
-        }
         
         System.out.println("Select your preferred schedule type:");
         
@@ -270,6 +267,10 @@ public class ScheduleManagerTask {
         System.out.print("\nEnter Flight Number > ");
         String flightNum = sc.nextLine().trim();
         
+//        System.out.print("Enter 'Y' if you would like to create a complementary flight route > ");
+//        if (sc.nextLine().equals("Y")) {
+//            num = 2;
+//        }
         
 
         switch (type) {
@@ -277,13 +278,18 @@ public class ScheduleManagerTask {
                 Pair<Flight, List<Fare>> pair1 = handlingFSPCreation(flightNum, sc);
                 Flight sFlight = pair1.getKey();
                 List<Fare> fare1 = pair1.getValue();
-                FlightSchedulePlan sFsp = createSingleFSP(sc, sFlight, sFlight.getAircraftConfig().getCabinClassList(), fare1);
+                Long sfspID = createSingleFSP(sc, sFlight, sFlight.getAircraftConfig().getCabinClassList(), fare1);
                 System.out.println("Successfully created single flight schedule plan :)" ); 
                 
-//                if (num == 2) { // check if flight has comp flight route 
-//                    FlightRoute compFR = checkComplementaryFlightRoute(sFlight.getFlightRoute());
-//                    createComplementaryReturnFSP(sFsp, compFR);
-//                }
+
+                Long id1 = checkForComplementaryFlight(sFlight.getFlightRoute().getId(), sFlight.getAircraftConfig().getId(), sc);
+
+                if (id1 != null) {
+                    createComplementaryReturnFSP(sfspID, id1);
+                    System.out.print("\n created Complementary Flight Schedule Plan!");
+                } else {
+                    System.out.print("\n Alright, no complementary flight schedule plan is created.");
+                }
                 
                 break;
 
@@ -291,41 +297,54 @@ public class ScheduleManagerTask {
                 Pair<Flight, List<Fare>> pair2 = handlingFSPCreation(flightNum, sc);
                 Flight mFlight = pair2.getKey();
                 List<Fare> fare2 = pair2.getValue();
-                FlightSchedulePlan mFsp = createMultipleFSP(sc, mFlight, mFlight.getAircraftConfig().getCabinClassList(), fare2);
+                Long mfspID = createMultipleFSP(sc, mFlight, mFlight.getAircraftConfig().getCabinClassList(), fare2);
                 System.out.println("Successfully created multiple flight schedule plan :)" );  
                 
-//                if (num == 2) { // check if flight has comp flight route 
-//                    FlightRoute compFR = checkComplementaryFlightRoute(mFlight.getFlightRoute());
-//                    createComplementaryReturnFSP(mFsp, compFR);
-//                }
-                
+                 // check if flight has comp flight route 
+                Long id2 = checkForComplementaryFlight(mFlight.getFlightRoute().getId(), mFlight.getAircraftConfig().getId(), sc);
+                if (id2 != null) {
+                    createComplementaryReturnFSP(mfspID, id2);
+                    System.out.print("\n created Complementary Flight Schedule Plan!");
+
+                } else {
+                    System.out.print("\n Alright, no complementary flight schedule plan is created.");
+                }
                 break;
 
             case 3:
                 Pair<Flight, List<Fare>> pair3 = handlingFSPCreation(flightNum, sc);
                 Flight rNFlight = pair3.getKey();
                 List<Fare> fare3 = pair3.getValue();
-                FlightSchedulePlan rnFsp = createRecurrentNFSP(sc, rNFlight, rNFlight.getAircraftConfig().getCabinClassList(), fare3);
+                Long rnfspID = createRecurrentNFSP(sc, rNFlight, rNFlight.getAircraftConfig().getCabinClassList(), fare3);
                 System.out.println("Successfully created  n recurrent flight schedule plan :)" ); 
                 
-//                if (num == 2) { // check if flight has comp flight route 
-//                    FlightRoute compFR = checkComplementaryFlightRoute(rNFlight.getFlightRoute());
-//                    createComplementaryReturnFSP(rnFsp, compFR);
-//                }
-                
+                // check if flight has comp flight route 
+                Long id3 = checkForComplementaryFlight(rNFlight.getFlightRoute().getId(), rNFlight.getAircraftConfig().getId(), sc);
+                if (id3 != null) {
+                    createComplementaryReturnFSP(rnfspID, id3);
+                    System.out.print("\n created Complementary Flight Schedule Plan!");
+
+                } else {
+                    System.out.print("\n Alright, no complementary flight schedule plan is created.");
+                }
                 break;
 
             case 4:
                 Pair<Flight, List<Fare>> pair4 = handlingFSPCreation(flightNum, sc);
                 Flight rWFlight = pair4.getKey();
                 List<Fare> fare4 = pair4.getValue();
-                FlightSchedulePlan rwFsp = createRecurrentWeeklyFSP(sc, rWFlight, rWFlight.getAircraftConfig().getCabinClassList(), fare4);
+                Long rwfspID = createRecurrentWeeklyFSP(sc, rWFlight, rWFlight.getAircraftConfig().getCabinClassList(), fare4);
                 System.out.println("Successfully created weekly recurrent flight schedule plan :)" );  
                 
-//                if (num == 2) { // check if flight has comp flight route 
-//                    FlightRoute compFR = checkComplementaryFlightRoute(rWFlight.getFlightRoute());
-//                    createComplementaryReturnFSP(rwFsp, compFR);
-//                }
+                 // check if flight has comp flight route 
+                Long id4 = checkForComplementaryFlight(rWFlight.getFlightRoute().getId(), rWFlight.getAircraftConfig().getId(), sc);
+                if (id4 != null) {
+                    createComplementaryReturnFSP(rwfspID, id4);
+                    System.out.print("\n created Complementary Flight Schedule Plan!");
+
+                } else {
+                    System.out.print("\n Alright, no complementary flight schedule plan is created.");
+                }
                 
                 break;
         }
@@ -333,65 +352,83 @@ public class ScheduleManagerTask {
     }
     
     
-    private void createComplementaryFlight(Long routeId, Long configId, Scanner sc) {
-        FlightRoute route =FRSManagementSessionBeanRemote.retrieveFlightRouteById(routeId);
+    private Flight createComplementaryFlight(Long routeId, Long configId, Scanner sc) {
+        FlightRoute route = FRSManagementSessionBeanRemote.retrieveFlightRouteById(routeId);
         Airport origin = route.getOrigin();
         Airport destination = route.getDestination();
         
         FlightRoute fr = FRSManagementSessionBeanRemote.viewFlightRoute(destination, origin);
+        
         if (fr != null) {
-            System.out.print("\nThere's a complementary flight route, enter 'Y' to create > ");
+            System.out.print("\nThere's no complementary flight route with the same aircraft configuration, enter 'Y' to create > ");
             if (sc.nextLine().equals("Y")) {
                 System.out.print("\nEnter another Flight Number: \n> ");
                 String flightNum = sc.nextLine().trim();
 
-                FRSManagementSessionBeanRemote.createFlight(flightNum, fr.getId(), configId);
+                Flight flight = FRSManagementSessionBeanRemote.createFlight(flightNum, fr.getId(), configId);
                 System.out.print("\nSuccessfully created complementary flight " + flightNum + "!");
+                return flight;
             } else {
                 System.out.println("Alright, no complementary flight is created!");
             }
         }
-    }
-    
-//    private FlightRoute checkComplementaryFlightRoute(Long routeId) {
-//        FlightRoute route =FRSManagementSessionBeanRemote.retrieveFlightRouteById(routeId);
-//        Airport origin = route.getOrigin();
-//        Airport destination = route.getDestination();
-//        
-//        FlightRoute fr = FRSManagementSessionBeanRemote.viewFlightRoute(destination, origin);
-//        if (fr == null) {
-//            System.out.print("\nThere's no complementary flight route of " + destination.getCountry() + " --> " + origin.getCountry());
-//            System.out.println("\n Enter 'Y' if you would like to create one ");
-//
-//            Long originID = new Long(origin.getId());
-//            Long destID = new Long(destination.getId());
-//            FlightRoute newFR = FRSManagementSessionBeanRemote.createFlightRoute(originID, destID);
-//            System.out.println("\n Complementary flight route from " + origin.getCountry() + " to " + destination.getCountry() + " has been created!");
-//            return newFR;
-//        } else {
-//            return fr;
-//        }
-//    }
-    
-    private void createComplementaryReturnFSP(FlightSchedulePlan fsp, FlightRoute newFR) {
         
-        if (fsp instanceof SinglePlan) {
-            SinglePlan complementaryFSP = new SinglePlan();
-            FRSManagementSessionBeanRemote.createComplementaryFSP(complementaryFSP, fsp);
-            
-        } else if (fsp instanceof MultiplePlan) {
-            MultiplePlan complementaryFSP = new MultiplePlan();
-            FRSManagementSessionBeanRemote.createComplementaryFSP(complementaryFSP, fsp);
-            
-        } else if (fsp instanceof RecurrentPlan) {
-            RecurrentPlan complementaryFSP = new RecurrentPlan();
-            FRSManagementSessionBeanRemote.createComplementaryFSP(complementaryFSP, fsp);
-            
-        } else {
-            RecurrentWeeklyPlan complementaryFSP = new RecurrentWeeklyPlan();
-            FRSManagementSessionBeanRemote.createComplementaryFSP(complementaryFSP, fsp);
-        }
+        return null;
     }
+    
+    private Long checkForComplementaryFlight(Long routeId, Long configId, Scanner sc) {
+        FlightRoute route = FRSManagementSessionBeanRemote.retrieveFlightRouteById(routeId);
+        Airport origin = route.getOrigin();
+        Airport destination = route.getDestination();
+        
+        List<Flight> selectedFlights = FRSManagementSessionBeanRemote.checkComplementaryFlightExistence(destination, origin, configId);
+        
+
+        if (selectedFlights.size() != 0) {
+
+            System.out.print("There are existing complementary flights.\nEnter 'Y' if you would like to create a complementary flight route > ");
+            if (sc.nextLine().equals("Y")) {
+
+                String flightText = "\n Select which flight you want to create complementary FSP for: \n";
+                for (Flight f: selectedFlights) {
+                    flightText += f.getId() + ": " +  f.getFlightNumber() + "\n";
+                }
+                flightText += "> ";
+                System.out.print(flightText);
+                int flightID = sc.nextInt();
+                sc.nextLine();
+                
+                return new Long(flightID);
+            }
+        } 
+       
+        
+        System.out.print("There are no existing complementary flights.\nEnter 'Y' if you would still like to create a complementary flight schedule plan > ");
+        if (sc.nextLine().equals("Y")) {
+            Long originID = new Long(origin.getId());
+            Long destID = new Long(destination.getId());
+            FlightRoute newFR = FRSManagementSessionBeanRemote.createFlightRoute(originID, destID);
+            System.out.print("\nComplementary flight route from " + origin.getCountry() + " to " + destination.getCountry() + " has been created!");
+            System.out.println("\n *** Creating Complementary Flight now ***");
+
+            Flight flight = createComplementaryFlight(newFR.getId(), configId, sc);
+
+            if (flight != null) {
+                System.out.print("\nComplementary flight " + flight.getFlightNumber() + " has been created!");
+                return flight.getId();
+            }
+        }
+
+        return null; 
+    }
+        
+
+    
+    private void createComplementaryReturnFSP(Long fspID, Long flightID) {
+        FRSManagementSessionBeanRemote.createComplementaryFSP(fspID, flightID);
+    }
+    
+    
     
     private Pair<Flight, List<Fare>> handlingFSPCreation(String flightNum, Scanner sc) {
         Flight flight = viewFlightDetailsCabinClasses(flightNum);
@@ -419,7 +456,7 @@ public class ScheduleManagerTask {
         return new Pair<>(flight, fareList);
     }
     
-    private FlightSchedulePlan createSingleFSP(Scanner sc, Flight flight, List<CabinClass> ccList, List<Fare> fare) {
+    private Long createSingleFSP(Scanner sc, Flight flight, List<CabinClass> ccList, List<Fare> fare) {
         System.out.print("FOR SINGLE SCHEDULE --- ");
         System.out.print("\nEnter date of flight (yyyy-MM-dd) > ");
         String singleDate = sc.nextLine().trim();
@@ -458,12 +495,11 @@ public class ScheduleManagerTask {
         List<FlightSchedule> fsList = new ArrayList<FlightSchedule>();
         fsList.add(flightSch);
         
-        createPersistAll(fsList, singleFsp, flight, fare, flightccList);
-        
-        return singleFsp;
+        Long id = createPersistAll(fsList, singleFsp, flight, fare, flightccList);
+        return id;
     }
     
-    private FlightSchedulePlan createMultipleFSP(Scanner sc, Flight flight, List<CabinClass> ccList, List<Fare> fare) {
+    private Long createMultipleFSP(Scanner sc, Flight flight, List<CabinClass> ccList, List<Fare> fare) {
         System.out.print("FOR MULTIPLE SCHEDULE --- ");
         System.out.print("\nEnter the number of flight schedules you want to create > ");
         int num = sc.nextInt();
@@ -510,13 +546,13 @@ public class ScheduleManagerTask {
             fsList.add(flightSch);
         }
 
-        createPersistAll(fsList, multipleFsp, flight, fare, new ArrayList<>(flightccList));
+        Long id = createPersistAll(fsList, multipleFsp, flight, fare, new ArrayList<>(flightccList));
         
-        return multipleFsp;
+        return id;
     }
     
 
-    private FlightSchedulePlan createRecurrentNFSP(Scanner sc, Flight flight, List<CabinClass> ccList, List<Fare> fare) {
+    private Long createRecurrentNFSP(Scanner sc, Flight flight, List<CabinClass> ccList, List<Fare> fare) {
         
         System.out.print("FOR RECURRENT N SCHEDULE --- ");
         System.out.print("\nEnter frequency > ");
@@ -581,11 +617,11 @@ public class ScheduleManagerTask {
            
         }
         
-        createPersistAll(fsList, recNFsp, flight, fare, flightccList);
-        return recNFsp;
+        Long id = createPersistAll(fsList, recNFsp, flight, fare, flightccList);
+        return id;
     }
     
-    private FlightSchedulePlan createRecurrentWeeklyFSP(Scanner sc, Flight flight, List<CabinClass> ccList, List<Fare> fare) {
+    private Long createRecurrentWeeklyFSP(Scanner sc, Flight flight, List<CabinClass> ccList, List<Fare> fare) {
         
         System.out.print("FOR RECURRENT WEEKLY SCHEDULE --- ");
         System.out.print("\nEnter dayOfWeek (1=Monday, 7=Sunday) > ");
@@ -651,12 +687,13 @@ public class ScheduleManagerTask {
         }
         
         recWFsp.setDayOfWeek(new BigDecimal(dayOfWeekInt));
-        createPersistAll(fsList, recWFsp, flight, fare, flightccList);
-        return recWFsp;
+        Long id = createPersistAll(fsList, recWFsp, flight, fare, flightccList);
+        return id;
     }
     
-    private void createPersistAll(List<FlightSchedule> fsList, FlightSchedulePlan fsp, Flight flight, List<Fare> fareList, List<List<FlightCabinClass>>  FCCList) {
-        FRSManagementSessionBeanRemote.createFlightScheduleAndPlan(fsList, fsp, flight, fareList, FCCList);
+    private Long createPersistAll(List<FlightSchedule> fsList, FlightSchedulePlan fsp, Flight flight, List<Fare> fareList, List<List<FlightCabinClass>>  FCCList) {
+        Long id = FRSManagementSessionBeanRemote.createFlightScheduleAndPlan(fsList, fsp, flight, fareList, FCCList);
+        return id;
     }
     
     

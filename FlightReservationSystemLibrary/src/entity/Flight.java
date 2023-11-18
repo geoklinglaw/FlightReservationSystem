@@ -17,6 +17,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToOne;
 import util.enumeration.FlightStatus;
 import util.enumeration.FlightType;
 
@@ -56,7 +57,7 @@ public class Flight implements Serializable {
     @ManyToOne 
     @JoinColumn (nullable=true)
     private FlightSchedulePlan flightSchedulePlan;
-    
+
 
     public Flight() {
     }

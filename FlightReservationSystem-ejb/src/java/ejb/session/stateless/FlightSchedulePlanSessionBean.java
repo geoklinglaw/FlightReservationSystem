@@ -22,8 +22,10 @@ public class FlightSchedulePlanSessionBean implements FlightSchedulePlanSessionB
     private EntityManager em;
 
     @Override
-    public void createNewFlightSchedulePlan(FlightSchedulePlan fsp) {
+    public Long createNewFlightSchedulePlan(FlightSchedulePlan fsp) {
         em.persist(fsp);
+        em.flush();
+        return fsp.getId();
     }
    
     @Override
@@ -43,5 +45,14 @@ public class FlightSchedulePlanSessionBean implements FlightSchedulePlanSessionB
         FlightSchedule fs = em.find(FlightSchedule.class, id);
         
         return fs;
+    }
+    
+    public FlightSchedulePlan retrieveFlightSchedulePlanById(Long id) {
+        em.setProperty ("javax.persistence.cache.storeMode", "REFRESH");
+        FlightSchedulePlan fsp = em.find(FlightSchedulePlan.class, id);
+        int size1 = fsp.getFlightSchedule().size();
+        int size2 = fsp.getFare().size();
+        
+        return fsp;
     }
 }

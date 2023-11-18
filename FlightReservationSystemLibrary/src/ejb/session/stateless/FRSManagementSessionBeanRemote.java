@@ -31,7 +31,7 @@ public interface FRSManagementSessionBeanRemote {
     public List<AircraftConfiguration> viewAllAircraftConfiguration();
     
     public FlightCabinClass createSeatsPerCabinClass(FlightCabinClass fcc) ;
-
+    
     public List<Airport> viewAllAirports();
     
     public FlightRoute createFlightRoute(Long originId, Long destId);
@@ -39,10 +39,10 @@ public interface FRSManagementSessionBeanRemote {
     public List<FlightRoute> viewAllFlightRoutes();
     
     public ArrayList<Airport> deleteFlightRoute(String originCode, String destCode);
-
+    
     public Pair<List<FlightRoute>, List<AircraftConfiguration>> enquireFlightRequirements();
     
-    public void createFlight(String flightNum, Long routeId, Long configId);
+    public Flight createFlight(String flightNum, Long routeId, Long configId);
 
     public List<Flight> viewAllFlight();
     
@@ -51,25 +51,28 @@ public interface FRSManagementSessionBeanRemote {
     public void deleteFlight(String flightNum);
     
     public Flight viewSpecificFlight(String flightNum);
+    
+    public void createFlightCabinClassSeats(List<FlightCabinClass> fccList);
 
-    public void createFlightScheduleAndPlan(List<FlightSchedule> fsList, FlightSchedulePlan fsp, Flight flight, List<Fare> fareList, List<List<FlightCabinClass>> fccList);
-
+    public Long createFlightScheduleAndPlan(List<FlightSchedule> fsList, FlightSchedulePlan fsp, Flight flight, List<Fare> fareList, List<List<FlightCabinClass>> fccList);
+    
     public List<FlightSchedulePlan> viewAllFlightSchedulePlan();
     
     public List<FlightCabinClass> viewSeatsInventory(Long fsId);
     
     public Flight retrieveFlightByNumber(String flightNum);
-
+    
     public FlightCabinClass viewCabinClass(Long fsId, Long ccId);
-    
-    public void createFlightCabinClassSeats(List<FlightCabinClass> fccList);
-    
-    public void createComplementaryFSP(FlightSchedulePlan newFSP, FlightSchedulePlan fsp);
     
     public FlightRoute viewFlightRoute(Airport origin, Airport destination);
     
     public FlightRoute retrieveFlightRouteById(Long id);
-
+    
+    public void createComplementaryFSP(Long fspID, Long flightID);
+    
+    public List<Flight> checkComplementaryFlightExistence(Airport origin, Airport destination, Long configId);
+    
+    
 
 
 

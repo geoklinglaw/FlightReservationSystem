@@ -16,11 +16,13 @@ import javax.ejb.Local;
 @Local
 public interface FlightSchedulePlanSessionBeanLocal {
     
-    public void createNewFlightSchedulePlan(FlightSchedulePlan fsp);
+    public Long createNewFlightSchedulePlan(FlightSchedulePlan fsp);
     
     public void createNewFlightSchedule(FlightSchedule fs);
     
     public List<FlightSchedulePlan> viewAllFlightSchedulePlan();
     
     public FlightSchedule retrieveFlightScheduleById(Long id);
+    
+    public FlightSchedulePlan retrieveFlightSchedulePlanById(Long id);
 }

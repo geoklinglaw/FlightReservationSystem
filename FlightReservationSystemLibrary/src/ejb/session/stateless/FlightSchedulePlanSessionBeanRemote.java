@@ -16,13 +16,11 @@ import javax.ejb.Remote;
 @Remote
 public interface FlightSchedulePlanSessionBeanRemote {
     
-    public void createNewFlightSchedulePlan(FlightSchedulePlan fsp);
+    public Long createNewFlightSchedulePlan(FlightSchedulePlan fsp);
     
     public void createNewFlightSchedule(FlightSchedule fs);
     
     public List<FlightSchedulePlan> viewAllFlightSchedulePlan();
-    
-
 
     public FlightSchedule retrieveFlightScheduleById(Long id);
 
