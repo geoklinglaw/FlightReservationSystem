@@ -338,21 +338,7 @@ public class FRSManagementSessionBean implements FRSManagementSessionBeanRemote,
     public void createComplementaryFSP(Long fspID, Long flightID) {
         
         FlightSchedulePlan fsp = flightSchedulePlanSessionBeanLocal.retrieveFlightSchedulePlanById(fspID);
-        
-        FlightSchedulePlan complementaryFSP;
-        
-        if (fsp instanceof SinglePlan) {
-            complementaryFSP = new SinglePlan();
-            
-        } else if (fsp instanceof MultiplePlan) {
-            complementaryFSP = new MultiplePlan();
-            
-        } else if (fsp instanceof RecurrentPlan) {
-            complementaryFSP = new RecurrentPlan();
-            
-        } else {
-            complementaryFSP = new RecurrentWeeklyPlan();
-        }
+      
         
         List<Fare> newFareList = fsp.getFare();
         Flight originalFlight = fsp.getFlight();
@@ -395,8 +381,29 @@ public class FRSManagementSessionBean implements FRSManagementSessionBeanRemote,
             combinedFCCList.add(newFCCList);
         }
         
+        FlightSchedulePlan complementaryFSP;
+        
+        if (fsp instanceof SinglePlan) {
+            SinglePlan compSinglePlan = new SinglePlan();
+            complementaryFSP = compSinglePlan; 
+        } else if (fsp instanceof MultiplePlan) {
+            MultiplePlan compMultiplePlan = new MultiplePlan();
+            complementaryFSP = compMultiplePlan; 
+        } else if (fsp instanceof RecurrentPlan) {
+            RecurrentPlan compRecurrentPlan = new RecurrentPlan();
+            compRecurrentPlan.setEndDate(((RecurrentPlan) fsp).getEndDate());
+            compRecurrentPlan.setFrequency(((RecurrentPlan) fsp).getFrequency());
+            complementaryFSP = compRecurrentPlan;
+        } else {
+            RecurrentWeeklyPlan compRecurrentWeeklyPlan = new RecurrentWeeklyPlan();
+            compRecurrentWeeklyPlan.setEndDate(((RecurrentPlan) fsp).getEndDate());
+            compRecurrentWeeklyPlan.setDayOfWeek(((RecurrentWeeklyPlan) fsp).getDayOfWeek());
+            complementaryFSP = compRecurrentWeeklyPlan; 
+        }
+        
         complementaryFSP.setType(fsp.getType());
         complementaryFSP.setFlight(compFlight);
+
         createFlightScheduleAndPlan(newFSList, complementaryFSP, compFlight, newFareList, combinedFCCList);
     }
     

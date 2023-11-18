@@ -191,20 +191,6 @@ public class FlightReservationSystemSessionBean implements FlightReservationSyst
                 int size2 = fs.getFlightSchedulePlan().getFare().size();
             }
             
-//            for (FlightSchedule fs: fsList) {
-//                
-//                int size = fs.getCabinClass().size();
-//                System.out.println(fs.getId() + "  " + size);
-//                int size1 = fs.getFlightSchedulePlan().getFare().size();
-//                int size3 = fs.getCabinClass().size();
-//                if (fs.getCabinClass().size() != 0){
-//                    for (CabinClass cc: fs.getCabinClass()) {
-//                        System.out.print(cc.getType());
-//                    }
-//                } else {
-//                    System.out.print(" is 0");
-//                }
-//            }
             
             resultSchedules.addAll(fsList);
         }
