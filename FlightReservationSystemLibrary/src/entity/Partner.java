@@ -28,7 +28,8 @@ public class Partner implements Serializable {
     public Partner() {
     }
 
-    public Partner(String username, String password) {
+    public Partner(String partnerName, String username, String password) {
+        this.partnerName = partnerName;
         this.username = username;
         this.password = password;
     }

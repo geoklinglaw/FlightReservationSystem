@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import javafx.util.Pair;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -62,6 +63,12 @@ public class FlightReservationSystemSessionBean implements FlightReservationSyst
         combinedList.add(fs2);
         List<FlightSchedule> fs3 = searchFlightsByDays(startDate, ccType, originCode, destCode, 3); // three day before
         combinedList.add(fs3);
+        
+        for (List<FlightSchedule> fslist: combinedList) {
+            for (FlightSchedule fs: fslist) {
+                System.out.print("its hereeeee " + fs.getFlightSchedulePlan().getFlight().getFlightNumber() + " : " + fs.getDepartureTime() + "  " + fs.getArrivalTime());
+            }
+        }
 
         return combinedList;
     }
@@ -245,5 +252,50 @@ public class FlightReservationSystemSessionBean implements FlightReservationSyst
 
     }
     
+//    public List<FlightRoute> searchFlightsWithTwoWay(Date startDate, CabinClassType ccType, String originIATA, String destIATA) {
+//        List<FlightRoute> originList1 = flightRouteSessionBeanLocal.findOriginFlightRoute(originIATA);
+//        List<FlightRoute> destList1 = flightRouteSessionBeanLocal.findDestFlightRoute(destIATA);
+//        
+//        List<FlightSchedule> originList = new ArrayList<FlightSchedule>();        
+//        List<FlightSchedule> destList = new ArrayList<FlightSchedule>();
+//        
+//        for (FlightSchedule fs: )
+//
+//        
+//        
+//        List<Pair<FlightRoute, FlightRoute>> pairList = new ArrayList<Pair<FlightRoute, FlightRoute>>();
+//        
+//        for (FlightRoute originFR: originList) {
+//            for (FlightRoute destFR: destList) {
+//                
+//                if (originFR.getDestination().getAirportCode().equals(destFR.getOrigin().getAirportCode())) {
+//                    System.out.println("Passed if 1");
+//                }
+//                
+//            }
+//        }
+        
+        
+//DIRECT AND CONNECTING FLIGHT LOGIC:
+//A -> B -> C
+//obtain 2 list where 
+//list1 = all flightroutes with A as origin
+//list2 = all flightroutes with C as destination
+//
+//List<Pair<FlightRoute, FlightRoute> pairList;
+//
+//for loop through list1
+//  for loop through list2
+//     if flightroute1's destination == flightroute2's origin
+//       if flightroute1's destination.departuredatetime < flightroute2's origin.arrivaldatetime
+//         if flightroute2's origin.arrivaldatetime - flightroute1's destination.departuredatetime < 24hrs
+//             pairList.add(new Pair(flightrout1, flightroute2)
+//
+//results will be a list of pairs for users to choose from
+//in order to do return connecting flight, swap A <-> C
+        
+    }
+        
     
-}
+    
+    

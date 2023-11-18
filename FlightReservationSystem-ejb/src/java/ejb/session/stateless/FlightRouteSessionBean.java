@@ -71,7 +71,28 @@ public class FlightRouteSessionBean implements FlightRouteSessionBeanRemote, Fli
         return (FlightRoute) query.getSingleResult();
     }
 
+    public List<FlightRoute> findOriginFlightRoute(String originIATA) {
+        Query query = em.createQuery("SELECT fr FROM FlightRoute fr WHERE fr.origin.airportCode = :inOrigin")
+                    .setParameter("inOrigin", originIATA);
 
+        return (List<FlightRoute>) query.getResultList();
+    }
 
+    public List<FlightRoute> findDestFlightRoute(String destIATA) {
+        Query query = em.createQuery("SELECT fr FROM FlightRoute fr WHERE fr.origin.airportCode = :inDestination")
+                    .setParameter("inOrigin", destIATA);
 
+        return (List<FlightRoute>) query.getResultList();
+    }
+
+//    public FlightRoute findSpecificFlightRouteWithCode(String iataO, String destinatiiataDon) {
+//        String iataO = origin.getAirportCode();
+//        String iataD = destination.getAirportCode();
+//
+//        Query query = em.createQuery("SELECT fr FROM FlightRoute fr WHERE fr.origin.airportCode = :inOrigin AND fr.destination.airportCode = :inDestination")
+//                    .setParameter("inOrigin", iataO)
+//                    .setParameter("inDestination", iataD);
+//
+//        return (FlightRoute) query.getSingleResult();
+//    }
 }

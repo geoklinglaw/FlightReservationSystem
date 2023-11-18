@@ -379,6 +379,7 @@ public class FRSManagementSessionBean implements FRSManagementSessionBeanRemote,
             FlightRoute flightroute = fs.getFlightSchedulePlan().getFlight().getFlightRoute();
             
             flightSch.setDepartureTime(addLayoverDuration(fs.getArrivalTime(), layover));
+            System.out.println("duration " + flightSch.getId() + " " + fs.getFlightDuration() + "  " + Duration.ofSeconds((long) fs.getFlightDuration()));
             flightSch.setFlightDuration(Duration.ofSeconds((long) fs.getFlightDuration()));
             Date initialArrivalTime = computeArrivalTime(addLayoverDuration(fs.getArrivalTime(), layover), Duration.ofSeconds((long) fs.getFlightDuration()));
             flightSch.setArrivalTime(initialArrivalTime);
@@ -487,6 +488,6 @@ public class FRSManagementSessionBean implements FRSManagementSessionBeanRemote,
         
         return selectedFlights;
     }
-        
     
+
 }

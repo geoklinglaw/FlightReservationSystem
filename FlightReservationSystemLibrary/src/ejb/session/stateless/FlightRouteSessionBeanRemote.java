@@ -23,5 +23,8 @@ public interface FlightRouteSessionBeanRemote {
     public FlightRoute retrieveFlightRouteById(Long id);
     
     public FlightRoute findSpecificFlightRoute(Airport origin, Airport destination);
-
+    
+    public List<FlightRoute> findOriginFlightRoute(String destIATA);
+    
+    public List<FlightRoute> findDestFlightRoute(String destIATA);
 }
