@@ -15,7 +15,9 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javafx.util.Pair;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -50,6 +52,8 @@ public class FlightReservationSystemSessionBean implements FlightReservationSyst
     @EJB
     private FareEntitySessionBeanLocal fareEntitySessionBean;
     
+    private static final int MIN_LAYOVER_HOURS = 0; // Minimum layover duration in hours
+    private static final int MAX_LAYOVER_HOURS = 24;
 
     @Override
     public List<List<FlightSchedule>> searchFlightsOneWay(Date startDate, CabinClassType ccType, String originCode, String destCode) {
@@ -252,50 +256,100 @@ public class FlightReservationSystemSessionBean implements FlightReservationSyst
 
     }
     
-//    public List<FlightRoute> searchFlightsWithTwoWay(Date startDate, CabinClassType ccType, String originIATA, String destIATA) {
-//        List<FlightRoute> originList1 = flightRouteSessionBeanLocal.findOriginFlightRoute(originIATA);
-//        List<FlightRoute> destList1 = flightRouteSessionBeanLocal.findDestFlightRoute(destIATA);
-//        
-//        List<FlightSchedule> originList = new ArrayList<FlightSchedule>();        
-//        List<FlightSchedule> destList = new ArrayList<FlightSchedule>();
-//        
-//        for (FlightSchedule fs: )
-//
-//        
-//        
-//        List<Pair<FlightRoute, FlightRoute>> pairList = new ArrayList<Pair<FlightRoute, FlightRoute>>();
-//        
-//        for (FlightRoute originFR: originList) {
-//            for (FlightRoute destFR: destList) {
-//                
-//                if (originFR.getDestination().getAirportCode().equals(destFR.getOrigin().getAirportCode())) {
-//                    System.out.println("Passed if 1");
-//                }
-//                
-//            }
-//        }
+    public List<Pair<FlightSchedule, FlightSchedule>> searchFlightsWithTwo(Date startDate, CabinClassType ccType, String originIATA, String destIATA) {
+        System.out.println("entered");
+        List<Pair<FlightSchedule, FlightSchedule>> obj = flightRouteSessionBeanLocal.filterConnectingFS();
+        if (obj == null) {
+            System.out.println("oh no null");
+            return null;
+        }
         
+        return obj;
         
-//DIRECT AND CONNECTING FLIGHT LOGIC:
-//A -> B -> C
-//obtain 2 list where 
-//list1 = all flightroutes with A as origin
-//list2 = all flightroutes with C as destination
-//
-//List<Pair<FlightRoute, FlightRoute> pairList;
-//
-//for loop through list1
-//  for loop through list2
-//     if flightroute1's destination == flightroute2's origin
-//       if flightroute1's destination.departuredatetime < flightroute2's origin.arrivaldatetime
-//         if flightroute2's origin.arrivaldatetime - flightroute1's destination.departuredatetime < 24hrs
-//             pairList.add(new Pair(flightrout1, flightroute2)
-//
-//results will be a list of pairs for users to choose from
-//in order to do return connecting flight, swap A <-> C
         
     }
-        
+    
+//    public List<Pair<FlightRoute, FlightRoute>> searchFlightsWithTwoWay(Date startDate, CabinClassType ccType, String originIATA, String destIATA) {
+//        // Fetching lists of flight routes based on origin and destination IATA codes
+//        List<FlightRoute> originList1 = flightRouteSessionBeanLocal.findOriginFlightRoute(originIATA);
+//        List<FlightRoute> destList1 = flightRouteSessionBeanLocal.findDestFlightRoute(destIATA);
+//
+//        Map<String, List<FlightSchedule>> originScheduleMap = new HashMap<>();
+//        Map<String, List<FlightSchedule>> destScheduleMap = new HashMap<>();
+//
+//        // Populate originScheduleMap
+//        for (FlightRoute originRoute : originList1) {
+//            for (Flight flight : originRoute.getFlightList()) {
+//                for (FlightSchedule schedule : flight.getFlightSchedulePlan().getFlightSchedule()) {
+//                    originScheduleMap.computeIfAbsent(originRoute.getDestination().getAirportCode(), k -> new ArrayList<>()).add(schedule);
+//                }
+//            }
+//        }
+//
+//        // Populate destScheduleMap
+//        for (FlightRoute destRoute : destList1) {
+//            for (Flight flight : destRoute.getFlightList()) {
+//                for (FlightSchedule schedule : flight.getFlightSchedulePlan().getFlightSchedule()) {
+//                    destScheduleMap.computeIfAbsent(destRoute.getOrigin().getAirportCode(), k -> new ArrayList<>()).add(schedule);
+//                }
+//            }
+//        }
+//
+//        List<Pair<FlightRoute, FlightRoute>> pairList = new ArrayList<>();
+//
+//        for (String originAirportCode : originScheduleMap.keySet()) {
+//            List<FlightSchedule> originSchedules = originScheduleMap.get(originAirportCode);
+//            for (FlightSchedule originSchedule : originSchedules) {
+//                List<FlightSchedule> connectingSchedules = destScheduleMap.get(originSchedule.getFlightSchedulePlan().getFlight().getFlightRoute().getDestination().getAirportCode());
+//                if (connectingSchedules != null) {
+//                    for (FlightSchedule connectingSchedule : connectingSchedules) {
+//                        if (isValidConnection(originSchedule, connectingSchedule, startDate)) {
+//                            FlightRoute originFlightRoute = originSchedule.getFlightSchedulePlan().getFlight().getFlightRoute();
+//                            FlightRoute destFlightRoute = connectingSchedule.getFlightSchedulePlan().getFlight().getFlightRoute();
+//                            pairList.add(new Pair<>(originFlightRoute, destFlightRoute));
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//
+//        return pairList;
+//    }
+//
+//        
+//    
+//    private boolean isValidConnection(FlightSchedule originSchedule, FlightSchedule connectingSchedule, Date startDate) {
+//        // Check if both flights are on the same date as the startDate
+//        if (!isSameDate(originSchedule.getDepartureTime(), startDate) || !isSameDate(connectingSchedule.getDepartureTime(), startDate)) {
+//            return false;
+//        }
+//
+//        // Check if the layover time between flights is within a reasonable range
+//        long layoverDurationInHours = getHoursDifference(originSchedule.getArrivalTime(), connectingSchedule.getDepartureTime());
+//        return layoverDurationInHours >= MIN_LAYOVER_HOURS && layoverDurationInHours <= MAX_LAYOVER_HOURS;
+//    }
+//
+//    private boolean isSameDate(Date date1, Date date2) {
+//        // Simple date comparison logic, assuming date1 and date2 are not null
+//        // This compares only the day, month, and year parts of the dates
+//        java.util.Calendar cal1 = java.util.Calendar.getInstance();
+//        java.util.Calendar cal2 = java.util.Calendar.getInstance();
+//        cal1.setTime(date1);
+//        cal2.setTime(date2);
+//        return cal1.get(java.util.Calendar.YEAR) == cal2.get(java.util.Calendar.YEAR) &&
+//               cal1.get(java.util.Calendar.DAY_OF_YEAR) == cal2.get(java.util.Calendar.DAY_OF_YEAR);
+//    }
+//
+//    private long getHoursDifference(Date date1, Date date2) {
+//        // Calculate the difference in hours between two dates manually
+//        long diffInMillies = Math.abs(date2.getTime() - date1.getTime());
+//        return diffInMillies / (60 * 60 * 1000); // Convert milliseconds to hours
+//    }
+
     
     
-    
+
+
+}    
+
+

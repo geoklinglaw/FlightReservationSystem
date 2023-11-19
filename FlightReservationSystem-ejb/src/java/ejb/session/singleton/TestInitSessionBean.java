@@ -41,9 +41,9 @@ import util.enumeration.FlightStatus;
  *
  * @author apple
  */
-@Startup
-@Singleton
-@LocalBean
+//@Startup
+//@Singleton
+//@LocalBean
 public class TestInitSessionBean implements TestInitSessionBeanLocal {
 
     @EJB(name = "EmployeeSessionBeanLocal")

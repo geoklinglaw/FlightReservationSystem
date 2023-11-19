@@ -30,9 +30,9 @@ import javax.persistence.PersistenceContext;
  *
  * @author apple
  */
-//@Startup
-//@Singleton
-//@LocalBean
+@Startup
+@Singleton
+@LocalBean
 public class DataInitSessionBean implements DataInitSessionBeanLocal {
     
     @EJB

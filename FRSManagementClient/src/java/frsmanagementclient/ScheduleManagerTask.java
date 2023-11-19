@@ -401,20 +401,25 @@ public class ScheduleManagerTask {
         Airport origin = route.getOrigin();
         Airport destination = route.getDestination();
         
-        FlightRoute fr = FRSManagementSessionBeanRemote.viewFlightRoute(destination, origin);
-        
-        if (fr != null) {
-            System.out.print("\nThere's no complementary flight route with the same aircraft configuration, enter 'Y' to create > ");
-            if (sc.nextLine().equals("Y")) {
-                System.out.print("\nEnter another Flight Number: \n> ");
-                String flightNum = sc.nextLine().trim();
+        try {
+            FlightRoute fr = FRSManagementSessionBeanRemote.viewFlightRoute(destination, origin);
 
-                Flight flight = FRSManagementSessionBeanRemote.createFlight(flightNum, fr.getId(), configId);
-                System.out.print("\nSuccessfully created complementary flight " + flightNum + "!");
-                return flight;
-            } else {
-                System.out.println("Alright, no complementary flight is created!");
+            if (fr != null) {
+                System.out.print("\nThere's an existing complementary flight route, enter 'Y' to create complementary flight > ");
+                if (sc.nextLine().equals("Y")) {
+                    System.out.print("\nEnter another Flight Number: \n> ");
+                    String flightNum = sc.nextLine().trim();
+
+                    Flight flight = FRSManagementSessionBeanRemote.createFlight(flightNum, fr.getId(), configId);
+                    System.out.print("\nSuccessfully created complementary flight " + flightNum + "!");
+                    return flight;
+                } else {
+                    System.out.println("Alright, no complementary flight is created!");
+                }
             }
+        } catch (Exception ex) {
+            System.out.println("\nThere are no existing complementary flight routes.");
+            return null;
         }
         
         return null;
@@ -430,7 +435,7 @@ public class ScheduleManagerTask {
 
         if (selectedFlights.size() != 0) {
 
-            System.out.print("There are existing complementary flights.\nEnter 'Y' if you would like to create a complementary flight route > ");
+            System.out.print("There are existing complementary flights.\nEnter 'Y' if you would like to create a complementary flight schedule plan > ");
             if (sc.nextLine().equals("Y")) {
                 
                 String flightText = "\n Select which flight you want to create complementary FSP for: \n";
@@ -444,22 +449,22 @@ public class ScheduleManagerTask {
                 
                 return new Long(flightID);
             }
-        } 
+        } else {
        
-        
-        System.out.print("There are no existing complementary flights.\nEnter 'Y' if you would still like to create a complementary flight schedule plan > ");
-        if (sc.nextLine().equals("Y")) {
-            Long originID = new Long(origin.getId());
-            Long destID = new Long(destination.getId());
-            FlightRoute newFR = FRSManagementSessionBeanRemote.createFlightRoute(originID, destID);
-            System.out.print("\nComplementary flight route from " + origin.getCountry() + " to " + destination.getCountry() + " has been created!");
-            System.out.println("\n *** Creating Complementary Flight now ***");
+            System.out.print("There are no existing complementary flights.\nEnter 'Y' if you would still like to create a complementary flight schedule plan > ");
+            if (sc.nextLine().equals("Y")) {
+                Long originID = new Long(origin.getId());
+                Long destID = new Long(destination.getId());
+                FlightRoute newFR = FRSManagementSessionBeanRemote.createFlightRoute(originID, destID);
+                System.out.print("\nComplementary flight route from " + origin.getCountry() + " to " + destination.getCountry() + " has been created!");
+                System.out.println("\n *** Creating Complementary Flight now ***");
 
-            Flight flight = createComplementaryFlight(newFR.getId(), configId, sc);
+                Flight flight = createComplementaryFlight(newFR.getId(), configId, sc);
 
-            if (flight != null) {
-                System.out.print("\nComplementary flight " + flight.getFlightNumber() + " has been created!");
-                return flight.getId();
+                if (flight != null) {
+                    System.out.print("\nComplementary flight " + flight.getFlightNumber() + " has been created!");
+                    return flight.getId();
+                }
             }
         }
 

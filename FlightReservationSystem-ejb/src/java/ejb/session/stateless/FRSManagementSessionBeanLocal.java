@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javafx.util.Pair;
 import javax.ejb.Local;
+import util.exception.NoFlightRouteFoundException;
 
 /**
  *
@@ -63,7 +64,7 @@ public interface FRSManagementSessionBeanLocal {
     
     public FlightCabinClass viewCabinClass(Long fsId, Long ccId);
     
-    public FlightRoute viewFlightRoute(Airport origin, Airport destination);
+    public FlightRoute viewFlightRoute(Airport origin, Airport destination) throws NoFlightRouteFoundException;
     
     public FlightRoute retrieveFlightRouteById(Long id);
     

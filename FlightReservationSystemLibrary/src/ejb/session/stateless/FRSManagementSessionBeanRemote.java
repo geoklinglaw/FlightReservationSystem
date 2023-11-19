@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javafx.util.Pair;
 import javax.ejb.Remote;
+import util.exception.NoFlightRouteFoundException;
 
 /**
  *
@@ -63,7 +64,8 @@ public interface FRSManagementSessionBeanRemote {
     
     public FlightCabinClass viewCabinClass(Long fsId, Long ccId);
     
-    public FlightRoute viewFlightRoute(Airport origin, Airport destination);
+    public FlightRoute viewFlightRoute(Airport origin, Airport destination) throws NoFlightRouteFoundException;
+
     
     public FlightRoute retrieveFlightRouteById(Long id);
     

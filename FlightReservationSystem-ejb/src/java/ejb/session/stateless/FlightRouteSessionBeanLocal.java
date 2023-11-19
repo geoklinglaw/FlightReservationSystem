@@ -6,7 +6,9 @@ package ejb.session.stateless;
 
 import entity.Airport;
 import entity.FlightRoute;
+import entity.FlightSchedule;
 import java.util.List;
+import javafx.util.Pair;
 import javax.ejb.Local;
 
 /**
@@ -29,4 +31,8 @@ public interface FlightRouteSessionBeanLocal {
     public List<FlightRoute> findOriginFlightRoute(String destIATA);
     
     public List<FlightRoute> findDestFlightRoute(String destIATA);
+    
+    public FlightRoute findSpecificFlightRouteWithCode(String iataO, String iataD);
+    
+    public List<Pair<FlightSchedule, FlightSchedule>> filterConnectingFS();
 }

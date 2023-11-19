@@ -36,6 +36,7 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import util.enumeration.CabinClassType;
 import util.enumeration.FlightStatus;
+import util.exception.NoFlightRouteFoundException;
 
 /**
  *
@@ -418,11 +419,15 @@ public class FRSManagementSessionBean implements FRSManagementSessionBeanRemote,
         return arrivalTime;
     }
     
-    public FlightRoute viewFlightRoute(Airport origin, Airport destination) {
-        FlightRoute route = flightRouteSessionBeanLocal.findSpecificFlightRoute(origin, destination);
-        int size = route.getFlightList().size();
+    public FlightRoute viewFlightRoute(Airport origin, Airport destination) throws NoFlightRouteFoundException {
+        FlightRoute route = flightRouteSessionBeanLocal.findSpecificFlightRouteWithCode(origin.getAirportCode(), destination.getAirportCode());
+        if (route == null || route.getFlightList().isEmpty()) {
+            throw new NoFlightRouteFoundException("No flight route or flights found for the specified airports: Origin - " 
+                                                  + origin.getAirportCode() + ", Destination - " + destination.getAirportCode());
+        }
         return route;
     }
+
     
     public List<FlightCabinClass> viewSeatsInventory(Long fsId) {
        FlightSchedule fs = flightSchedulePlanSessionBeanLocal.retrieveFlightScheduleById(fsId);

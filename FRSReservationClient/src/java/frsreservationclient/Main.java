@@ -11,6 +11,7 @@ import ejb.session.stateless.PersonSessionBeanRemote;
 import entity.Airport;
 import entity.CabinClass;
 import entity.Fare;
+import entity.Flight;
 import entity.FlightCabinClass;
 import entity.FlightRoute;
 import entity.FlightSchedule;
@@ -27,6 +28,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Scanner;
 import java.util.stream.Collectors;
+import javafx.util.Pair;
 import javax.ejb.EJB;
 import javax.ejb.EJBTransactionRolledbackException;
 import util.enumeration.CabinClassType;
@@ -413,7 +415,12 @@ public class Main {
                 printSelectedFlightSchedule(sc, mapTwo, numPass);
                 
             } else if (tripType == 1 && flightType == 2) {
+                System.out.println(startDate + " " + cabinType + " " + originCode + " " + destCode);
                 
+                List<Pair<FlightSchedule, FlightSchedule>> results = flightReservationSystemSessionBeanRemote.searchFlightsWithTwo(startDate, cabinType, originCode, destCode);
+                handleTwoWayFlight(results, cabinType, numPass);
+                
+
             }
             
             
@@ -421,10 +428,104 @@ public class Main {
 
     }
     
-    private static void handleTwoWayFlight() {
-        
+    private static void handleTwoWayFlight(List<Pair<FlightSchedule, FlightSchedule>> pairList, CabinClassType cabinType, int numPass) {
+        if (pairList.isEmpty()) {
+            System.out.println("No connecting flights found !");
+        } else {
+            int index = 0;
+            
+            for (Pair<FlightSchedule, FlightSchedule> pair: pairList) {
+                index += 1;
+                
+                System.out.printf(ANSI_GREEN + "\n\n                                              CONNECTING FLIGHT SCHEDULE PAIR " + index + ANSI_RESET + "\n");
+                
+                System.out.printf("%-4s %-12s %-16s %5s %10s %-30s %-30s %-15s\n", 
+                    "No", "Flight", "Cabin Class", "$$/pax", "Total $$", "Departure", "Arrival", "Duration");
+                
+                System.out.println("first " + pair.getKey().getFlightCabinClass().size());
+                for (FlightCabinClass fcc: pair.getKey().getFlightCabinClass()) {
+                    
+                    String flightNumA = pair.getKey().getFlightSchedulePlan().getFlight().getFlightNumber();
+                    CabinClassType ccTypeA = fcc.getCabinClass().getType();
+                    BigDecimal amountA = fcc.getFare().getFareAmount();
+                    long totalFareA = (long) 1000;
+                    String departureTimeA = new SimpleDateFormat("EEE, MMM dd, yyyy, hh:mm a").format(pair.getKey().getDepartureTime());
+                    String arrivalTimeA = new SimpleDateFormat("EEE, MMM dd, yyyy, hh:mm a").format(pair.getKey().getArrivalTime());
+                    double durationInHoursA = pair.getKey().getFlightDuration();
+                    int hoursA = (int) durationInHoursA;
+                    int minutesA = (int) ((durationInHoursA - hoursA) * 60);
+                    Long indexA = pair.getKey().getId();
+                    
+                    System.out.println(index + " first");
+                    System.out.printf("%-4d %-12s %-16s $%7.2f $%7.2f %-30s %-30s %d hrs %d mins\n",
+                        indexA, flightNumA, ccTypeA.toString(), amountA, (double) totalFareA, departureTimeA, arrivalTimeA, hoursA, minutesA);
+
+                }
+                
+                System.out.println("second " + pair.getKey().getFlightCabinClass().size());
+                for (FlightCabinClass fcc: pair.getValue().getFlightCabinClass()) {
+                    
+                    String flightNumB = pair.getValue().getFlightSchedulePlan().getFlight().getFlightNumber();
+                    CabinClassType ccTypeB = fcc.getCabinClass().getType();
+//                    BigDecimal amountB = fcc.getFare().getFareAmount();
+//                    long totalFareB = (long) (amountB.doubleValue() * numPass);
+                    BigDecimal amountB = new BigDecimal("300");
+                    long totalFareB = (long) 300 * numPass;
+
+                    String departureTimeB = new SimpleDateFormat("EEE, MMM dd, yyyy, hh:mm a").format(pair.getValue().getDepartureTime());
+                    String arrivalTimeB = new SimpleDateFormat("EEE, MMM dd, yyyy, hh:mm a").format(pair.getValue().getArrivalTime());
+                    double durationInHoursB = pair.getValue().getFlightDuration();
+                    int hoursB = (int) durationInHoursB;
+                    int minutesB = (int) ((durationInHoursB - hoursB) * 60);
+                    Long indexB = pair.getValue().getId();
+                    
+                    System.out.println(index + " second");
+                    System.out.printf("%-4d %-12s %-16s $%7.2f $%7.2f %-30s %-30s %d hrs %d mins\n",
+                        indexB, flightNumB, ccTypeB.toString(), amountB, (double) totalFareB, departureTimeB, arrivalTimeB, hoursB, minutesB);
+
+                    
+                }
+            }
+        }
     }
     
+    
+    private static FlightSchedule getPreferredFlightSchedule(FlightRoute route, CabinClassType cabinType) {
+        for (Flight flight : route.getFlightList()) {
+            for (FlightSchedule fs : flight.getFlightSchedulePlan().getFlightSchedule()) {
+                for (FlightCabinClass fcc : fs.getFlightCabinClass()) {
+                    if (fcc.getCabinClass().getType().equals(cabinType)) {
+                        return fs;
+                    }
+                }
+            }
+        }
+        return null; // Return null if no matching FlightSchedule is found
+    }
+
+    private static void printFlightScheduleDetails(FlightSchedule fs, CabinClassType cabinType, int numPass, int index) {
+        FlightCabinClass preferredCabinClass = fs.getFlightCabinClass().stream()
+            .filter(fcc -> fcc.getCabinClass().getType().equals(cabinType))
+            .findFirst()
+            .orElse(null);
+
+        if (preferredCabinClass != null) {
+            String flightNumber = fs.getFlightSchedulePlan().getFlight().getFlightNumber();
+            BigDecimal fareAmount = preferredCabinClass.getFare().getFareAmount();
+            String departureTime = new SimpleDateFormat("EEE, MMM dd, yyyy, hh:mm a").format(fs.getDepartureTime());
+            String arrivalTime = new SimpleDateFormat("EEE, MMM dd, yyyy, hh:mm a").format(fs.getArrivalTime());
+            double durationInHours = fs.getFlightDuration();
+            int hours = (int) durationInHours;
+            int minutes = (int) ((durationInHours - hours) * 60);
+            double totalFare = fareAmount.doubleValue() * numPass;
+
+            System.out.printf("%-4d %-12s %-16s $%7.2f $%7.2f %-30s %-30s %d hrs %d mins\n", 
+                index, flightNumber, cabinType.toString(), fareAmount, totalFare, departureTime, arrivalTime, hours, minutes);
+        } else {
+            System.out.println("No preferred cabin class found for FlightSchedule ID: " + fs.getId());
+        }
+    }
+
     private static void printSelectedFlightSchedule(Scanner sc, HashMap<Long, Integer> map, int numPass) {
             System.out.print("\nEnter the flight schedule ID > ");
             int id = sc.nextInt();

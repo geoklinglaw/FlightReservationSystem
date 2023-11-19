@@ -4,9 +4,11 @@
  */
 package ejb.session.stateless;
 
+import entity.FlightRoute;
 import entity.FlightSchedule;
 import java.util.Date;
 import java.util.List;
+import javafx.util.Pair;
 import javax.ejb.Local;
 import util.enumeration.CabinClassType;
 
@@ -24,4 +26,6 @@ public interface FlightReservationSystemSessionBeanLocal {
     public FlightSchedule findFS(Long id) ;
     
     public void bookSeats(List<String> seatNumList, Long ccId);
+    
+    public List<Pair<FlightSchedule, FlightSchedule>> searchFlightsWithTwo(Date startDate, CabinClassType ccType, String originIATA, String destIATA);
 }
