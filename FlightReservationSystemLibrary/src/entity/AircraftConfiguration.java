@@ -31,6 +31,10 @@ import util.enumeration.AircraftName;
     @NamedQuery(
         name = "viewAllAircraftConfigurations",
         query = "SELECT acc FROM AircraftConfiguration acc ORDER BY acc.name, acc.aircraftType.name ASC"
+    ),
+    @NamedQuery(
+        name = "retrieveAircraftConfigurationByNameAndStyle",
+        query = "SELECT acc FROM AircraftConfiguration acc WHERE acc.name = :name AND acc.aircraftStyle = :style" 
     )
 
 })
@@ -42,8 +46,6 @@ public class AircraftConfiguration implements Serializable {
     private Long id;
     @Column(nullable = false)
     private String name;
-    @Column(nullable = false)
-    private BigDecimal maxSeatCapacity;
     @Column(nullable = false)
     private String aircraftStyle;
     @OneToMany (mappedBy = "aircraftConfig")
@@ -61,7 +63,7 @@ public class AircraftConfiguration implements Serializable {
     }
     
     public AircraftConfiguration(AircraftType type, String aircraftStyle) {
-        this.name = type.getName();
+        this.name = type.getName() + aircraftStyle;
         this.cabinClassList = new ArrayList<CabinClass>();
         this.aircraftType = type;
         this.flight = new ArrayList<Flight>();
@@ -159,19 +161,7 @@ public class AircraftConfiguration implements Serializable {
         this.flight = flight;
     }
 
-    /**
-     * @return the maxSeatCapacity
-     */
-    public BigDecimal getMaxSeatCapacity() {
-        return maxSeatCapacity;
-    }
 
-    /**
-     * @param maxSeatCapacity the maxSeatCapacity to set
-     */
-    public void setMaxSeatCapacity(BigDecimal maxSeatCapacity) {
-        this.maxSeatCapacity = maxSeatCapacity;
-    }
 
     /**
      * @return the aircraftStyle

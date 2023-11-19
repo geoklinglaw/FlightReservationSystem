@@ -113,7 +113,7 @@ public class FleetManagerTask {
             System.out.print("Enter seating configuration per column \n> ");
             String seatConfig = sc.nextLine().trim();
             
-            CabinClass cabinClass = new CabinClass(ccType, new BigDecimal(numSeats), new BigDecimal(numAisles), new BigDecimal(numRows), new BigDecimal(numAisles), seatConfig);
+            CabinClass cabinClass = new CabinClass(ccType, new BigDecimal(numSeats), new BigDecimal(numSeatsAbreast), new BigDecimal(numRows), new BigDecimal(numAisles), seatConfig);
             cabinClasses.add(cabinClass);
             
         }
@@ -132,7 +132,7 @@ public class FleetManagerTask {
         int index = 1;
         
         for (AircraftConfiguration acConfig: aircraftConfigList) {
-            acListString += index + ": " + acConfig.getName() + "\n";
+            acListString += index + ": " + acConfig.getName() + " " + acConfig.getAircraftStyle() + "\n";
             index += 1; 
         }
         
@@ -147,7 +147,7 @@ public class FleetManagerTask {
         int index = 1;
         
         for (AircraftConfiguration acConfig: aircraftConfigList) {
-            acListString += index + ": " + acConfig.getName() + " (" + acConfig.getName()+ " " + acConfig.getMaxSeatCapacity() + ")\n";
+            acListString += index + ": " + acConfig.getName() + " (" + acConfig.getName()+ " " + ")\n";
             index += 1; 
         }
         

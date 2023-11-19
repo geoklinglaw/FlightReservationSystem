@@ -38,10 +38,9 @@ public class AircraftTypeSessionBean implements AircraftTypeSessionBeanRemote, A
     }
     
     @Override
-    public AircraftType retrieveAircraftTypeByValue(int value) {
-        AircraftName aircraftNameEnum = AircraftName.fromValue(value);
+    public AircraftType retrieveAircraftTypeByValue(String value) {
         Query query = em.createNamedQuery("selectAircraftTypeByName");
-        query.setParameter("inName", aircraftNameEnum);
+        query.setParameter("inName", value);
         
         return (AircraftType) query.getSingleResult();
     }

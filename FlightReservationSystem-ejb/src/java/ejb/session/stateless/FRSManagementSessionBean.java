@@ -34,6 +34,7 @@ import java.util.Set;
 import javafx.util.Pair;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import util.enumeration.AircraftName;
 import util.enumeration.CabinClassType;
 import util.enumeration.FlightStatus;
 import util.exception.NoFlightRouteFoundException;
@@ -84,12 +85,14 @@ public class FRSManagementSessionBean implements FRSManagementSessionBeanRemote,
     @Override
     public void createAircraftConfiguration(String style, int aircraftType, int maxSeats, List<CabinClass> ccList) {
         
-        AircraftType acType = aircraftTypeSessionBeanLocal.retrieveAircraftTypeByValue(aircraftType);
+        AircraftName aircraftNameEnum = AircraftName.fromValue(aircraftType);
+        String result = aircraftNameEnum + style;
+
+        AircraftType acType = aircraftTypeSessionBeanLocal.retrieveAircraftTypeByValue(result);
         
         AircraftConfiguration aircraftConfig = new AircraftConfiguration(acType, style);
         aircraftConfig.setAircraftType(acType);
         aircraftConfig.setCabinClassList(ccList);
-        aircraftConfig.setMaxSeatCapacity(new BigDecimal(maxSeats));
         
         for (CabinClass cc: ccList) {
             cc.setAircraftConfig(aircraftConfig);

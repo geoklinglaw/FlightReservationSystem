@@ -41,11 +41,10 @@ import util.enumeration.FlightStatus;
  *
  * @author apple
  */
-//@Startup
-//@Singleton
-//@LocalBean
+@Startup
+@Singleton
+@LocalBean
 public class TestInitSessionBean implements TestInitSessionBeanLocal {
-
     @EJB(name = "EmployeeSessionBeanLocal")
     private EmployeeSessionBeanLocal employeeSessionBeanLocal;
 
@@ -75,10 +74,12 @@ public class TestInitSessionBean implements TestInitSessionBeanLocal {
 
     @EJB(name = "FlightSchedulePlanSessionBeanLocal")
     private FlightSchedulePlanSessionBeanLocal flightSchedulePlanSessionBeanLocal;
-
-
+    
     @EJB
     private AircraftConfigurationSessionBeanLocal aircraftConfigurationSessionBean;
+    
+    @EJB
+    private FlightRouteSessionBeanLocal flightRouteSessionBean;
     
     @PersistenceContext(unitName = "FlightReservationSystem-ejbPU")
     private EntityManager em;
@@ -114,39 +115,74 @@ public class TestInitSessionBean implements TestInitSessionBeanLocal {
         if (em.find(Airport.class, 1L) == null) {
             Airport changi = new Airport("SIN", "Changi", "Changi", "Singapore", "Singapore");
             Airport taoyuan = new Airport("TPE", "Taoyuan", "Taoyuan", "Taoyuan", "Taiwan");
-            Airport perth = new Airport("PER", "Perth", "Perth", "Perth", "Australia");
+            Airport sydney = new Airport("SYD", "Sydney", "Sydney", "Sydney", "Australia");
             Airport hongkong = new Airport("HKG", "Hongkong", "Hongkong", "Hongkong", "Hongkong");
             Airport narita = new Airport("NRT", "Narita", "Narita", "Narita", "Japan");
+            Airport bangkok = new Airport("BKK", "Bangkok", "Bangkok", "Bangkok", "Thailand");
             
             Long changiID = airportEntitySessionBean.createNewAirport(changi);
             Long taoyuanID = airportEntitySessionBean.createNewAirport(taoyuan);
-            Long perthID = airportEntitySessionBean.createNewAirport(perth);
+            Long sydneyID = airportEntitySessionBean.createNewAirport(sydney);
             Long hongkongID = airportEntitySessionBean.createNewAirport(hongkong);
             Long naritaID = airportEntitySessionBean.createNewAirport(narita);
+            Long bangkokID = airportEntitySessionBean.createNewAirport(bangkok);
+            
         }
         
         if (em.find(AircraftConfiguration.class, 1L) == null) {
             AircraftType boeing737 = new AircraftType(AircraftName.B737.getValue());
             AircraftType boeing747 = new AircraftType(AircraftName.B747.getValue());
             
+            aircraftTypeSessionBeanLocal.createNewAircraftType(boeing737);
+            aircraftTypeSessionBeanLocal.createNewAircraftType(boeing747);
+            
             AircraftConfiguration boeing737AllEconomy = new AircraftConfiguration(boeing737, "All Economy");
-            boeing737AllEconomy.getCabinClassList().add(new CabinClass("Y", new BigDecimal(180), new BigDecimal(1), new BigDecimal(30), new BigDecimal(6), "3-3"));
+            aircraftConfigurationSessionBean.createNewAircraftConfiguration(boeing737AllEconomy);
+            CabinClass cc0 = new CabinClass("Y", new BigDecimal(180), new BigDecimal(1), new BigDecimal(30), new BigDecimal(6), "3-3");
+            
+            cabinClassSessionBeanLocal.createNewCabinClass(cc0);
+            boeing737AllEconomy.getCabinClassList().add(cc0);
+            
 
             AircraftConfiguration boeing737ThreeClasses = new AircraftConfiguration(boeing737, "Three Classes");
-            boeing737ThreeClasses.getCabinClassList().add(new CabinClass("F", new BigDecimal(10), new BigDecimal(1), new BigDecimal(5), new BigDecimal(2), "1-1"));
-            boeing737ThreeClasses.getCabinClassList().add(new CabinClass("J", new BigDecimal(20), new BigDecimal(1), new BigDecimal(5), new BigDecimal(4), "2-2"));
-            boeing737ThreeClasses.getCabinClassList().add(new CabinClass("Y", new BigDecimal(150), new BigDecimal(1), new BigDecimal(25), new BigDecimal(6), "3-3"));
-
+            aircraftConfigurationSessionBean.createNewAircraftConfiguration(boeing737ThreeClasses);
+            CabinClass cc1 = new CabinClass("F", new BigDecimal(10), new BigDecimal(1), new BigDecimal(5), new BigDecimal(2), "1-1");
+            CabinClass cc2 = new CabinClass("J", new BigDecimal(20), new BigDecimal(1), new BigDecimal(5), new BigDecimal(4), "2-2");
+            CabinClass cc3 = new CabinClass("Y", new BigDecimal(150), new BigDecimal(1), new BigDecimal(25), new BigDecimal(6), "3-3");
+            
+            cabinClassSessionBeanLocal.createNewCabinClass(cc3);
+            cabinClassSessionBeanLocal.createNewCabinClass(cc2);
+            cabinClassSessionBeanLocal.createNewCabinClass(cc1);
+            
+            boeing737ThreeClasses.getCabinClassList().add(cc1);
+            boeing737ThreeClasses.getCabinClassList().add(cc2);
+            boeing737ThreeClasses.getCabinClassList().add(cc3);
+            
             
 
             AircraftConfiguration boeing747AllEconomy = new AircraftConfiguration(boeing747, "All Economy");
-            boeing747AllEconomy.getCabinClassList().add(new CabinClass("Y", new BigDecimal(380), new BigDecimal(2), new BigDecimal(38), new BigDecimal(10), "3-4-3"));
+            aircraftConfigurationSessionBean.createNewAircraftConfiguration(boeing747AllEconomy);
+            CabinClass cc4 = new CabinClass("Y", new BigDecimal(380), new BigDecimal(2), new BigDecimal(38), new BigDecimal(10), "3-4-3");
+            cabinClassSessionBeanLocal.createNewCabinClass(cc4);
+            boeing747AllEconomy.getCabinClassList().add(cc4);
+            
 
 
             AircraftConfiguration boeing747ThreeClasses = new AircraftConfiguration(boeing747, "Three Classes");
-            boeing747ThreeClasses.getCabinClassList().add(new CabinClass("F", new BigDecimal(10), new BigDecimal(1), new BigDecimal(5), new BigDecimal(2), "1-1"));
-            boeing747ThreeClasses.getCabinClassList().add(new CabinClass("J", new BigDecimal(30), new BigDecimal(2), new BigDecimal(5), new BigDecimal(6), "2-2-2"));
-            boeing747ThreeClasses.getCabinClassList().add(new CabinClass("Y", new BigDecimal(320), new BigDecimal(2), new BigDecimal(32), new BigDecimal(10), "3-4-3"));
+            aircraftConfigurationSessionBean.createNewAircraftConfiguration(boeing747ThreeClasses);
+            CabinClass cc5 = new CabinClass("F", new BigDecimal(10), new BigDecimal(1), new BigDecimal(5), new BigDecimal(2), "1-1");
+            CabinClass cc6 = new CabinClass("J", new BigDecimal(30), new BigDecimal(2), new BigDecimal(5), new BigDecimal(6), "2-2-2");
+            CabinClass cc7 = new CabinClass("Y", new BigDecimal(320), new BigDecimal(2), new BigDecimal(32), new BigDecimal(10), "3-4-3");
+            
+            cabinClassSessionBeanLocal.createNewCabinClass(cc5);
+            cabinClassSessionBeanLocal.createNewCabinClass(cc6);
+            cabinClassSessionBeanLocal.createNewCabinClass(cc7);
+            
+            
+            boeing747ThreeClasses.getCabinClassList().add(cc5);
+            boeing747ThreeClasses.getCabinClassList().add(cc6);
+            boeing747ThreeClasses.getCabinClassList().add(cc7);
+            
 
         }   
         
@@ -157,13 +193,141 @@ public class TestInitSessionBean implements TestInitSessionBeanLocal {
             Airport nrt = airportEntitySessionBean.retrieveAirportByCode("NRT");
             Airport syd = airportEntitySessionBean.retrieveAirportByCode("SYD");
             
+            
             FlightRoute sinToHkg = new FlightRoute(sin, hkg, FlightRouteStatus.ACTIVE.getValue());
             FlightRoute hkgToSin = new FlightRoute(hkg, sin, FlightRouteStatus.ACTIVE.getValue());
-        }
+            FlightRoute sinToTpe = new FlightRoute(sin, tpe, FlightRouteStatus.ACTIVE.getValue());
+            FlightRoute tpeToSin = new FlightRoute(tpe, sin, FlightRouteStatus.ACTIVE.getValue());
+            FlightRoute sinToNrt = new FlightRoute(sin, nrt, FlightRouteStatus.ACTIVE.getValue());
+            FlightRoute nrtToSin = new FlightRoute(nrt, sin, FlightRouteStatus.ACTIVE.getValue());
+            FlightRoute hkgToNrt = new FlightRoute(hkg, nrt, FlightRouteStatus.ACTIVE.getValue());
+            FlightRoute nrtToHkg = new FlightRoute(nrt, hkg, FlightRouteStatus.ACTIVE.getValue());
+            FlightRoute tpeToNrt = new FlightRoute(tpe, nrt, FlightRouteStatus.ACTIVE.getValue());
+            FlightRoute nrtToTpe = new FlightRoute(nrt, tpe, FlightRouteStatus.ACTIVE.getValue());
+            FlightRoute sinToSyd = new FlightRoute(sin, syd, FlightRouteStatus.ACTIVE.getValue());
+            FlightRoute sydToSin = new FlightRoute(syd, sin, FlightRouteStatus.ACTIVE.getValue());
+            FlightRoute sydToNrt = new FlightRoute(syd, nrt, FlightRouteStatus.ACTIVE.getValue());
+            FlightRoute nrtToSyd = new FlightRoute(nrt, syd, FlightRouteStatus.ACTIVE.getValue());
         
-        if (em.find(Flight.class, 1L) == null) {
+            FlightRoute hkgToTpe = new FlightRoute(hkg, tpe, FlightRouteStatus.ACTIVE.getValue());            
+            FlightRoute tpeToHkg = new FlightRoute(tpe, hkg, FlightRouteStatus.ACTIVE.getValue());
+            FlightRoute hkgToSyd = new FlightRoute(hkg, syd, FlightRouteStatus.ACTIVE.getValue());
+            FlightRoute sydToHkg = new FlightRoute(syd, hkg, FlightRouteStatus.ACTIVE.getValue());
 
-        }
         
+            flightRouteSessionBean.createNewFlightRoute(sinToHkg, true);
+            flightRouteSessionBean.createNewFlightRoute(hkgToSin, true);
+            flightRouteSessionBean.createNewFlightRoute(sinToTpe, true);
+            flightRouteSessionBean.createNewFlightRoute(tpeToSin, true);
+            flightRouteSessionBean.createNewFlightRoute(sinToNrt, true);
+            flightRouteSessionBean.createNewFlightRoute(nrtToSin, true);
+            flightRouteSessionBean.createNewFlightRoute(hkgToNrt, true);
+            flightRouteSessionBean.createNewFlightRoute(nrtToHkg, true);
+            flightRouteSessionBean.createNewFlightRoute(tpeToNrt, true);
+            flightRouteSessionBean.createNewFlightRoute(nrtToTpe, true);
+            flightRouteSessionBean.createNewFlightRoute(sinToSyd, true);
+            flightRouteSessionBean.createNewFlightRoute(sydToSin, true);
+            flightRouteSessionBean.createNewFlightRoute(sydToNrt, true);
+            flightRouteSessionBean.createNewFlightRoute(nrtToSyd, true);
+
+            flightRouteSessionBean.createNewFlightRoute(hkgToTpe, true);
+            flightRouteSessionBean.createNewFlightRoute(tpeToHkg, true);
+            flightRouteSessionBean.createNewFlightRoute(hkgToSyd, true);
+            flightRouteSessionBean.createNewFlightRoute(sydToHkg, true);           
+
+
+        if (em.find(Flight.class, 1L) == null) {
+            AircraftConfiguration ac1 = aircraftConfigurationSessionBean.retrieveAircraftConfigurationByNameAndStyle("Boeing 737", "Three Classes");
+            
+            Flight ML111 = new Flight("ML111", 1);
+            ML111.setFlightRoute(sinToHkg);
+            ML111.setAircraftConfig(ac1);
+           
+            
+            Flight ML112 = new Flight("ML112", 1);
+            ML112.setFlightRoute(hkgToSin);
+            ML112.setAircraftConfig(ac1);
+            
+            Flight ML211 = new Flight("ML211", 1);
+            ML211.setFlightRoute(sinToTpe);
+            ML211.setAircraftConfig(ac1);
+            
+            Flight ML212 = new Flight("ML212", 1);
+            ML212.setFlightRoute(tpeToSin);
+            ML212.setAircraftConfig(ac1);
+            
+            AircraftConfiguration ac2 = aircraftConfigurationSessionBean.retrieveAircraftConfigurationByNameAndStyle("Boeing 747", "Three Classes");
+            
+            Flight ML311 = new Flight("ML311", 1);
+            ML311.setFlightRoute(sinToNrt);
+            ML311.setAircraftConfig(ac2);
+            
+            Flight ML312 = new Flight("ML312", 1);
+            ML312.setFlightRoute(nrtToSin);
+            ML312.setAircraftConfig(ac2);
+            
+            Flight ML411 = new Flight("ML411", 1);
+            ML411.setFlightRoute(hkgToNrt);
+            ML411.setAircraftConfig(ac1);
+            
+            Flight ML412 = new Flight("ML412", 1);
+            ML412.setFlightRoute(nrtToHkg);
+            ML412.setAircraftConfig(ac1);
+            
+            Flight ML511 = new Flight("ML511", 1);
+            ML511.setFlightRoute(tpeToNrt);
+            ML511.setAircraftConfig(ac1);
+            
+            Flight ML512 = new Flight("ML512", 1);
+            ML512.setFlightRoute(nrtToTpe);
+            ML512.setAircraftConfig(ac1);
+            
+            Flight ML611 = new Flight("ML611", 1);
+            ML611.setFlightRoute(sinToSyd);
+            ML611.setAircraftConfig(ac1);
+            
+            Flight ML612 = new Flight("ML612", 1);
+            ML612.setFlightRoute(sydToSin);
+            ML612.setAircraftConfig(ac1);
+            
+            AircraftConfiguration ac3 = aircraftConfigurationSessionBean.retrieveAircraftConfigurationByNameAndStyle("Boeing 737", "All Economy");
+            
+            Flight ML621 = new Flight("ML621", 1);
+            ML621.setFlightRoute(sinToSyd);
+            ML621.setAircraftConfig(ac3);
+            
+            Flight ML622 = new Flight("ML622", 1);
+            ML622.setFlightRoute(sydToSin);
+            ML622.setAircraftConfig(ac3);
+            
+            Flight ML711 = new Flight("ML711", 1);
+            ML711.setFlightRoute(sydToNrt);
+            ML711.setAircraftConfig(ac2);
+            
+            Flight ML712 = new Flight("ML712", 1);
+            ML712.setFlightRoute(nrtToSyd);
+            ML712.setAircraftConfig(ac2);
+            
+            flightSessionBeanLocal.createNewFlight(ML111);
+            flightSessionBeanLocal.createNewFlight(ML112);
+            flightSessionBeanLocal.createNewFlight(ML211);
+            flightSessionBeanLocal.createNewFlight(ML212);
+            flightSessionBeanLocal.createNewFlight(ML311);
+            flightSessionBeanLocal.createNewFlight(ML312);
+            flightSessionBeanLocal.createNewFlight(ML411);
+            flightSessionBeanLocal.createNewFlight(ML412);
+            flightSessionBeanLocal.createNewFlight(ML511);
+            flightSessionBeanLocal.createNewFlight(ML512);
+            flightSessionBeanLocal.createNewFlight(ML611);
+            flightSessionBeanLocal.createNewFlight(ML612);
+            flightSessionBeanLocal.createNewFlight(ML621);
+            flightSessionBeanLocal.createNewFlight(ML622);
+            flightSessionBeanLocal.createNewFlight(ML711);
+            flightSessionBeanLocal.createNewFlight(ML712);
+            
+            
+        }
+    }
     }
 }
+

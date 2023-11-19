@@ -20,6 +20,9 @@ public interface FlightRouteSessionBeanRemote {
     
     public void createNewFlightRoute(FlightRoute flightRoute);
     
+    public void createNewFlightRoute(FlightRoute flightRoute, boolean data);    
+
+    
     public List<FlightRoute> viewAllFlightRoute();
     
     public FlightRoute retrieveFlightRouteById(Long id);

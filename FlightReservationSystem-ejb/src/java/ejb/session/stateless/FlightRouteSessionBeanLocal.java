@@ -19,6 +19,8 @@ import javax.ejb.Local;
 public interface FlightRouteSessionBeanLocal {
     
     public void createNewFlightRoute(FlightRoute flightRoute);
+
+    public void createNewFlightRoute(FlightRoute flightRoute, boolean data);  
     
     public List<FlightRoute> viewAllFlightRoute();
     

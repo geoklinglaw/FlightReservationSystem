@@ -21,4 +21,6 @@ public interface AircraftConfigurationSessionBeanLocal {
     
     public AircraftConfiguration retrieveAircraftConfigurationById(Long id);
     
+    public AircraftConfiguration retrieveAircraftConfigurationByNameAndStyle(String name, String style);
+    
 }

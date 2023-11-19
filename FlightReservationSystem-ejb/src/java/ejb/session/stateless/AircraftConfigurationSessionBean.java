@@ -9,6 +9,7 @@ import entity.AircraftType;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
@@ -41,6 +42,16 @@ public class AircraftConfigurationSessionBean implements AircraftConfigurationSe
         AircraftConfiguration config = em.find(AircraftConfiguration.class, id);
         
         return config;
+    }
+    
+    @Override
+    public AircraftConfiguration retrieveAircraftConfigurationByNameAndStyle(String name, String style) {
+        Query query = em.createNamedQuery("retrieveAircraftConfigurationByNameAndStyle");
+        query.setParameter("name", name);
+        query.setParameter("style", style);
+
+        return (AircraftConfiguration) query.getSingleResult();
+
     }
 
 }

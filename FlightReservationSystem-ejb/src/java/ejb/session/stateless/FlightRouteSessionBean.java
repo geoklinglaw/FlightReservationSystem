@@ -42,6 +42,12 @@ public class FlightRouteSessionBean implements FlightRouteSessionBeanRemote, Fli
         em.persist(flightRoute);
     }
     
+    
+    @Override
+    public void createNewFlightRoute(FlightRoute flightRoute, boolean data) {
+        em.persist(flightRoute);
+    }
+    
     @Override
     public List<FlightRoute> viewAllFlightRoute() {
         em.setProperty ("javax.persistence.cache.storeMode", "REFRESH"); 
