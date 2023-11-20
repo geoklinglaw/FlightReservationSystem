@@ -14,6 +14,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import util.enumeration.CabinClassType;
 
 /**
  *
@@ -26,6 +27,10 @@ public class FlightBooking implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    private BigDecimal fareAmount;
+    private BigDecimal numPassenger;
+    private List<String> seatList;
+    private CabinClassType ccType;
     
     @ManyToMany (mappedBy = "flightBooking")
     private List<Seat> seatBookings;
@@ -35,6 +40,7 @@ public class FlightBooking implements Serializable {
 
     @ManyToOne
     private FlightReservation flightReservation;
+    
     
     public FlightBooking() {
     }
@@ -118,6 +124,62 @@ public class FlightBooking implements Serializable {
      */
     public void setFlightReservation(FlightReservation flightReservation) {
         this.flightReservation = flightReservation;
+    }
+
+    /**
+     * @return the fareAmount
+     */
+    public BigDecimal getFareAmount() {
+        return fareAmount;
+    }
+
+    /**
+     * @param fareAmount the fareAmount to set
+     */
+    public void setFareAmount(BigDecimal fareAmount) {
+        this.fareAmount = fareAmount;
+    }
+
+    /**
+     * @return the numPassenger
+     */
+    public BigDecimal getNumPassenger() {
+        return numPassenger;
+    }
+
+    /**
+     * @param numPassenger the numPassenger to set
+     */
+    public void setNumPassenger(BigDecimal numPassenger) {
+        this.numPassenger = numPassenger;
+    }
+
+    /**
+     * @return the seatList
+     */
+    public List<String> getSeatList() {
+        return seatList;
+    }
+
+    /**
+     * @param seatList the seatList to set
+     */
+    public void setSeatList(List<String> seatList) {
+        this.seatList = seatList;
+    }
+
+    /**
+     * @return the ccType
+     */
+    public CabinClassType getCcType() {
+        return ccType;
+    }
+
+    /**
+     * @param ccType the ccType to set
+     */
+    public void setCcType(CabinClassType ccType) {
+        this.ccType = ccType;
     }
 
 

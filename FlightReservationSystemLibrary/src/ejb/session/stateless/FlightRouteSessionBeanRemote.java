@@ -12,6 +12,7 @@ import javafx.util.Pair;
 import javax.ejb.Remote;
 import util.exception.FlightExistsForFlightRouteException;
 import util.exception.FlightRouteExistsException;
+import util.exception.FlightRouteNotFoundException;
 
 /**
  *
@@ -31,13 +32,15 @@ public interface FlightRouteSessionBeanRemote {
     
     public FlightRoute retrieveFlightRouteById(Long id);
     
-    public FlightRoute findSpecificFlightRoute(Airport origin, Airport destination);
     
     public List<FlightRoute> findOriginFlightRoute(String destIATA);
     
     public List<FlightRoute> findDestFlightRoute(String destIATA);
     
-    public FlightRoute findSpecificFlightRouteWithCode(String iataO, String iataD);
+    public FlightRoute findSpecificFlightRouteWithCode(String iataO, String iataD) throws FlightRouteNotFoundException;
+
+    public FlightRoute findSpecificFlightRoute(Airport origin, Airport destination) throws FlightRouteNotFoundException;
+
     
     public List<Pair<FlightSchedule, FlightSchedule>> filterConnectingFS();
 

@@ -33,6 +33,7 @@ import javax.ejb.EJB;
 import javax.ejb.EJBTransactionRolledbackException;
 import util.enumeration.CabinClassType;
 import util.enumeration.PersonRoleType;
+import util.exception.PersonNotFoundException;
 
 /**
  *
@@ -347,6 +348,7 @@ public class Main {
         System.out.print("Enter trip type (1: one way, 2: twoway) > ");
         int tripType = sc.nextInt();
         sc.nextLine();
+        
         System.out.print("Enter your departure airport IATA code> ");
         String originCode = sc.nextLine().trim();
         
@@ -387,10 +389,18 @@ public class Main {
             System.out.println(cabinClass + " " + cabinClass.getValue());
         }
         
-        System.out.print("Select your preference for cabin class > ");
         sc.nextLine();
-        String ccType = sc.nextLine().trim();
-        CabinClassType cabinType = CabinClassType.fromValue(ccType);
+        
+        CabinClassType cabinType = CabinClassType.fromValue("J");
+        System.out.print("Enter 'Y' if you have preference for cabin class > ");
+        String response = sc.nextLine();
+        if (response.equals("Y")) {
+            System.out.print("Select your preference for cabin class > ");
+
+            String ccType = sc.nextLine().trim();
+            cabinType = CabinClassType.fromValue(ccType);
+        }
+
         HashMap<Long, Integer> mapOne = new HashMap<Long, Integer>();
         HashMap<Long, Integer> mapTwo = new HashMap<Long, Integer>();
 
@@ -399,28 +409,53 @@ public class Main {
             if (tripType == 1 && flightType == 1) {
 
                 List<List<FlightSchedule>> listofFSList = flightReservationSystemSessionBeanRemote.searchFlightsOneWay(startDate, cabinType, originCode, destCode);
+
                 System.out.printf(ANSI_BLUE + "\n\n                                              FROM " + originCode + " TO " + destCode + ANSI_RESET);
-                handleOneWayFlight(listofFSList, tripType, originCode, destCode, startDate, numPass, cabinType, mapOne);
-                printSelectedFlightSchedule(sc, mapOne, numPass);
+                int result = handleOneWayFlight(listofFSList, tripType, originCode, destCode, startDate, numPass, cabinType, mapOne);
+                if (result != 0) {
+                    Long id = printSelectedFlightSchedule(sc, mapOne, numPass);
+                } else {
+                    System.out.println("You might want to search again");
+                    doSearchFlights(sc);
+                }
                 
             } else if (tripType == 2 && flightType == 1) {
                 List<List<FlightSchedule>> listofFSList1 = flightReservationSystemSessionBeanRemote.searchFlightsOneWay(startDate, cabinType, originCode, destCode);
                 System.out.printf(ANSI_BLUE + "\n\n                                              FROM " + originCode + " TO " + destCode + ANSI_RESET);
-                handleOneWayFlight(listofFSList1, tripType, originCode, destCode, startDate, numPass, cabinType, mapOne);
-                printSelectedFlightSchedule(sc, mapOne, numPass);
+                int result1 = handleOneWayFlight(listofFSList1, tripType, originCode, destCode, startDate, numPass, cabinType, mapOne);
+                if (result1 != 0) {
+                    Long id1 = printSelectedFlightSchedule(sc, mapOne, numPass);
+                } else {
+                    System.out.println("You might want to search again");
+                    doSearchFlights(sc);
+                }
+                
                 
                 System.out.printf(ANSI_BLUE + "\n\n                                              FROM " + destCode + " TO " + originCode + ANSI_RESET);
                 List<List<FlightSchedule>> listofFSList2 = flightReservationSystemSessionBeanRemote.searchFlightsOneWay(endDate, cabinType, destCode, originCode);
-                handleOneWayFlight(listofFSList2, tripType, originCode, destCode, endDate, numPass, cabinType, mapTwo);
-                printSelectedFlightSchedule(sc, mapTwo, numPass);
+                int result2 = handleOneWayFlight(listofFSList2, tripType, originCode, destCode, endDate, numPass, cabinType, mapTwo);
+                if (result2 != 0) {
+                    Long id2 = printSelectedFlightSchedule(sc, mapTwo, numPass);
+                } else {
+                    System.out.println("You might want to search again");
+                    doSearchFlights(sc);
+                }
+                
                 
             } else if (tripType == 1 && flightType == 2) {
                 System.out.println(startDate + " " + cabinType + " " + originCode + " " + destCode);
-                
+                System.out.printf(ANSI_BLUE + "\n\n                                              FROM " + originCode + " TO " + destCode + ANSI_RESET);
                 List<Pair<FlightSchedule, FlightSchedule>> results = flightReservationSystemSessionBeanRemote.searchFlightsWithTwo(startDate, cabinType, originCode, destCode);
                 handleTwoWayFlight(results, cabinType, numPass);
                 
-
+            } else {
+                System.out.printf(ANSI_BLUE + "\n\n                                              FROM " + originCode + " TO " + destCode + ANSI_RESET);
+                List<Pair<FlightSchedule, FlightSchedule>> results1 = flightReservationSystemSessionBeanRemote.searchFlightsWithTwo(startDate, cabinType, originCode, destCode);
+                handleTwoWayFlight(results1, cabinType, numPass);
+                
+                System.out.printf(ANSI_BLUE + "\n\n                                              FROM " + destCode + " TO " + originCode + ANSI_RESET);
+                List<Pair<FlightSchedule, FlightSchedule>> results2 = flightReservationSystemSessionBeanRemote.searchFlightsWithTwo(startDate, cabinType, destCode, originCode);
+                handleTwoWayFlight(results2, cabinType, numPass);
             }
             
             
@@ -526,7 +561,8 @@ public class Main {
         }
     }
 
-    private static void printSelectedFlightSchedule(Scanner sc, HashMap<Long, Integer> map, int numPass) {
+    private static Long printSelectedFlightSchedule(Scanner sc, HashMap<Long, Integer> map, int numPass) {
+        try {
             System.out.print("\nEnter the flight schedule ID > ");
             int id = sc.nextInt();
             Long fsId = new Long(id);
@@ -586,42 +622,44 @@ public class Main {
                 seatsSelectedText += "!\n\n";
                 System.out.print(seatsSelectedText);
                 
+                
+                System.out.print("Enter your username > ");
+                String name = sc.nextLine();
+                Long bookingID = flightReservationSystemSessionBeanRemote.makeReservation(fsId, name, seatNumList, flightCabinClass.getId(), numPass, fare);
+                
+                return bookingID;
             }
+        } catch (PersonNotFoundException ex) {
+            System.out.println(ex);
+            
+        }
+        return null;
     }
     
     
-    private static void handleOneWayFlight(List<List<FlightSchedule>> listofFSList, int tripType, String originCode, String destCode, Date startDate, int numPass, CabinClassType cabinType, HashMap<Long, Integer> map) {
+    private static int handleOneWayFlight(List<List<FlightSchedule>> listofFSList, int tripType, String originCode, String destCode, Date startDate, int numPass, CabinClassType cabinType, HashMap<Long, Integer> map) {
+
         for (int index = 0; index < listofFSList.size(); index++) {
             List<FlightSchedule> fsList = listofFSList.get(index);
-            
-//            fsList = fsList.stream()
-//                .filter(fs -> fs.getFlightCabinClass().stream()
-//                    .anyMatch(cc -> cc.getFare() != null && cc.getFare().getFareAmount() != null))
-//                .sorted(Comparator.comparing(fs -> fs.getFlightCabinClass().stream()
-//                    .map(FlightCabinClass::getFare)
-//                    .filter(Objects::nonNull)
-//                    .map(Fare::getFareAmount)
-//                    .min(Comparator.naturalOrder())
-//                    .get())) // This will throw if no fare is present, but we've already filtered those cases
-//                .collect(Collectors.toList());
-
-            
             System.out.printf(ANSI_BLUE + "\n\n                                   == %d DAY(S) BEFORE REQUESTED DATE ==\n" + ANSI_RESET, index);
-            if (fsList.isEmpty()) {
+            
+            
+            if (fsList.size() == 0) {
                 System.out.println("No flights found ! \n");
+//                return 0;
             } else {
                 System.out.printf("%-4s %-12s %-16s %5s %10s %-30s %-30s %-15s\n", 
                     "No", "Flight", "Cabin Class", "$$/pax", "Total $$", "     Departure", "Arrival", "Duration");
 
-
+               
                 for (FlightSchedule fs : fsList) {
-                                
+
                     List<FlightCabinClass> fccList = fs.getFlightCabinClass();
                     for (int i = 0; i < fccList.size(); i++) {
                         // Loop through to print out the preferred cabin class type first
 
-
-                        if (fccList.get(i).getCabinClass().getType().equals(cabinType)) {
+                            
+//                        if (fccList.get(i).getCabinClass().getType().equals(cabinType)) {
                             String flightNumber = fs.getFlightSchedulePlan().getFlight().getFlightNumber();
                             BigDecimal fareAmount = fccList.get(i).getFare().getFareAmount();
                             String departureTime = new SimpleDateFormat("EEE, MMM dd, yyyy, hh:mm a").format(fs.getDepartureTime());
@@ -630,20 +668,17 @@ public class Main {
                             int hours = (int) durationInHours;
                             int minutes = (int) ((durationInHours - hours) * 60);
                             map.put(fs.getId(), i);
-                            CabinClass cc = fs.getFlightSchedulePlan().getFlight().getAircraftConfig().getCabinClassList().get(i);;
+                            CabinClass cc = fs.getFlightSchedulePlan().getFlight().getAircraftConfig().getCabinClassList().get(i);
                             double totalFare = fareAmount.doubleValue() * numPass;
                             System.out.printf("%-4d %-12s %-16s $%7.2f $%7.2f %-30s %-30s %d hrs %d mins\n", 
                                 fs.getId(), flightNumber, cc.getType().toString(), fareAmount, totalFare, departureTime, arrivalTime, hours, minutes);
 
-                        }
+//                        }
                     }
                     
 
-                    // Loop again to print out the remaining cabin class types
-
                     for (int i = 0; i < fccList.size(); i++) {
-                        // 
-                        if (!fccList.get(i).getCabinClass().getType().equals(cabinType)) {
+//                        if (!fccList.get(i).getCabinClass().getType().equals(cabinType)) {
                             String flightNumber = fs.getFlightSchedulePlan().getFlight().getFlightNumber();
                             BigDecimal fareAmount = fccList.get(i).getFare().getFareAmount();
                             String departureTime = new SimpleDateFormat("EEE, MMM dd, yyyy, hh:mm a").format(fs.getDepartureTime());
@@ -656,12 +691,15 @@ public class Main {
                             double totalFare = fareAmount.doubleValue() * numPass;
                             System.out.printf("%-4d %-12s %-16s $%7.2f $%7.2f %-30s %-30s %d hrs %d mins\n", 
                                 fs.getId(), flightNumber, cc.getType().toString(), fareAmount, totalFare, departureTime, arrivalTime, hours, minutes);
-                        }
+//                        }
                     }
                 }
+                return 1;
             }
+            
         }
-
+        return 0;
+        
     }
        
     

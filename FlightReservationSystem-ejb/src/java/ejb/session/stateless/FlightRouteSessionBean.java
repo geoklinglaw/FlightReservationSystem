@@ -25,6 +25,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import util.exception.FlightExistsForFlightRouteException;
 import util.exception.FlightRouteExistsException;
+import util.exception.FlightRouteNotFoundException;
 
 /**
  *
@@ -78,11 +79,14 @@ public class FlightRouteSessionBean implements FlightRouteSessionBeanRemote, Fli
 
 
     public void deleteFlightRoute(FlightRoute route) throws FlightExistsForFlightRouteException {
+        
         FlightRoute r = em.find(FlightRoute.class, route.getId());
         if (r.getFlightList().size() > 0) {
             throw new FlightExistsForFlightRouteException("Flight route has a flight!");
+        } else {
+            em.remove(route);
         }
-        em.remove(route);
+        
     }
     
     public FlightRoute retrieveFlightRouteById(Long id) {
@@ -92,15 +96,26 @@ public class FlightRouteSessionBean implements FlightRouteSessionBeanRemote, Fli
         return route;
     }
     
-    public FlightRoute findSpecificFlightRoute(Airport origin, Airport destination) {
-        String iataO = origin.getAirportCode();
-        String iataD = destination.getAirportCode();
+    @Override
+    public FlightRoute findSpecificFlightRoute(Airport origin, Airport destination) throws FlightRouteNotFoundException {
+        try {
+            String iataO = origin.getAirportCode();
+            String iataD = destination.getAirportCode();
 
-        Query query = em.createQuery("SELECT fr FROM FlightRoute fr WHERE fr.origin.airportCode = :inOrigin AND fr.destination.airportCode = :inDestination")
-                    .setParameter("inOrigin", iataO)
-                    .setParameter("inDestination", iataD);
+            Query query = em.createQuery("SELECT fr FROM FlightRoute fr WHERE fr.origin.airportCode = :inOrigin AND fr.destination.airportCode = :inDestination")
+                        .setParameter("inOrigin", iataO)
+                        .setParameter("inDestination", iataD);
 
-        return (FlightRoute) query.getSingleResult();
+            if (query == null) {
+                throw new FlightRouteNotFoundException("Cannot find flight route!");
+                
+            }
+            return (FlightRoute) query.getSingleResult();
+        } catch (FlightRouteNotFoundException ex) {
+            throw new FlightRouteNotFoundException("Cannot find flight route!");
+        }
+        
+
     }
 
     public List<FlightRoute> findOriginFlightRoute(String originIATA) {
@@ -117,14 +132,18 @@ public class FlightRouteSessionBean implements FlightRouteSessionBeanRemote, Fli
         return (List<FlightRoute>) query.getResultList();
     }
 
-    public FlightRoute findSpecificFlightRouteWithCode(String iataO, String iataD) {
-
-        Query query = em.createQuery("SELECT fr FROM FlightRoute fr WHERE fr.origin.airportCode = :inOrigin AND fr.destination.airportCode = :inDestination")
+    public FlightRoute findSpecificFlightRouteWithCode(String iataO, String iataD) throws FlightRouteNotFoundException {
+        try {
+            Query query = em.createQuery("SELECT fr FROM FlightRoute fr WHERE fr.origin.airportCode = :inOrigin AND fr.destination.airportCode = :inDestination")
                     .setParameter("inOrigin", iataO)
                     .setParameter("inDestination", iataD);
 
-        return (FlightRoute) query.getSingleResult();
+            return (FlightRoute) query.getSingleResult();
+        } catch (NoResultException ex) {
+            throw new FlightRouteNotFoundException("Cannot find flight route with specified origin and destination codes.");
+        }
     }
+
     
     public List<Pair<FlightSchedule, FlightSchedule>> filterConnectingFS() {
         Query query = em.createQuery(

@@ -36,14 +36,21 @@ import java.util.logging.Logger;
 import javafx.util.Pair;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
+import javax.persistence.PersistenceContext;
 import util.enumeration.AircraftName;
 import util.enumeration.CabinClassType;
+import util.enumeration.FlightScheduleStatus;
 import util.enumeration.FlightStatus;
 import util.exception.AirportNotAvailableException;
 import util.exception.ExceedSeatCapacityException;
+import util.exception.FlightExistsException;
 import util.exception.FlightExistsForFlightRouteException;
 import util.exception.FlightRouteExistsException;
 import util.exception.FlightRouteNotFoundException;
+import util.exception.FlightScheduleBookedException;
+import util.exception.OverlappedSchedules;
 /**
  *
  * @author apple
@@ -74,6 +81,9 @@ public class FRSManagementSessionBean implements FRSManagementSessionBeanRemote,
 
     @EJB(name = "FlightSchedulePlanSessionBeanLocal")
     private FlightSchedulePlanSessionBeanLocal flightSchedulePlanSessionBeanLocal;
+    
+    @PersistenceContext(unitName = "FlightReservationSystem-ejbPU")
+    private EntityManager em;
 
 
     @EJB
@@ -225,7 +235,7 @@ public class FRSManagementSessionBean implements FRSManagementSessionBeanRemote,
 
 
   @Override
-    public ArrayList<Airport> deleteFlightRoute(String originCode, String destCode) throws AirportNotAvailableException, FlightRouteNotFoundException, FlightExistsForFlightRouteException {
+    public ArrayList<Airport> deleteFlightRoute(String originCode, String destCode) throws AirportNotAvailableException, FlightExistsForFlightRouteException, FlightRouteNotFoundException {
 
         Airport originAirport;
         Airport destinationAirport;
@@ -233,52 +243,44 @@ public class FRSManagementSessionBean implements FRSManagementSessionBeanRemote,
         try {
             originAirport = airportEntitySessionBeanLocal.retrieveAirportByCode(originCode);
             destinationAirport = airportEntitySessionBeanLocal.retrieveAirportByCode(destCode); 
-        } catch (AirportNotAvailableException ex) {
-            throw new AirportNotAvailableException("Airport not available: " + ex.getMessage());
-        }
-
-        FlightRoute intendedRoute = null;
-        for (FlightRoute originRoute: originAirport.getFlightRouteOrigin()) {
-            for (FlightRoute destRoute: destinationAirport.getFlightRouteDestination()) {
-                if (originRoute.getId().equals(destRoute.getId())) {
-                    intendedRoute = originRoute;
-                    break;
-                } 
-            }
-            if (intendedRoute != null) {
-                break; // Stop searching if we found the route
-            }
-        }
-
-        if (intendedRoute == null) {
-            throw new FlightRouteNotFoundException("Flight route not found for given origin and destination codes.");
-        }
-
-        try {
-            intendedRoute.setOrigin(null);
-            intendedRoute.setDestination(null);
+            FlightRoute intendedRoute = flightRouteSessionBeanLocal.findSpecificFlightRouteWithCode(originCode, destCode);
+            
+            flightRouteSessionBeanLocal.deleteFlightRoute(intendedRoute);
+//            intendedRoute.setOrigin(null);
+//            intendedRoute.setDestination(null);
             originAirport.getFlightRouteOrigin().remove(intendedRoute);
             destinationAirport.getFlightRouteDestination().remove(intendedRoute);
-            flightRouteSessionBeanLocal.deleteFlightRoute(intendedRoute);
+            
+        } catch (AirportNotAvailableException ex) {
+            throw new AirportNotAvailableException("Airport not available: " + ex.getMessage());
         } catch (FlightExistsForFlightRouteException ex) {
             throw new FlightExistsForFlightRouteException(ex.getMessage());
+        } catch (FlightRouteNotFoundException ex) {
+            throw new FlightRouteNotFoundException(ex.getMessage());
         }
 
         return new ArrayList<Airport>(Arrays.asList(originAirport, destinationAirport));
     }
 
     
-    public Flight createFlight(String flightNum, String origin, String destination, Long configId) {
-        AircraftConfiguration config = aircraftConfigurationSessionBean.retrieveAircraftConfigurationById(configId);
-        FlightRoute route = flightRouteSessionBeanLocal.findSpecificFlightRouteWithCode(origin, destination);
-        Flight flight = new Flight(flightNum, 1);
-        flight.setFlightRoute(route);
-        flight.setAircraftConfig(config);
-        
-        Long flightID = flightSessionBeanLocal.createNewFlight(flight);
-        Flight managedFlight = flightSessionBeanLocal.retrieveFlightById(flightID);
-        route.getFlightList().add(managedFlight);
-        return flight;
+    @Override
+    public Flight createFlight(String flightNum, String origin, String destination, Long configId) throws FlightRouteNotFoundException {
+        try {
+            AircraftConfiguration config = aircraftConfigurationSessionBean.retrieveAircraftConfigurationById(configId);
+            FlightRoute route = flightRouteSessionBeanLocal.findSpecificFlightRouteWithCode(origin, destination);
+            Flight flight = new Flight(flightNum, 1);
+            flight.setFlightRoute(route);
+            flight.setAircraftConfig(config);
+
+            Long flightID = flightSessionBeanLocal.createNewFlight(flight);
+            Flight managedFlight = flightSessionBeanLocal.retrieveFlightById(flightID);
+            route.getFlightList().add(managedFlight);
+            return flight;
+            
+        } catch (FlightRouteNotFoundException ex) {
+            throw new FlightRouteNotFoundException();
+        }
+
     }
 
     public List<Flight> viewAllFlight() {
@@ -422,7 +424,7 @@ public class FRSManagementSessionBean implements FRSManagementSessionBeanRemote,
             complementaryFSP = compRecurrentPlan;
         } else {
             RecurrentWeeklyPlan compRecurrentWeeklyPlan = new RecurrentWeeklyPlan();
-            compRecurrentWeeklyPlan.setEndDate(((RecurrentPlan) fsp).getEndDate());
+            compRecurrentWeeklyPlan.setEndDate(((RecurrentWeeklyPlan) fsp).getEndDate());
             compRecurrentWeeklyPlan.setDayOfWeek(((RecurrentWeeklyPlan) fsp).getDayOfWeek());
             complementaryFSP = compRecurrentWeeklyPlan; 
         }
@@ -495,7 +497,8 @@ public class FRSManagementSessionBean implements FRSManagementSessionBeanRemote,
         return flightRouteSessionBeanLocal.retrieveFlightRouteById(id);
     }
     
-    public List<Flight> checkComplementaryFlightExistence(Airport origin, Airport destination, Long configId) {
+    @Override
+    public List<Flight> checkComplementaryFlightExistence(Airport origin, Airport destination, Long configId) throws FlightRouteNotFoundException {
         FlightRoute route = flightRouteSessionBeanLocal.findSpecificFlightRoute(origin, destination);
         int size = route.getFlightList().size();
         
@@ -655,5 +658,79 @@ public class FRSManagementSessionBean implements FRSManagementSessionBeanRemote,
         return aircraftTypeSessionBeanLocal.checkForCapacity(type, pax);
     }
     
+    public Boolean checkFlightNumber(String flightNum) {
+        
+        return flightSessionBeanLocal.checkFlightByNumber(flightNum);
+        
+    }
+    
+    public Boolean checkForOverlappingFlightSchedule(List<FlightSchedule> fsList) throws OverlappedSchedules {
+        Boolean overlapped = false;
+        
+        for (int i = 0; i < fsList.size(); i++) {
+            for (int j = 0; j < fsList.size(); i++) {
+                if (i != j) {
+                    if (!fsList.get(i).getDepartureTime().before(fsList.get(j).getArrivalTime()) && !fsList.get(i).getArrivalTime().after(fsList.get(i).getArrivalTime())) {
+                        overlapped = true;
+                    }
+                    
+                }
+            }
+        }
+        
+        
+        if (overlapped) {
+            throw new OverlappedSchedules("There are overlapping flight schedules!");
+
+        }
+        
+        return overlapped;
+        
+    }
+    
+    
+    public void deleteFlightSchedulePlan(String flightNum) throws NoResultException, FlightScheduleBookedException {
+        
+        Flight flight = flightSessionBeanLocal.retrieveFlightByNumber(flightNum);
+        FlightSchedulePlan fsp = flightSchedulePlanSessionBeanLocal.retrieveFlightSchedulePlanById(flight.getFlightSchedulePlan().getId());
+
+        List<FlightSchedule> fsList = fsp.getFlightSchedule();
+        
+        for (FlightSchedule flightSch: fsList) {
+            if (flightSch.getFlightBookings().size() > 0) {
+                fsp.setType(FlightScheduleStatus.DISABLED);
+                throw new FlightScheduleBookedException("One of the flight schedule has been booked!");
+            }
+        }
+        
+        if (flight != null) {
+            flight.setFlightSchedulePlan(null);
+            em.merge(flight); // Persist the disassociation
+        }
+        
+        // Delete associated FlightSchedules
+        for (FlightSchedule fs : fsList) {
+            for (FlightCabinClass fcc: fs.getFlightCabinClass()) {
+                for (Seat s: fcc.getSeatList()) {
+                    em.remove(s);
+                }
+                fcc.setFlightSchedule(null);
+                em.remove(fcc);
+            }
+            
+            fs.setFlightCabinClass(new ArrayList<>());
+            em.remove(fs);
+        }
+
+        for (Fare fare : fsp.getFare()) {
+            em.remove(fare);
+        }
+
+        em.remove(fsp);
+    }
+
+
+
+        
  
 }

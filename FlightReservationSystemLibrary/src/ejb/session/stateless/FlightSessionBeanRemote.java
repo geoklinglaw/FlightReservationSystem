@@ -7,6 +7,7 @@ package ejb.session.stateless;
 import entity.Flight;
 import java.util.List;
 import javax.ejb.Remote;
+import util.exception.FlightExistsException;
 
 /**
  *
@@ -25,6 +26,9 @@ public interface FlightSessionBeanRemote {
     
     public void deleteFlight(Flight flight);
     
+    public boolean checkFlightByNumber(String flightNum) throws FlightExistsException;
+
+
     public Flight retrieveFlightByNumber(String flightNum, boolean needSeats);
 
 

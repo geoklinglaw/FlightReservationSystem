@@ -37,7 +37,7 @@ public class FleetManagerTask {
             System.out.println("1: Create Aircraft Configuration");
             System.out.println("2: View all Aircraft Configurations");
             System.out.println("3: View Aircraft Configuration Details");
-            System.out.println("To go back, please press '0'.");
+            System.out.println("To log out, please press '0'.");
 
             response = -1;
             

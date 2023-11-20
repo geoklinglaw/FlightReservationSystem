@@ -19,11 +19,15 @@ import java.util.ArrayList;
 import java.util.List;
 import javafx.util.Pair;
 import javax.ejb.Remote;
+import javax.persistence.NoResultException;
 import util.exception.AirportNotAvailableException;
 import util.exception.ExceedSeatCapacityException;
+import util.exception.FlightExistsException;
 import util.exception.FlightExistsForFlightRouteException;
 import util.exception.FlightRouteExistsException;
 import util.exception.FlightRouteNotFoundException;
+import util.exception.FlightScheduleBookedException;
+import util.exception.OverlappedSchedules;
 
 /**
  *
@@ -47,7 +51,7 @@ public interface FRSManagementSessionBeanRemote {
             
     public Pair<List<FlightRoute>, List<AircraftConfiguration>> enquireFlightRequirements();
     
-    public Flight createFlight(String flightNum, String origin, String destination, Long configId);
+    public Flight createFlight(String flightNum, String origin, String destination, Long configId) throws FlightRouteNotFoundException;
 
     public List<Flight> viewAllFlight();
     
@@ -76,7 +80,14 @@ public interface FRSManagementSessionBeanRemote {
     
     public void createComplementaryFSP(Long fspID, Long flightID, int layover);
     
-    public List<Flight> checkComplementaryFlightExistence(Airport origin, Airport destination, Long configId);
+    public List<Flight> checkComplementaryFlightExistence(Airport origin, Airport destination, Long configId) throws FlightRouteNotFoundException;
+
+    public Boolean checkFlightNumber(String flightNum);
+    
+    public Boolean checkForOverlappingFlightSchedule(List<FlightSchedule> fsList) throws OverlappedSchedules;
+
+
+
     
     public FlightSchedulePlan updateFaresFSP(FlightSchedulePlan fsp, List<Fare> newFarelist);
     
@@ -102,6 +113,8 @@ public interface FRSManagementSessionBeanRemote {
 
 
     public FlightRoute createFlightRoute(Long originId, Long destId) throws FlightRouteExistsException, AirportNotAvailableException;
+
+    public void deleteFlightSchedulePlan(String flightNum) throws NoResultException, FlightScheduleBookedException;
 
 
 }

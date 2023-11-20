@@ -39,7 +39,7 @@ public class RoutePlannerTask {
             System.out.println("1: Create Flight Route");
             System.out.println("2: View all Flight Route");
             System.out.println("3: Delete Flight Route");
-            System.out.println("To go back, please press '0'.");
+            System.out.println("To log out, please press '0'.");
 
             response = -1;
             
@@ -115,11 +115,16 @@ public class RoutePlannerTask {
             if (num == 2) {
                 FRSManagementSessionBeanRemote.createFlightRoute(destID, originID); 
             }
+            
+            System.out.print("\n Flight route successfully created!");
+            
         } catch (FlightRouteExistsException ex) {
             System.out.println(ex.getMessage());
         } catch (AirportNotAvailableException ex1) {
             System.out.println(ex1.getMessage());
         }
+        
+        
         
     }
     
@@ -130,7 +135,7 @@ public class RoutePlannerTask {
         String routeText = "List of Flight Routes:\n";
         
         for (FlightRoute flightRoute: flightRoutes) {
-            routeText += flightRoute.getOrigin().getCountry() + " --> " + flightRoute.getDestination().getCountry() +"\n";
+            routeText += flightRoute.getOrigin().getCountry()+ " (" + flightRoute.getOrigin().getAirportCode() + ") --> " + flightRoute.getDestination().getCountry() + " (" + flightRoute.getDestination().getAirportCode() +")\n";
             
         }
         System.out.print(routeText);
@@ -153,7 +158,7 @@ public class RoutePlannerTask {
         } catch (FlightRouteNotFoundException ex2) {
             System.out.println(ex2.getMessage());
         } catch (FlightExistsForFlightRouteException ex2) {
-            System.out.println(ex2.getMessage());
+            System.out.println(ex2.getMessage() + " Hence it cannot be deleted");
         }
 
     }

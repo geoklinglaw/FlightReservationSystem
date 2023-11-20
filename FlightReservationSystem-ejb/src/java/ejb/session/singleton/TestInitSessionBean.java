@@ -114,10 +114,12 @@ public class TestInitSessionBean implements TestInitSessionBeanLocal {
        
         if (em.find(Airport.class, 1L) == null) {
             Airport changi = new Airport("SIN", "Changi", "Changi", "Singapore", "Singapore");
-            Airport taoyuan = new Airport("TPE", "Taoyuan", "Taoyuan", "Taoyuan", "Taiwan");
-            Airport sydney = new Airport("SYD", "Sydney", "Sydney", "Sydney", "Australia");
-            Airport hongkong = new Airport("HKG", "Hongkong", "Hongkong", "Hongkong", "Hongkong");
-            Airport narita = new Airport("NRT", "Narita", "Narita", "Narita", "Japan");
+            Airport taoyuan = new Airport("TPE", "Taoyuan", "Taoyuan", "Taipei", "Taiwan R.O.C");
+            Airport sydney = new Airport("SYD", "Sydney", "Sydney", "New South Wales", "Australia");
+            Airport hongkong = new Airport("HKG", "Hong Kong", "Chek Lap Kok", "Hongkong", "Hongkong");
+            Airport narita = new Airport("NRT", "Narita", "Narita", "Chiba", "Japan");
+            
+        
 //            Airport bangkok = new Airport("BKK", "Bangkok", "Bangkok", "Bangkok", "Thailand");
             
             Long changiID = airportEntitySessionBean.createNewAirport(changi);
@@ -224,11 +226,6 @@ public class TestInitSessionBean implements TestInitSessionBeanLocal {
             FlightRoute sydToNrt = new FlightRoute(syd, nrt, FlightRouteStatus.ACTIVE.getValue());
             FlightRoute nrtToSyd = new FlightRoute(nrt, syd, FlightRouteStatus.ACTIVE.getValue());
         
-            FlightRoute hkgToTpe = new FlightRoute(hkg, tpe, FlightRouteStatus.ACTIVE.getValue());            
-            FlightRoute tpeToHkg = new FlightRoute(tpe, hkg, FlightRouteStatus.ACTIVE.getValue());
-            FlightRoute hkgToSyd = new FlightRoute(hkg, syd, FlightRouteStatus.ACTIVE.getValue());
-            FlightRoute sydToHkg = new FlightRoute(syd, hkg, FlightRouteStatus.ACTIVE.getValue());
-
         
             flightRouteSessionBean.createNewFlightRoute(sinToHkg, true);
             flightRouteSessionBean.createNewFlightRoute(hkgToSin, true);
@@ -245,10 +242,6 @@ public class TestInitSessionBean implements TestInitSessionBeanLocal {
             flightRouteSessionBean.createNewFlightRoute(sydToNrt, true);
             flightRouteSessionBean.createNewFlightRoute(nrtToSyd, true);
 
-            flightRouteSessionBean.createNewFlightRoute(hkgToTpe, true);
-            flightRouteSessionBean.createNewFlightRoute(tpeToHkg, true);
-            flightRouteSessionBean.createNewFlightRoute(hkgToSyd, true);
-            flightRouteSessionBean.createNewFlightRoute(sydToHkg, true);  
             
             em.flush();
 

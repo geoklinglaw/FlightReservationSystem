@@ -8,14 +8,20 @@ import ejb.session.stateless.FRSManagementSessionBeanRemote;
 import ejb.session.stateless.FlightSessionBeanRemote;
 import entity.CabinClass;
 import entity.Flight;
+import entity.FlightBooking;
 import entity.FlightCabinClass;
 import entity.FlightRoute;
 import entity.FlightSchedule;
+import entity.FlightSchedulePlan;
 import entity.Seat;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
+import java.util.TreeMap;
 import javax.ejb.EJB;
+import util.enumeration.CabinClassType;
 
 /**
  *
@@ -40,8 +46,7 @@ public class SalesManagerTask {
             System.out.println("\n\n*** Sales Manager ***\n");
             System.out.print("Enter your task: \n");
             System.out.println("1: View Seat Inventory");
-            System.out.println("2: View all Flight Route");
-            System.out.println("3: Delete Flight Route");
+            System.out.println("2: View all reservations");
             System.out.println("To go back, please press '0'.");            
 
             response = -1;
@@ -55,11 +60,8 @@ public class SalesManagerTask {
                    viewSeatsInventory(scanner);
                 }
                 else if (response == 2) {
-                    
+                   viewReservation(scanner);
                 }
-                else if (response == 3) {
-                   
-                } 
                 else if (response == 0) {
                     goBack();
                 }
@@ -73,6 +75,48 @@ public class SalesManagerTask {
     
     private void goBack() {
         Main.runApp();
+    }
+    
+    private void viewReservation(Scanner sc) {
+        System.out.println("\n\n*** Viewing Flight Reservations *** \n");
+
+        sc.nextLine();
+        System.out.print("Enter Flight Number > ");
+        String flightNum = sc.nextLine().trim();
+        
+        Flight flight = FRSManagementSessionBeanRemote.retrieveFlightByNumber(flightNum);
+        
+
+        System.out.println("List of flight schedules associated with this flight:");
+        System.out.printf("%30s%30s%30s\n", "ID", "Departure Time", "Arrival Time");
+        for (int counter = 0; counter < flight.getFlightSchedulePlan().getFlightSchedule().size(); counter++) {
+            FlightSchedule flightSchedule = flight.getFlightSchedulePlan().getFlightSchedule().get(counter);
+            System.out.printf("%30s%30s%30s\n", counter, flightSchedule.getDepartureTime().getTime(), flightSchedule.getArrivalTime().getTime());
+        }
+
+        System.out.print("Select Flight Schedule ID > ");
+        Long scheduleId = sc.nextLong();
+
+        FlightSchedule selectedSchedule = FRSManagementSessionBeanRemote.retrieveFlightScheduleById(scheduleId);
+
+        Map<String, List<FlightBooking>> cabinClassBookings = new TreeMap<>();
+        
+        for (FlightBooking booking : selectedSchedule.getFlightBookings()) {
+            for (Seat s: booking.getSeatBookings()) {
+                String seatNumber = s.getSeatID();
+                cabinClassBookings.computeIfAbsent(seatNumber, k -> new ArrayList<>()).add(booking);
+            }
+        }
+
+        System.out.printf("%20s%20s%20s\n", "Seat Number", "Passenger Name", "Fare Basis Code");
+        for (Map.Entry<String, List<FlightBooking>> entry : cabinClassBookings.entrySet()) {
+            for (FlightBooking booking : entry.getValue()) {
+                String passengerName = booking.getFlightReservation().getPerson().getFirstName(); 
+                BigDecimal fare = booking.getFareAmount(); 
+                System.out.printf("%20s%20s%20s\n", entry.getKey(), passengerName, fare);
+            }
+        }
+        
     }
     
     private void viewSeatsInventory(Scanner sc) {

@@ -6,12 +6,16 @@ package ejb.session.stateless;
 
 import entity.Airport;
 import entity.CabinClass;
+import entity.Fare;
 import entity.Flight;
+import entity.FlightBooking;
 import entity.FlightCabinClass;
 import entity.FlightRoute;
 import entity.FlightSchedule;
+import entity.Person;
 import entity.Seat;
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -26,6 +30,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import util.enumeration.CabinClassType;
 import util.enumeration.SeatStatus;
+import util.exception.PersonNotFoundException;
 
 /**
  *
@@ -33,6 +38,15 @@ import util.enumeration.SeatStatus;
  */
 @Stateless
 public class FlightReservationSystemSessionBean implements FlightReservationSystemSessionBeanRemote, FlightReservationSystemSessionBeanLocal {
+
+    @EJB(name = "SeatEntitySessionBeanLocal")
+    private SeatEntitySessionBeanLocal seatEntitySessionBeanLocal;
+
+    @EJB(name = "FlightBookingSessionBeanLocal")
+    private FlightBookingSessionBeanLocal flightBookingSessionBeanLocal;
+
+    @EJB(name = "PersonSessionBeanLocal")
+    private PersonSessionBeanLocal personSessionBeanLocal;
 
     @EJB(name = "CabinClassSessionBeanLocal")
     private CabinClassSessionBeanLocal cabinClassSessionBeanLocal;
@@ -59,15 +73,20 @@ public class FlightReservationSystemSessionBean implements FlightReservationSyst
     public List<List<FlightSchedule>> searchFlightsOneWay(Date startDate, CabinClassType ccType, String originCode, String destCode) {
         System.out.println("entered searchFlightsOneWay");
         List<List<FlightSchedule>> combinedList = new ArrayList<List<FlightSchedule>>();
-        List<FlightSchedule> fs0 = searchFlightsByDays(startDate, ccType, originCode, destCode, 0); // exact day
+        List<FlightSchedule> fs0 = searchFlightsByDays(startDate, ccType, originCode, destCode, 0, true); // exact day
         combinedList.add(fs0);
-        List<FlightSchedule> fs1 = searchFlightsByDays(startDate, ccType, originCode, destCode, 1); // one day before
+        List<FlightSchedule> fs1 = searchFlightsByDays(startDate, ccType, originCode, destCode, 1, true); // one day before
         combinedList.add(fs1);
-        List<FlightSchedule> fs2 = searchFlightsByDays(startDate, ccType, originCode, destCode, 2); // two day before
+        List<FlightSchedule> fs2 = searchFlightsByDays(startDate, ccType, originCode, destCode, 2, true); // two day before
         combinedList.add(fs2);
-        List<FlightSchedule> fs3 = searchFlightsByDays(startDate, ccType, originCode, destCode, 3); // three day before
+        List<FlightSchedule> fs3 = searchFlightsByDays(startDate, ccType, originCode, destCode, 3, true); // three day before
         combinedList.add(fs3);
-        
+        List<FlightSchedule> fs4 = searchFlightsByDays(startDate, ccType, originCode, destCode, 1, false); // one day before
+        combinedList.add(fs4);
+        List<FlightSchedule> fs5 = searchFlightsByDays(startDate, ccType, originCode, destCode, 2, false); // two day before
+        combinedList.add(fs5);
+        List<FlightSchedule> fs6 = searchFlightsByDays(startDate, ccType, originCode, destCode, 3, false); // three day before
+        combinedList.add(fs6);
         for (List<FlightSchedule> fslist: combinedList) {
             for (FlightSchedule fs: fslist) {
                 System.out.print("its hereeeee " + fs.getFlightSchedulePlan().getFlight().getFlightNumber() + " : " + fs.getDepartureTime() + "  " + fs.getArrivalTime());
@@ -139,7 +158,7 @@ public class FlightReservationSystemSessionBean implements FlightReservationSyst
 //    }
 //}
 
-    public List<FlightSchedule> searchFlightsByDays(Date startDate, CabinClassType ccType, String originCode, String destCode, int daysBefore) {
+    public List<FlightSchedule> searchFlightsByDays(Date startDate, CabinClassType ccType, String originCode, String destCode, int daysBefore, boolean isBefore) {
 
         List <FlightRoute> routes = flightRouteSessionBeanLocal.viewAllFlightRoute();
         
@@ -178,11 +197,19 @@ public class FlightReservationSystemSessionBean implements FlightReservationSyst
             }
         }
         
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(startDate);
-        calendar.add(Calendar.DAY_OF_MONTH, -daysBefore);
-        Date targetDate = calendar.getTime(); // This is the specific date we are interested in
-            
+        Date targetDate;  // Declare without initialization
+        if (isBefore) {
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(startDate);  // Assuming startDate is already initialized and is a Date object
+            calendar.add(Calendar.DAY_OF_MONTH, -daysBefore);
+            targetDate = calendar.getTime();
+        } else {
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(startDate);
+            calendar.add(Calendar.DAY_OF_MONTH, daysBefore);
+            targetDate = calendar.getTime();
+        }
+
         
         List<FlightSchedule> resultSchedules = new ArrayList<>();
 
@@ -237,11 +264,10 @@ public class FlightReservationSystemSessionBean implements FlightReservationSyst
         return fs;
     }
    
-    public void bookSeats(List<String> seatNumList, Long fccId) {
+    public List<Seat> bookSeats(List<String> seatNumList, Long fccId) {
         FlightCabinClass flightCabin = cabinClassSessionBeanLocal.retrieveFlightCabinClassById(fccId, true);
         int size = flightCabin.getSeatList().size();
         List<Seat> seatList = flightCabin.getSeatList();
-        
 
         for (String seatNum: seatNumList) {
             for (Seat s: seatList) {
@@ -253,6 +279,9 @@ public class FlightReservationSystemSessionBean implements FlightReservationSyst
         
         flightCabin.setNumReservedSeats(new BigDecimal(flightCabin.getNumReservedSeats().intValue() + seatList.size()));
         flightCabin.setNumReservedSeats(flightCabin.getNumAvailableSeats().subtract(flightCabin.getNumBalanceSeats()));
+        
+        return seatList;
+        
 
     }
     
@@ -346,7 +375,34 @@ public class FlightReservationSystemSessionBean implements FlightReservationSyst
 //        return diffInMillies / (60 * 60 * 1000); // Convert milliseconds to hours
 //    }
 
-    
+    @Override
+    public Long makeReservation(Long fsID, String name, List<String> seatNumList, Long fccID, int numPass, Fare fare) throws PersonNotFoundException {    
+        personSessionBeanLocal.checkPersonExists(name);
+        Person person = personSessionBeanLocal.retrievePersonByUsername(name);
+        FlightBooking booking = new FlightBooking();
+        FlightSchedule fs = flightSchedulePlanSessionBeanLocal.retrieveFlightScheduleById(fsID);
+        FlightCabinClass fcc = cabinClassSessionBeanLocal.retrieveFlightCabinClassById(fccID);
+        List<Seat> seatList = fcc.getSeatList();
+        
+        booking.setFlightSchedule(fs);
+        booking.setSeatBookings(seatList);
+        booking.setFareAmount(fare.getFareAmount());
+        
+        Long bookingID = flightBookingSessionBeanLocal.createBooking(booking);
+        
+        fs.getFlightBookings().add(booking);
+        
+        for (String seatNum : seatNumList) {
+            for (Seat s: seatList) {
+                if (seatNum.equals(s.getSeatID())){
+                    Seat seat = seatEntitySessionBeanLocal.retrieveSeatById(s.getId());
+                    seat.getFlightBooking().add(booking);
+                }
+            }
+        }
+        
+        return bookingID;
+    }
     
 
 
