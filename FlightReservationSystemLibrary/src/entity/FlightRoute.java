@@ -30,8 +30,11 @@ import util.enumeration.FlightRouteStatus;
     @NamedQuery(
         name = "viewAllFlightRoutes",
         query = "SELECT fr FROM FlightRoute fr"
+    ),
+    @NamedQuery(
+            name = "checkForExistingFlightRoute",
+            query = "SELECT fr FROM FlightRoute fr WHERE fr.origin = :origin AND fr.destination = :destination"
     )
-
 })
 
 public class FlightRoute implements Serializable {

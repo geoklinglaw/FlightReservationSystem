@@ -71,11 +71,10 @@ public class Main {
                 response = scanner.nextInt();
 
                 if(response == 1){  
-                    performTasks();
                     try {
-                        doLogin();
+                        Employee currEmp = doLogin();
                         System.out.println("You are logged in!");
-                        performTasks();
+                        performTasks(currEmp);
                         
                     } catch (InvalidLoginCredentialException ex) {
                        System.out.println("Invalid login credentials: " + ex.getMessage() + "\n");
@@ -96,7 +95,7 @@ public class Main {
         }
     }
     
-    private static void doLogin() throws InvalidLoginCredentialException {
+    private static Employee doLogin() throws InvalidLoginCredentialException {
         Scanner sc = new Scanner(System.in);
         
         System.out.println("*** FRS System :: Login ***\n");
@@ -107,45 +106,48 @@ public class Main {
         
         if (username.length() > 0 && password.length() > 0) {
             Employee currEmployee = employeeSessionBeanRemote.login(username, password);
+            return currEmployee;
             
         } else {
             throw new InvalidLoginCredentialException("Invalid login credentials!");
         }
     }
     
-    private static void performTasks() {
-        Scanner scanner = new Scanner(System.in);
-        Integer response = 0;
+    private static void performTasks(Employee emp) {
+//        Scanner scanner = new Scanner(System.in);
+//        Integer response = -1;
         
         while(true) {
-            System.out.println("\n\nEnter your role (will be auto next time) \n");
-            System.out.println("1: Fleet Manager");
-            System.out.println("2: Route Planner");
-            System.out.println("3: Schedule Manager");
-            System.out.println("4: Sales Manager");
-
-            response = 0;
+            int position = emp.getPosition().getValue();
             
-            while(response < 1 || response > 4) {
-                System.out.print("> ");
+//            System.out.println("\n\nEnter your role (will be auto next time) \n");
+//            System.out.println("1: Fleet Manager");
+//            System.out.println("2: Route Planner");
+//            System.out.println("3: Schedule Manager");
+//            System.out.println("4: Sales Manager");
 
-                response = scanner.nextInt();
+//            response = -1;
+            
+//            while(position < 0 || position > 4) {
+//                System.out.print("> ");
+//
+//                response = scanner.nextInt();
 
-                if(response == 1){       
+                if(position == 0){       
                     FleetManagerTask fleetManagerTasks = new FleetManagerTask(FRSManagementSessionBeanRemote);
                     fleetManagerTasks.getTasks();
                     
                 }
-                else if (response == 2) {
+                else if (position == 1) {
                     RoutePlannerTask routeManagerTasks = new RoutePlannerTask(FRSManagementSessionBeanRemote);
                     routeManagerTasks.getTasks();
                 }
-                else if (response == 3) {
+                else if (position == 2) {
                     ScheduleManagerTask scheduleManagerTasks = new ScheduleManagerTask(FRSManagementSessionBeanRemote);
                     scheduleManagerTasks.getTasks();
 
                 }
-                else if (response == 4) {
+                else if (position == 3) {
                     SalesManagerTask salesManagerTasks = new SalesManagerTask(FRSManagementSessionBeanRemote);
                     salesManagerTasks.getTasks();
                 }
@@ -158,6 +160,3 @@ public class Main {
         
     }
     
-
-
-}

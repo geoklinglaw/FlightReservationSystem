@@ -145,8 +145,8 @@ public class DataInitSessionBean implements DataInitSessionBeanLocal {
         }
         
         if (em.find(AircraftType.class, 1l) == null) {
-            AircraftType aircraftType0 = new AircraftType(1);
-            AircraftType aircraftType1 = new AircraftType(0);
+            AircraftType aircraftType0 = new AircraftType(1, 200);
+            AircraftType aircraftType1 = new AircraftType(0, 400);
             
             Long acType0id = aircraftTypeSessionBean.createNewAircraftType(aircraftType0);
             Long acType1id = aircraftTypeSessionBean.createNewAircraftType(aircraftType1);

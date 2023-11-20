@@ -6,11 +6,13 @@ package ejb.session.stateless;
 
 import entity.AircraftType;
 import entity.Fare;
+import java.math.BigDecimal;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import util.enumeration.AircraftName;
+import util.exception.ExceedSeatCapacityException;
 
 /**
  *
@@ -38,11 +40,30 @@ public class AircraftTypeSessionBean implements AircraftTypeSessionBeanRemote, A
     }
     
     @Override
-    public AircraftType retrieveAircraftTypeByValue(String value) {
+    public AircraftType retrieveAircraftTypeByValue(int value) {
+        
+        AircraftName aircraftNameEnum = AircraftName.fromValue(value);
+        
         Query query = em.createNamedQuery("selectAircraftTypeByName");
-        query.setParameter("inName", value);
+        query.setParameter("inName", aircraftNameEnum);
         
         return (AircraftType) query.getSingleResult();
+    }
+    
+    public Boolean checkForCapacity(int type, BigDecimal pax) throws ExceedSeatCapacityException {
+        AircraftName aircraftNameEnum = AircraftName.fromValue(type);
+        
+        BigDecimal query = (BigDecimal) em.createNamedQuery("selectMaxSeatCapacityByName").setParameter("inName", aircraftNameEnum).getSingleResult();
+        
+        if (pax.compareTo(query) < 0) {
+            return true;
+        } else if (pax.compareTo(query) == 0) {
+            return true;
+        } else {
+            throw new ExceedSeatCapacityException("Seat capacity is exceed!");
+            
+        }
+       
     }
         
 

@@ -63,7 +63,7 @@ public class AircraftConfiguration implements Serializable {
     }
     
     public AircraftConfiguration(AircraftType type, String aircraftStyle) {
-        this.name = type.getName() + aircraftStyle;
+        this.name = type.getName();
         this.cabinClassList = new ArrayList<CabinClass>();
         this.aircraftType = type;
         this.flight = new ArrayList<Flight>();

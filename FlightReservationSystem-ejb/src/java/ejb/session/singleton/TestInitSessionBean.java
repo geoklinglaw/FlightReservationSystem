@@ -118,34 +118,42 @@ public class TestInitSessionBean implements TestInitSessionBeanLocal {
             Airport sydney = new Airport("SYD", "Sydney", "Sydney", "Sydney", "Australia");
             Airport hongkong = new Airport("HKG", "Hongkong", "Hongkong", "Hongkong", "Hongkong");
             Airport narita = new Airport("NRT", "Narita", "Narita", "Narita", "Japan");
-            Airport bangkok = new Airport("BKK", "Bangkok", "Bangkok", "Bangkok", "Thailand");
+//            Airport bangkok = new Airport("BKK", "Bangkok", "Bangkok", "Bangkok", "Thailand");
             
             Long changiID = airportEntitySessionBean.createNewAirport(changi);
             Long taoyuanID = airportEntitySessionBean.createNewAirport(taoyuan);
             Long sydneyID = airportEntitySessionBean.createNewAirport(sydney);
             Long hongkongID = airportEntitySessionBean.createNewAirport(hongkong);
             Long naritaID = airportEntitySessionBean.createNewAirport(narita);
-            Long bangkokID = airportEntitySessionBean.createNewAirport(bangkok);
+//            Long bangkokID = airportEntitySessionBean.createNewAirport(bangkok);
             
         }
         
         if (em.find(AircraftConfiguration.class, 1L) == null) {
-            AircraftType boeing737 = new AircraftType(AircraftName.B737.getValue());
-            AircraftType boeing747 = new AircraftType(AircraftName.B747.getValue());
+            AircraftType boeing737 = new AircraftType(AircraftName.B737.getValue(), 200);
+            AircraftType boeing747 = new AircraftType(AircraftName.B747.getValue(), 400);
             
             aircraftTypeSessionBeanLocal.createNewAircraftType(boeing737);
             aircraftTypeSessionBeanLocal.createNewAircraftType(boeing747);
             
             AircraftConfiguration boeing737AllEconomy = new AircraftConfiguration(boeing737, "All Economy");
             aircraftConfigurationSessionBean.createNewAircraftConfiguration(boeing737AllEconomy);
-            CabinClass cc0 = new CabinClass("Y", new BigDecimal(180), new BigDecimal(1), new BigDecimal(30), new BigDecimal(6), "3-3");
             
+            CabinClass cc0 = new CabinClass("Y", new BigDecimal(180), new BigDecimal(1), new BigDecimal(30), new BigDecimal(6), "3-3");
             cabinClassSessionBeanLocal.createNewCabinClass(cc0);
             boeing737AllEconomy.getCabinClassList().add(cc0);
             
+            for (CabinClass cc: boeing737AllEconomy.getCabinClassList()) {
+                cc.setAircraftConfig(boeing737AllEconomy);
+            }
+            
 
             AircraftConfiguration boeing737ThreeClasses = new AircraftConfiguration(boeing737, "Three Classes");
+            
+            System.out.println(boeing737ThreeClasses.getName() + "  " + boeing737ThreeClasses.getAircraftStyle());
             aircraftConfigurationSessionBean.createNewAircraftConfiguration(boeing737ThreeClasses);
+            
+            
             CabinClass cc1 = new CabinClass("F", new BigDecimal(10), new BigDecimal(1), new BigDecimal(5), new BigDecimal(2), "1-1");
             CabinClass cc2 = new CabinClass("J", new BigDecimal(20), new BigDecimal(1), new BigDecimal(5), new BigDecimal(4), "2-2");
             CabinClass cc3 = new CabinClass("Y", new BigDecimal(150), new BigDecimal(1), new BigDecimal(25), new BigDecimal(6), "3-3");
@@ -158,7 +166,9 @@ public class TestInitSessionBean implements TestInitSessionBeanLocal {
             boeing737ThreeClasses.getCabinClassList().add(cc2);
             boeing737ThreeClasses.getCabinClassList().add(cc3);
             
-            
+            for (CabinClass cc: boeing737ThreeClasses.getCabinClassList()) {
+                cc.setAircraftConfig(boeing737ThreeClasses);
+            }
 
             AircraftConfiguration boeing747AllEconomy = new AircraftConfiguration(boeing747, "All Economy");
             aircraftConfigurationSessionBean.createNewAircraftConfiguration(boeing747AllEconomy);
@@ -167,7 +177,10 @@ public class TestInitSessionBean implements TestInitSessionBeanLocal {
             boeing747AllEconomy.getCabinClassList().add(cc4);
             
 
-
+            for (CabinClass cc: boeing747AllEconomy.getCabinClassList()) {
+                cc.setAircraftConfig(boeing747AllEconomy);
+            }
+            
             AircraftConfiguration boeing747ThreeClasses = new AircraftConfiguration(boeing747, "Three Classes");
             aircraftConfigurationSessionBean.createNewAircraftConfiguration(boeing747ThreeClasses);
             CabinClass cc5 = new CabinClass("F", new BigDecimal(10), new BigDecimal(1), new BigDecimal(5), new BigDecimal(2), "1-1");
@@ -183,15 +196,17 @@ public class TestInitSessionBean implements TestInitSessionBeanLocal {
             boeing747ThreeClasses.getCabinClassList().add(cc6);
             boeing747ThreeClasses.getCabinClassList().add(cc7);
             
-
+            for (CabinClass cc: boeing747ThreeClasses.getCabinClassList()) {
+                cc.setAircraftConfig(boeing747ThreeClasses);
+            }
         }   
         
         if (em.find(FlightRoute.class, 1L) == null) {
-            Airport sin = airportEntitySessionBean.retrieveAirportByCode("SIN");
-            Airport hkg = airportEntitySessionBean.retrieveAirportByCode("HKG");
-            Airport tpe = airportEntitySessionBean.retrieveAirportByCode("TPE");
-            Airport nrt = airportEntitySessionBean.retrieveAirportByCode("NRT");
-            Airport syd = airportEntitySessionBean.retrieveAirportByCode("SYD");
+            Airport sin = airportEntitySessionBean.retrieveAirportByIATA("SIN");
+            Airport hkg = airportEntitySessionBean.retrieveAirportByIATA("HKG");
+            Airport tpe = airportEntitySessionBean.retrieveAirportByIATA("TPE");
+            Airport nrt = airportEntitySessionBean.retrieveAirportByIATA("NRT");
+            Airport syd = airportEntitySessionBean.retrieveAirportByIATA("SYD");
             
             
             FlightRoute sinToHkg = new FlightRoute(sin, hkg, FlightRouteStatus.ACTIVE.getValue());
@@ -233,7 +248,9 @@ public class TestInitSessionBean implements TestInitSessionBeanLocal {
             flightRouteSessionBean.createNewFlightRoute(hkgToTpe, true);
             flightRouteSessionBean.createNewFlightRoute(tpeToHkg, true);
             flightRouteSessionBean.createNewFlightRoute(hkgToSyd, true);
-            flightRouteSessionBean.createNewFlightRoute(sydToHkg, true);           
+            flightRouteSessionBean.createNewFlightRoute(sydToHkg, true);  
+            
+            em.flush();
 
 
         if (em.find(Flight.class, 1L) == null) {

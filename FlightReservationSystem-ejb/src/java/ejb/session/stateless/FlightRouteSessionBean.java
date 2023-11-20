@@ -20,8 +20,11 @@ import javafx.util.Pair;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import util.exception.FlightExistsForFlightRouteException;
+import util.exception.FlightRouteExistsException;
 
 /**
  *
@@ -38,8 +41,20 @@ public class FlightRouteSessionBean implements FlightRouteSessionBeanRemote, Fli
 
 
     @Override
-    public void createNewFlightRoute(FlightRoute flightRoute) {
-        em.persist(flightRoute);
+    public void createNewFlightRoute(FlightRoute flightRoute) throws FlightRouteExistsException {
+        Airport origin = flightRoute.getOrigin();
+        Airport destination = flightRoute.getDestination();
+        
+        Query query = em.createNamedQuery("checkForExistingFlightRoute");
+        query.setParameter("origin", origin);
+        query.setParameter("destination", destination);
+        
+        try {
+            FlightRoute existingRoute = (FlightRoute) query.getSingleResult();
+            throw new FlightRouteExistsException("Flight route with the same origin and destination already exists!");
+        } catch (NoResultException ex) {
+            em.persist(flightRoute);
+        }
     }
     
     
@@ -50,8 +65,9 @@ public class FlightRouteSessionBean implements FlightRouteSessionBeanRemote, Fli
     
     @Override
     public List<FlightRoute> viewAllFlightRoute() {
-        em.setProperty ("javax.persistence.cache.storeMode", "REFRESH"); 
+//        em.setProperty ("javax.persistence.cache.storeMode", "REFRESH"); 
         List<FlightRoute> flightRoutes = em.createNamedQuery("viewAllFlightRoutes").getResultList();
+        System.out.println(flightRoutes.size());
 
         // Sort the entire list based on the country of the origin airport
         flightRoutes.sort(Comparator.comparing(route -> route.getOrigin().getCountry()));
@@ -61,7 +77,11 @@ public class FlightRouteSessionBean implements FlightRouteSessionBeanRemote, Fli
 
 
 
-    public void deleteFlightRoute(FlightRoute route) {
+    public void deleteFlightRoute(FlightRoute route) throws FlightExistsForFlightRouteException {
+        FlightRoute r = em.find(FlightRoute.class, route.getId());
+        if (r.getFlightList().size() > 0) {
+            throw new FlightExistsForFlightRouteException("Flight route has a flight!");
+        }
         em.remove(route);
     }
     

@@ -10,6 +10,8 @@ import entity.FlightSchedule;
 import java.util.List;
 import javafx.util.Pair;
 import javax.ejb.Local;
+import util.exception.FlightExistsForFlightRouteException;
+import util.exception.FlightRouteExistsException;
 
 /**
  *
@@ -18,13 +20,13 @@ import javax.ejb.Local;
 @Local
 public interface FlightRouteSessionBeanLocal {
     
-    public void createNewFlightRoute(FlightRoute flightRoute);
+    public void createNewFlightRoute(FlightRoute flightRoute) throws FlightRouteExistsException;
 
     public void createNewFlightRoute(FlightRoute flightRoute, boolean data);  
     
     public List<FlightRoute> viewAllFlightRoute();
     
-    public void deleteFlightRoute(FlightRoute route);
+    public void deleteFlightRoute(FlightRoute route) throws FlightExistsForFlightRouteException;
     
     public FlightRoute retrieveFlightRouteById(Long id);
     

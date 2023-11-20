@@ -27,6 +27,10 @@ import util.enumeration.AircraftName;
     @NamedQuery(
         name = "selectAircraftTypeByName",
         query = "SELECT act FROM AircraftType act WHERE act.name = :inName"
+    ),
+    @NamedQuery(
+        name = "selectMaxSeatCapacityByName",
+        query = "SELECT act.maxSeatCapacity FROM AircraftType act WHERE act.name = :inName"
     )
 
 })
@@ -45,21 +49,13 @@ public class AircraftType implements Serializable {
 //    @JoinColumn(nullable = false)
     private List<AircraftConfiguration> aircraftConfig;
     
-    public static final String B737_SEATCAPACITY = "120"; // 20 rows of 3-3
-    public static final String B747_SEATCAPACITY = "180"; // 20 rows of 3-3-3
 
     public AircraftType() {
     }
 
-    public AircraftType(int aircraftValue) {
+    public AircraftType(int aircraftValue, int num) {
         this.name = AircraftName.fromValue(aircraftValue);
-        if (this.name == AircraftName.B737) {
-            BigDecimal seatCap = new BigDecimal(B737_SEATCAPACITY);
-            this.maxSeatCapacity = seatCap;
-        } else {
-            BigDecimal seatCap = new BigDecimal(B747_SEATCAPACITY);
-            this.maxSeatCapacity = seatCap;
-        }
+        this.maxSeatCapacity = new BigDecimal(num);
     }
     
 

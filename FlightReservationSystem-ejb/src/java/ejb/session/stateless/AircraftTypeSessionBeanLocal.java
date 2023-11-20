@@ -5,7 +5,9 @@
 package ejb.session.stateless;
 
 import entity.AircraftType;
+import java.math.BigDecimal;
 import javax.ejb.Local;
+import util.exception.ExceedSeatCapacityException;
 
 /**
  *
@@ -18,6 +20,9 @@ public interface AircraftTypeSessionBeanLocal {
     
     public AircraftType retrieveAircraftType(Long id);
     
-    public AircraftType retrieveAircraftTypeByValue(String value);
+    public AircraftType retrieveAircraftTypeByValue(int value);
+    
+    public Boolean checkForCapacity(int type, BigDecimal pax) throws ExceedSeatCapacityException;
+
     
 }

@@ -25,6 +25,7 @@ public class AircraftConfigurationSessionBean implements AircraftConfigurationSe
 
     public Long createNewAircraftConfiguration(AircraftConfiguration aircraftConfig) {
         em.persist(aircraftConfig);
+        System.out.println("successully persisted ac ");
         em.flush();
         
         return aircraftConfig.getId();

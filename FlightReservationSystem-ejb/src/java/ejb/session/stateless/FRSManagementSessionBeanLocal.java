@@ -14,11 +14,16 @@ import entity.FlightRoute;
 import entity.FlightSchedule;
 import entity.FlightSchedulePlan;
 import entity.Seat;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import javafx.util.Pair;
 import javax.ejb.Local;
-import util.exception.NoFlightRouteFoundException;
+import util.exception.AirportNotAvailableException;
+import util.exception.ExceedSeatCapacityException;
+import util.exception.FlightExistsForFlightRouteException;
+import util.exception.FlightRouteExistsException;
+import util.exception.FlightRouteNotFoundException;
 
 /**
  *
@@ -35,15 +40,14 @@ public interface FRSManagementSessionBeanLocal {
     
     public List<Airport> viewAllAirports();
     
-    public FlightRoute createFlightRoute(Long originId, Long destId);
+
     
     public List<FlightRoute> viewAllFlightRoutes();
     
-    public ArrayList<Airport> deleteFlightRoute(String originCode, String destCode);
     
     public Pair<List<FlightRoute>, List<AircraftConfiguration>> enquireFlightRequirements();
     
-    public Flight createFlight(String flightNum, Long routeId, Long configId);
+    public Flight createFlight(String flightNum, String origin, String destination, Long configId);
 
     public List<Flight> viewAllFlight();
     
@@ -64,7 +68,7 @@ public interface FRSManagementSessionBeanLocal {
     
     public FlightCabinClass viewCabinClass(Long fsId, Long ccId);
     
-    public FlightRoute viewFlightRoute(Airport origin, Airport destination) throws NoFlightRouteFoundException;
+    public FlightRoute viewFlightRoute(Airport origin, Airport destination) throws FlightRouteNotFoundException;
     
     public FlightRoute retrieveFlightRouteById(Long id);
     
@@ -74,6 +78,8 @@ public interface FRSManagementSessionBeanLocal {
     
     public FlightSchedulePlan updateFaresFSP(FlightSchedulePlan fsp, List<Fare> newFarelist);
     
+    public ArrayList<Airport> deleteFlightRoute(String originCode, String destCode) throws AirportNotAvailableException, FlightRouteNotFoundException, FlightExistsForFlightRouteException;
+
 
     public FlightSchedulePlan retrieveFlightSchedulePlan(Long id);
     
@@ -90,5 +96,10 @@ public interface FRSManagementSessionBeanLocal {
     public FlightSchedule updateFlightSchedule(FlightSchedule oldFs);
     
     public void deleteFS(Long id);
+    
+    public FlightRoute createFlightRoute(Long originId, Long destId) throws FlightRouteExistsException, AirportNotAvailableException ;
 
+    public FlightRoute checkForFlightRoutes(String origin, String destination) throws FlightRouteNotFoundException;
+    
+    public Boolean checkForACConfigurationIssues(int type, BigDecimal pax) throws ExceedSeatCapacityException;
 }

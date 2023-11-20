@@ -33,9 +33,14 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.util.Pair;
 import util.enumeration.CabinClassType;
 import util.enumeration.FlightScheduleStatus;
+import util.exception.AirportNotAvailableException;
+import util.exception.FlightRouteExistsException;
+import util.exception.FlightRouteNotFoundException;
 
 /**
  *
@@ -56,7 +61,7 @@ public class ScheduleManagerTask {
         Integer response = -1;
         
         while(true) {
-            System.out.println("\n\n*** Route Planner ***\n");
+            System.out.println("\n\n*** Schedule Manager ***\n");
             
             System.out.print("Enter your task: \n");
             System.out.println("1: Create Flight");
@@ -143,26 +148,33 @@ public class ScheduleManagerTask {
         sc.nextLine();
         System.out.print("\nEnter Flight Number: \n> ");
         String flightNum = sc.nextLine().trim();
-        System.out.print("\nEnter Flight Route: \n> ");
-        Long routeId = new Long(sc.nextInt());
-
+        System.out.print("\nEnter Flight Route (Origin): \n> ");
+        String origin = sc.nextLine().trim();
+        System.out.print("\nEnter Flight Route (Destination): \n> ");
+        String dest = sc.nextLine().trim();
         
         String acConfigText = "";
         for (AircraftConfiguration config: acConfiglist) {
-            acConfigText += "\n(" + config.getId() + ") " + config.getName() + ": ";
+            acConfigText += "\n(" + config.getId() + ") " + config.getName() + " " + config.getAircraftStyle() + ": ";
             for (CabinClass cc: config.getCabinClassList()) {
                 acConfigText += cc.getType() + ", ";
             }
         }
-        System.out.print("Enter Aircraft Configuration ID: \n> ");
+        System.out.print(acConfigText);
+        System.out.print("\n\nEnter Aircraft Configuration ID: \n> ");
         Long config = new Long(sc.nextInt());
         
-        FRSManagementSessionBeanRemote.createFlight(flightNum, routeId, config);
+        FRSManagementSessionBeanRemote.createFlight(flightNum, origin, dest, config);
         System.out.print("Successfully created Flight " + flightNum);
         
         sc.nextLine();
         
-        createComplementaryFlight(routeId, config, sc);
+        
+        try {
+            createComplementaryFlight(origin, dest, config, sc);
+        } catch (FlightRouteNotFoundException ex) {
+            System.out.println(ex);
+        }
     }
     
     private List<Flight> viewAllFlight() {
@@ -172,7 +184,7 @@ public class ScheduleManagerTask {
         String flightText = "List of Flights:\n";
         int index = 1;
         for (Flight flight: flights) {
-            flightText += index + ": " + flight.getFlightNumber() + " (" + flight.getAircraftConfig().getName() + ")\n";
+            flightText += index + ": " + flight.getFlightNumber() + " (" + flight.getAircraftConfig().getName() + " " + flight.getAircraftConfig().getAircraftStyle() + ")\n";
             index += 1;
         }
         
@@ -188,7 +200,7 @@ public class ScheduleManagerTask {
         
         String flightDetails = "-- Flight Details -- \n";
         flightDetails += "Flight Number: " + flight.getFlightNumber() + "\n";
-        flightDetails += "Aircraft Configuration: " + flight.getAircraftConfig().getName() + "\n";
+        flightDetails += "Aircraft Configuration: " + flight.getAircraftConfig().getName() + " " + flight.getAircraftConfig().getAircraftStyle() + "\n";
         FlightRoute flightRoute = flight.getFlightRoute();
         flightDetails += "Flight Route: " + flightRoute.getOrigin().getCountry() + " --> " + flightRoute.getDestination().getCountry();
         System.out.println(flightDetails);
@@ -396,8 +408,8 @@ public class ScheduleManagerTask {
     }
     
     
-    private Flight createComplementaryFlight(Long routeId, Long configId, Scanner sc) {
-        FlightRoute route = FRSManagementSessionBeanRemote.retrieveFlightRouteById(routeId);
+    private Flight createComplementaryFlight(String originCode, String destinationCode, Long configId, Scanner sc) throws FlightRouteNotFoundException {
+        FlightRoute route = FRSManagementSessionBeanRemote.checkForFlightRoutes(originCode, destinationCode);
         Airport origin = route.getOrigin();
         Airport destination = route.getDestination();
         
@@ -410,7 +422,7 @@ public class ScheduleManagerTask {
                     System.out.print("\nEnter another Flight Number: \n> ");
                     String flightNum = sc.nextLine().trim();
 
-                    Flight flight = FRSManagementSessionBeanRemote.createFlight(flightNum, fr.getId(), configId);
+                    Flight flight = FRSManagementSessionBeanRemote.createFlight(flightNum, destinationCode, originCode, configId);
                     System.out.print("\nSuccessfully created complementary flight " + flightNum + "!");
                     return flight;
                 } else {
@@ -451,25 +463,40 @@ public class ScheduleManagerTask {
             }
         } else {
        
-            System.out.print("There are no existing complementary flights.\nEnter 'Y' if you would still like to create a complementary flight schedule plan > ");
+            System.out.print("There are no existing complementary flight .\nEnter 'Y' if you would still like to create a complementary flight schedule plan > ");
             if (sc.nextLine().equals("Y")) {
-                Long originID = new Long(origin.getId());
-                Long destID = new Long(destination.getId());
-                FlightRoute newFR = FRSManagementSessionBeanRemote.createFlightRoute(originID, destID);
-                System.out.print("\nComplementary flight route from " + origin.getCountry() + " to " + destination.getCountry() + " has been created!");
-                System.out.println("\n *** Creating Complementary Flight now ***");
+                try {
+                    Long originID = new Long(origin.getId());
+                    Long destID = new Long(destination.getId());
 
-                Flight flight = createComplementaryFlight(newFR.getId(), configId, sc);
+                    FlightRoute newFR = FRSManagementSessionBeanRemote.createFlightRoute(originID, destID);
 
-                if (flight != null) {
-                    System.out.print("\nComplementary flight " + flight.getFlightNumber() + " has been created!");
-                    return flight.getId();
+                    System.out.print("\nComplementary flight route from " + origin.getCountry() + " to " + destination.getCountry() + " has been created!");
+                    System.out.println("\n *** Creating Complementary Flight now ***");
+
+                    Flight flight = null;
+                    try {
+                        flight = createComplementaryFlight(newFR.getOrigin().getAirportCode(), newFR.getDestination().getAirportCode(), configId, sc);
+                    } catch (FlightRouteNotFoundException ex) {
+                        System.out.println(ex);
+                    }
+
+                    if (flight != null) {
+                        System.out.print("\nComplementary flight " + flight.getFlightNumber() + " has been created!");
+                        return flight.getId();
+                    }
+                
+                } catch (FlightRouteExistsException ex) {
+                    System.out.println(ex);
+                } catch (AirportNotAvailableException ex2) {
+                    System.out.println(ex2);
                 }
             }
         }
-
         return null; 
     }
+
+
         
 
     

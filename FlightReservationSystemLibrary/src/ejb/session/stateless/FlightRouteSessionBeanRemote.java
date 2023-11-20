@@ -10,6 +10,8 @@ import entity.FlightSchedule;
 import java.util.List;
 import javafx.util.Pair;
 import javax.ejb.Remote;
+import util.exception.FlightExistsForFlightRouteException;
+import util.exception.FlightRouteExistsException;
 
 /**
  *
@@ -18,9 +20,11 @@ import javax.ejb.Remote;
 @Remote
 public interface FlightRouteSessionBeanRemote {
     
-    public void createNewFlightRoute(FlightRoute flightRoute);
+    public void createNewFlightRoute(FlightRoute flightRoute) throws FlightRouteExistsException;
     
     public void createNewFlightRoute(FlightRoute flightRoute, boolean data);    
+
+    public void deleteFlightRoute(FlightRoute route) throws FlightExistsForFlightRouteException;
 
     
     public List<FlightRoute> viewAllFlightRoute();

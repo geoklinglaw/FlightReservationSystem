@@ -31,14 +31,19 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.util.Pair;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import util.enumeration.AircraftName;
 import util.enumeration.CabinClassType;
 import util.enumeration.FlightStatus;
-import util.exception.NoFlightRouteFoundException;
-
+import util.exception.AirportNotAvailableException;
+import util.exception.ExceedSeatCapacityException;
+import util.exception.FlightExistsForFlightRouteException;
+import util.exception.FlightRouteExistsException;
+import util.exception.FlightRouteNotFoundException;
 /**
  *
  * @author apple
@@ -85,10 +90,7 @@ public class FRSManagementSessionBean implements FRSManagementSessionBeanRemote,
     @Override
     public void createAircraftConfiguration(String style, int aircraftType, int maxSeats, List<CabinClass> ccList) {
         
-        AircraftName aircraftNameEnum = AircraftName.fromValue(aircraftType);
-        String result = aircraftNameEnum + style;
-
-        AircraftType acType = aircraftTypeSessionBeanLocal.retrieveAircraftTypeByValue(result);
+        AircraftType acType = aircraftTypeSessionBeanLocal.retrieveAircraftTypeByValue(aircraftType);
         
         AircraftConfiguration aircraftConfig = new AircraftConfiguration(acType, style);
         aircraftConfig.setAircraftType(acType);
@@ -148,23 +150,37 @@ public class FRSManagementSessionBean implements FRSManagementSessionBeanRemote,
 
 
     
+    @Override
     public List<Airport> viewAllAirports() {
+
         List<Airport> airportList = airportEntitySessionBeanLocal.retrieveAllAirports();
         return airportList;
+        
     }
     
-    public FlightRoute createFlightRoute(Long originId, Long destId) {
+    public FlightRoute createFlightRoute(Long originId, Long destId) throws FlightRouteExistsException, AirportNotAvailableException {
         Airport origin = airportEntitySessionBeanLocal.retrieveAirport(originId);
+        if (origin == null) {
+            throw new AirportNotAvailableException("Origin airport with ID " + originId + " not found.");
+        }
+
         Airport destination = airportEntitySessionBeanLocal.retrieveAirport(destId);
-       
-        
+        if (destination == null) {
+            throw new AirportNotAvailableException("Destination airport with ID " + destId + " not found.");
+        }
+
         FlightRoute flightRoute = new FlightRoute(origin, destination, 1);
-        flightRouteSessionBeanLocal.createNewFlightRoute(flightRoute);
+        try {
+            flightRouteSessionBeanLocal.createNewFlightRoute(flightRoute);
+        } catch (FlightRouteExistsException ex) {
+            throw new FlightRouteExistsException("Flight route with the same origin and destination already exists: " + ex.getMessage());
+        }
+
         origin.getFlightRouteOrigin().add(flightRoute);
         destination.getFlightRouteDestination().add(flightRoute);
-        
         return flightRoute;
     }
+
     
     public List<FlightRoute> viewAllFlightRoutes() {
         List<FlightRoute> flightRoute = flightRouteSessionBeanLocal.viewAllFlightRoute();
@@ -208,10 +224,18 @@ public class FRSManagementSessionBean implements FRSManagementSessionBeanRemote,
     }
 
 
-    @Override
-    public ArrayList<Airport> deleteFlightRoute(String originCode, String destCode) {
-        Airport originAirport = airportEntitySessionBeanLocal.retrieveAirportByCode(originCode);
-        Airport destinationAirport = airportEntitySessionBeanLocal.retrieveAirportByCode(destCode);
+  @Override
+    public ArrayList<Airport> deleteFlightRoute(String originCode, String destCode) throws AirportNotAvailableException, FlightRouteNotFoundException, FlightExistsForFlightRouteException {
+
+        Airport originAirport;
+        Airport destinationAirport;
+
+        try {
+            originAirport = airportEntitySessionBeanLocal.retrieveAirportByCode(originCode);
+            destinationAirport = airportEntitySessionBeanLocal.retrieveAirportByCode(destCode); 
+        } catch (AirportNotAvailableException ex) {
+            throw new AirportNotAvailableException("Airport not available: " + ex.getMessage());
+        }
 
         FlightRoute intendedRoute = null;
         for (FlightRoute originRoute: originAirport.getFlightRouteOrigin()) {
@@ -226,19 +250,27 @@ public class FRSManagementSessionBean implements FRSManagementSessionBeanRemote,
             }
         }
 
-        intendedRoute.setOrigin(null);
-        originAirport.getFlightRouteOrigin().remove(intendedRoute);
-        destinationAirport.getFlightRouteDestination().remove(intendedRoute);
-        flightRouteSessionBeanLocal.deleteFlightRoute(intendedRoute);
+        if (intendedRoute == null) {
+            throw new FlightRouteNotFoundException("Flight route not found for given origin and destination codes.");
+        }
+
+        try {
+            intendedRoute.setOrigin(null);
+            intendedRoute.setDestination(null);
+            originAirport.getFlightRouteOrigin().remove(intendedRoute);
+            destinationAirport.getFlightRouteDestination().remove(intendedRoute);
+            flightRouteSessionBeanLocal.deleteFlightRoute(intendedRoute);
+        } catch (FlightExistsForFlightRouteException ex) {
+            throw new FlightExistsForFlightRouteException(ex.getMessage());
+        }
 
         return new ArrayList<Airport>(Arrays.asList(originAirport, destinationAirport));
-
     }
+
     
-    
-    public Flight createFlight(String flightNum, Long routeId, Long configId) {
+    public Flight createFlight(String flightNum, String origin, String destination, Long configId) {
         AircraftConfiguration config = aircraftConfigurationSessionBean.retrieveAircraftConfigurationById(configId);
-        FlightRoute route = flightRouteSessionBeanLocal.retrieveFlightRouteById(routeId);
+        FlightRoute route = flightRouteSessionBeanLocal.findSpecificFlightRouteWithCode(origin, destination);
         Flight flight = new Flight(flightNum, 1);
         flight.setFlightRoute(route);
         flight.setAircraftConfig(config);
@@ -422,10 +454,10 @@ public class FRSManagementSessionBean implements FRSManagementSessionBeanRemote,
         return arrivalTime;
     }
     
-    public FlightRoute viewFlightRoute(Airport origin, Airport destination) throws NoFlightRouteFoundException {
+    public FlightRoute viewFlightRoute(Airport origin, Airport destination) throws FlightRouteNotFoundException {
         FlightRoute route = flightRouteSessionBeanLocal.findSpecificFlightRouteWithCode(origin.getAirportCode(), destination.getAirportCode());
         if (route == null || route.getFlightList().isEmpty()) {
-            throw new NoFlightRouteFoundException("No flight route or flights found for the specified airports: Origin - " 
+            throw new FlightRouteNotFoundException("No flight route or flights found for the specified airports: Origin - " 
                                                   + origin.getAirportCode() + ", Destination - " + destination.getAirportCode());
         }
         return route;
@@ -607,4 +639,21 @@ public class FRSManagementSessionBean implements FRSManagementSessionBeanRemote,
             
         }
     }
+    
+    public FlightRoute checkForFlightRoutes(String origin, String destination) throws FlightRouteNotFoundException {
+        FlightRoute route = flightRouteSessionBeanLocal.findSpecificFlightRouteWithCode(origin, destination);
+        if (route != null) {
+            return route;
+        } else {
+            throw new FlightRouteNotFoundException("No flight route for " + origin + " and " + destination);
+        }
+        
+    }
+    
+    
+    public Boolean checkForACConfigurationIssues(int type, BigDecimal pax) throws ExceedSeatCapacityException {
+        return aircraftTypeSessionBeanLocal.checkForCapacity(type, pax);
+    }
+    
+ 
 }

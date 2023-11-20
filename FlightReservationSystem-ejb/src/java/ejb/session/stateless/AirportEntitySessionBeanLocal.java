@@ -7,6 +7,7 @@ package ejb.session.stateless;
 import entity.Airport;
 import java.util.List;
 import javax.ejb.Local;
+import util.exception.AirportNotAvailableException;
 
 /**
  *
@@ -17,11 +18,13 @@ public interface AirportEntitySessionBeanLocal {
     
     public Long createNewAirport(Airport airport);
     
-    public Airport retrieveAirport(Long id);
+    public Airport retrieveAirport(Long id) throws AirportNotAvailableException;
     
     public List<Airport> retrieveAllAirports();
     
-    public Airport retrieveAirportByCode(String code);
+    public Airport retrieveAirportByIATA(String code);
+    
+    public Airport retrieveAirportByCode(String code) throws AirportNotAvailableException;
     
     
 }

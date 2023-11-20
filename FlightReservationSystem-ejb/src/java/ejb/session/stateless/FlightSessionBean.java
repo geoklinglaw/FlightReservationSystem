@@ -11,7 +11,9 @@ import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
+import util.exception.FlightExistsException;
 
 /**
  *
@@ -58,6 +60,7 @@ public class FlightSessionBean implements FlightSessionBeanRemote, FlightSession
         return flight;
     }
     
+    
     public Flight retrieveFlightByNumber(String flightNum, boolean needSeats) {
         Flight flight = (Flight) em.createNamedQuery("selectFlight").setParameter("inNum", flightNum).getSingleResult();
 //        int size2 = flight.getFlightSchedulePlan().getFlightSchedule().get(0).getCabinClass().size();
@@ -69,6 +72,17 @@ public class FlightSessionBean implements FlightSessionBeanRemote, FlightSession
 //        }
 
         return flight;
+    }
+    
+    public boolean checkFlightByNumber(String flightNum, boolean needSeats) throws FlightExistsException {
+    try {
+        Flight flight = (Flight) em.createNamedQuery("selectFlight").setParameter("inNum", flightNum).getSingleResult();
+
+        // If a flight is found, throw an exception
+        throw new FlightExistsException("Flight already exists!");
+    } catch (NoResultException ex) {
+        return false;
+    } 
     }
     
     public void deleteFlight(Flight flight) {

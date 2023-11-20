@@ -5,7 +5,9 @@
 package ejb.session.stateless;
 
 import entity.AircraftType;
+import java.math.BigDecimal;
 import javax.ejb.Remote;
+import util.exception.ExceedSeatCapacityException;
 
 /**
  *
@@ -18,7 +20,12 @@ public interface AircraftTypeSessionBeanRemote {
     
     public AircraftType retrieveAircraftType(Long id);
     
-    public AircraftType retrieveAircraftTypeByValue(String value);
+    
+    public AircraftType retrieveAircraftTypeByValue(int value);
+    
+    public Boolean checkForCapacity(int type, BigDecimal pax) throws ExceedSeatCapacityException;
+
+
 
     
 }

@@ -11,7 +11,10 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import util.enumeration.CabinClassType;
+import util.exception.ExceedSeatCapacityException;
 
 /**
  *
@@ -86,44 +89,54 @@ public class FleetManagerTask {
         int num = sc.nextInt();
         System.out.print("Enter maximum seat capacity \n> ");
         int maxSeats = sc.nextInt();
-        sc.nextLine();
+        
+        try {
+            FRSManagementSessionBeanRemote.checkForACConfigurationIssues(type, new BigDecimal(maxSeats));
+            
 
-        List<CabinClass> cabinClasses = new ArrayList<CabinClass>();
-        
-        for (int i = 0; i < num; i++) {
-            String cabinClassText = "Enter Select Cabin Class(es) \n";
-            cabinClassText += "F: First Class \n";
-            cabinClassText += "J: Business Class \n";
-            cabinClassText += "W: Premium Economy \n";
-            cabinClassText += "Y: Economy \n";
-            cabinClassText += "> ";
-            System.out.print(cabinClassText);
-            String ccType = sc.nextLine().trim();
-            System.out.print("Selected Cabin Class: " + CabinClassType.fromValue(ccType));
-            
-            System.out.print("\nEnter number of seats \n> ");
-            int numSeats = sc.nextInt();
-            System.out.print("Enter number of rows \n> ");
-            int numRows = sc.nextInt();
-            System.out.print("Enter number of seats abreast \n> ");
-            int numSeatsAbreast = sc.nextInt();
-            System.out.print("Enter number of aisles \n> ");
-            int numAisles = sc.nextInt();
             sc.nextLine();
-            System.out.print("Enter seating configuration per column \n> ");
-            String seatConfig = sc.nextLine().trim();
+
+            List<CabinClass> cabinClasses = new ArrayList<CabinClass>();
+
+            for (int i = 0; i < num; i++) {
+                String cabinClassText = "Enter Select Cabin Class(es) \n";
+                cabinClassText += "F: First Class \n";
+                cabinClassText += "J: Business Class \n";
+                cabinClassText += "W: Premium Economy \n";
+                cabinClassText += "Y: Economy \n";
+                cabinClassText += "> ";
+                System.out.print(cabinClassText);
+                String ccType = sc.nextLine().trim();
+                System.out.print("Selected Cabin Class: " + CabinClassType.fromValue(ccType));
+
+                System.out.print("\nEnter number of seats \n> ");
+                int numSeats = sc.nextInt();
+                System.out.print("Enter number of rows \n> ");
+                int numRows = sc.nextInt();
+                System.out.print("Enter number of seats abreast \n> ");
+                int numSeatsAbreast = sc.nextInt();
+                System.out.print("Enter number of aisles \n> ");
+                int numAisles = sc.nextInt();
+                sc.nextLine();
+                System.out.print("Enter seating configuration per column \n> ");
+                String seatConfig = sc.nextLine().trim();
+
+                CabinClass cabinClass = new CabinClass(ccType, new BigDecimal(numSeats), new BigDecimal(numSeatsAbreast), new BigDecimal(numRows), new BigDecimal(numAisles), seatConfig);
+                cabinClasses.add(cabinClass);
+
+            }
+
+            FRSManagementSessionBeanRemote.createAircraftConfiguration(style, type, maxSeats, cabinClasses);
+
+            String msg;
+            msg = type == 0 ? "Boeing 737" : "Boeing 747";
+
+            System.out.println("Successfully created " + msg);  
             
-            CabinClass cabinClass = new CabinClass(ccType, new BigDecimal(numSeats), new BigDecimal(numSeatsAbreast), new BigDecimal(numRows), new BigDecimal(numAisles), seatConfig);
-            cabinClasses.add(cabinClass);
-            
+        } catch (ExceedSeatCapacityException ex) {
+            System.out.println(ex);
         }
-        
-        FRSManagementSessionBeanRemote.createAircraftConfiguration(style, type, maxSeats, cabinClasses);
-        
-        String msg;
-        msg = type == 0 ? "Boeing 737" : "Boeing 747";
-        
-        System.out.println("Successfully created " + msg);  
+
     }
     
     private void viewAircraftConfigurations() {
@@ -147,7 +160,7 @@ public class FleetManagerTask {
         int index = 1;
         
         for (AircraftConfiguration acConfig: aircraftConfigList) {
-            acListString += index + ": " + acConfig.getName() + " (" + acConfig.getName()+ " " + ")\n";
+            acListString += index + ": " + acConfig.getName() + " (" + acConfig.getAircraftStyle() + ")\n";
             index += 1; 
         }
         
@@ -164,15 +177,24 @@ public class FleetManagerTask {
         int response = sc.nextInt();
         AircraftConfiguration selectedACConfig = aircraftconfigList.get(response - 1);
         
-        String configDetails = "-- Aircraft Configuration Details -- \n";
-        configDetails += "Name: " + selectedACConfig.getName() + "\n";
-        configDetails += "Max Seat Capacity: " + selectedACConfig.getAircraftType().getMaxSeatCapacity();
+        String configDetails = "\n-- Aircraft Configuration Details -- \n";
+        configDetails += "Name: " + selectedACConfig.getName() + " " + selectedACConfig.getAircraftStyle() + "\n";
         List<CabinClass> cabinClassList = selectedACConfig.getCabinClassList();
+        int totalPax = computeMaxCapacity(cabinClassList);
+        configDetails += "Max Seat Capacity: " + totalPax;
         configDetails += "\nCabin Class: ";
         for (CabinClass cc: cabinClassList) {
             configDetails += cc.getType().name() + "(" + cc.getSeatingCapacity() + ")" + ", ";
         }
         System.out.println(configDetails);
+    }
+    
+    private int computeMaxCapacity(List<CabinClass> ccList) {
+        int total = 0;
+        for (CabinClass cc: ccList) {
+            total += cc.getSeatingCapacity().intValue();
+        }
+        return total;
     }
 
 }

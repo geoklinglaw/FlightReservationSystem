@@ -11,6 +11,7 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import util.exception.AirportNotAvailableException;
 
 /**
  *
@@ -29,10 +30,20 @@ public class AirportEntitySessionBean implements AirportEntitySessionBeanRemote,
         return airport.getId();
     }
     
-    public Airport retrieveAirport(Long id) {
+    public Airport retrieveAirport(Long id) throws AirportNotAvailableException {
+        if (id == null) {
+            throw new AirportNotAvailableException("There is no existing Airport ID !");
+        }
+
         Airport airport = em.find(Airport.class, id);
+        if (airport == null) {
+            throw new AirportNotAvailableException("Airport with ID " + id + " not found.");
+        }
         return airport;
     }
+
+
+
     
     public List<Airport> retrieveAllAirports() {
         List<Airport> airportList = em.createNamedQuery("viewAllAirports").getResultList();
@@ -40,10 +51,27 @@ public class AirportEntitySessionBean implements AirportEntitySessionBeanRemote,
       
     }
 
-    public Airport retrieveAirportByCode(String code) {
+    public Airport retrieveAirportByIATA(String code) {
+        
         Query query = em.createNamedQuery("retrieveAirportByCode", Airport.class);
         query.setParameter("airportCode", code);
-        Airport airport = (Airport) query.getSingleResult();
+        Airport airport =  (Airport)query.getSingleResult();
+        
+        airport.getFlightRouteDestination().size();
+        airport.getFlightRouteOrigin().size();
+
+        return airport;
+
+    }
+    
+    public Airport retrieveAirportByCode(String code) throws AirportNotAvailableException {
+        Query query = em.createNamedQuery("retrieveAirportByCode", Airport.class);
+        query.setParameter("airportCode", code);
+        Airport airport =  (Airport)query.getSingleResult();
+        
+        if (airport == null) {
+            throw new AirportNotAvailableException("There are no such airport registered!");
+        }
         airport.getFlightRouteDestination().size();
         airport.getFlightRouteOrigin().size();
 

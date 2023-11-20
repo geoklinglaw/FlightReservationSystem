@@ -8,22 +8,22 @@ package util.exception;
  *
  * @author apple
  */
-public class NoFlightRouteFoundException extends Exception {
+public class AirportNotAvailableException extends Exception{
 
     /**
-     * Creates a new instance of <code>NoFlightRouteFoundException</code>
+     * Creates a new instance of <code>AirportNotAvailableException</code>
      * without detail message.
      */
-    public NoFlightRouteFoundException() {
+    public AirportNotAvailableException() {
     }
 
     /**
-     * Constructs an instance of <code>NoFlightRouteFoundException</code> with
+     * Constructs an instance of <code>AirportNotAvailableException</code> with
      * the specified detail message.
      *
      * @param msg the detail message.
      */
-    public NoFlightRouteFoundException(String msg) {
+    public AirportNotAvailableException(String msg) {
         super(msg);
     }
 }

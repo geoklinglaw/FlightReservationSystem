@@ -9,6 +9,10 @@ import entity.Airport;
 import entity.FlightRoute;
 import java.util.List;
 import java.util.Scanner;
+import util.exception.AirportNotAvailableException;
+import util.exception.FlightExistsForFlightRouteException;
+import util.exception.FlightRouteExistsException;
+import util.exception.FlightRouteNotFoundException;
 
 /**
  *
@@ -90,26 +94,31 @@ public class RoutePlannerTask {
         System.out.print("Enter IATA code of DESTINATION location: \n> ");
         String destination = sc.nextLine().trim();
         
-        
-        Long originID = null;
-        Long destID = null;
-        for (Airport airport: airportList) {
-            if (origin.equals(airport.getAirportCode())) {
-                originID = airport.getId();
-                System.out.println("Your Chosen Origin is " + airport.getCountry());
-                
+        try {
+            Long originID = null;
+            Long destID = null;
+            for (Airport airport: airportList) {
+                if (origin.equals(airport.getAirportCode())) {
+                    originID = airport.getId();
+                    System.out.println("Your Chosen Origin is " + airport.getCountry());
+
+                }
+                if (destination.equals(airport.getAirportCode())) {
+                    destID = airport.getId();
+                    System.out.println("Your Chosen Destination is " + airport.getCountry());
+
+                }
             }
-            if (destination.equals(airport.getAirportCode())) {
-                destID = airport.getId();
-                System.out.println("Your Chosen Destination is " + airport.getCountry());
-                
+
+            FRSManagementSessionBeanRemote.createFlightRoute(originID, destID);
+
+            if (num == 2) {
+                FRSManagementSessionBeanRemote.createFlightRoute(destID, originID); 
             }
-        }
-        
-        FRSManagementSessionBeanRemote.createFlightRoute(originID, destID);
-        
-        if (num == 2) {
-            FRSManagementSessionBeanRemote.createFlightRoute(destID, originID); 
+        } catch (FlightRouteExistsException ex) {
+            System.out.println(ex.getMessage());
+        } catch (AirportNotAvailableException ex1) {
+            System.out.println(ex1.getMessage());
         }
         
     }
@@ -136,7 +145,16 @@ public class RoutePlannerTask {
         System.out.print("Enter IATA code of DESTINATION location: \n> ");
         String destination = sc.nextLine().trim();
 
-        List<Airport> airportList = FRSManagementSessionBeanRemote.deleteFlightRoute(origin, destination);
-        System.out.println("Successfully deleted flight route: " + airportList.get(0).getCountry() + " --> " + airportList.get(1).getCountry());
+        try {
+            List<Airport> airportList = FRSManagementSessionBeanRemote.deleteFlightRoute(origin, destination);
+            System.out.println("Successfully deleted flight route: " + airportList.get(0).getCountry() + " --> " + airportList.get(1).getCountry());
+        } catch (AirportNotAvailableException ex1) {
+            System.out.println(ex1.getMessage());
+        } catch (FlightRouteNotFoundException ex2) {
+            System.out.println(ex2.getMessage());
+        } catch (FlightExistsForFlightRouteException ex2) {
+            System.out.println(ex2.getMessage());
+        }
+
     }
 }
