@@ -664,29 +664,28 @@ public class FRSManagementSessionBean implements FRSManagementSessionBeanRemote,
         
     }
     
+    
     public Boolean checkForOverlappingFlightSchedule(List<FlightSchedule> fsList) throws OverlappedSchedules {
-        Boolean overlapped = false;
-        
-        for (int i = 0; i < fsList.size(); i++) {
-            for (int j = 0; j < fsList.size(); i++) {
-                if (i != j) {
-                    if (!fsList.get(i).getDepartureTime().before(fsList.get(j).getArrivalTime()) && !fsList.get(i).getArrivalTime().after(fsList.get(i).getArrivalTime())) {
-                        overlapped = true;
-                    }
-                    
+    Boolean overlapped = false;
+    
+    for (int i = 0; i < fsList.size(); i++) {
+        for (int j = 0; j < fsList.size(); j++) {
+            if (i != j) {
+                if (!fsList.get(i).getDepartureTime().before(fsList.get(j).getDepartureTime()) &&
+                    !fsList.get(i).getDepartureTime().after(fsList.get(j).getArrivalTime())) {
+                    overlapped = true;
                 }
             }
         }
-        
-        
-        if (overlapped) {
-            throw new OverlappedSchedules("There are overlapping flight schedules!");
-
-        }
-        
-        return overlapped;
-        
     }
+    
+    if (overlapped) {
+        throw new OverlappedSchedules("There are overlapping flight schedules!");
+    }
+    
+    return overlapped;
+}
+
     
     
     public void deleteFlightSchedulePlan(String flightNum) throws NoResultException, FlightScheduleBookedException {

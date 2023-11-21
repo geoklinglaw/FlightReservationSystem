@@ -104,8 +104,8 @@ public class Main {
             response = sc.nextInt();
             switch (response) {
                 case 1:
-//                    doLogin();
-                      doMenuFeatures(sc);
+                    doLogin();
+//                      doMenuFeatures(sc);
                     break;
                 case 2:
                     doRegistration();
@@ -223,7 +223,7 @@ public class Main {
                 Person currPerson = personSessionBeanRemote.login(username, password);
                 System.out.println("Welcome " + currPerson.getFirstName() + ", you're logged in!\n");
 
-                doMenuFeatures(sc, currPerson.getId());
+              doMenuFeatures(sc);
 
             } else {
                 System.out.println("No matching account found or wrong login details. Please try again.\n");
@@ -316,12 +316,12 @@ public class Main {
         while (true) {
             System.out.println("\n==== Menu Interface ====");
             System.out.println("> 1. Search for Flights");
-            System.out.println("> 2. Reserve Flights");
-            System.out.println("> 3. View My Flight Reservation Details");
-            System.out.println("> 4. View All My Flight Reservations");
-            System.out.println("> 5. Logout");
+//            System.out.println("> 2. Reserve Flights");
+            System.out.println("> 2. View My Flight Reservation Details");
+            System.out.println("> 3. View All My Flight Reservations");
+            System.out.println("> 4. Logout");
             System.out.print("> ");
-            sc.nextLine();
+//            sc.nextLine();
             response = sc.nextInt();
             switch (response) {
                 case 1:

@@ -89,7 +89,7 @@ public class FlightReservationSystemSessionBean implements FlightReservationSyst
         combinedList.add(fs6);
         for (List<FlightSchedule> fslist: combinedList) {
             for (FlightSchedule fs: fslist) {
-                System.out.print("its hereeeee " + fs.getFlightSchedulePlan().getFlight().getFlightNumber() + " : " + fs.getDepartureTime() + "  " + fs.getArrivalTime());
+                System.out.print("its hereeeee " + fs.getId() + " " + fs.getFlightSchedulePlan().getFlight().getFlightNumber() + " : " + fs.getDepartureTime() + "  " + fs.getArrivalTime());
             }
         }
 
