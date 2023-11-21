@@ -104,8 +104,8 @@ public class Main {
             response = sc.nextInt();
             switch (response) {
                 case 1:
-//                    doLogin();
-                      doMenuFeatures(sc);
+                    doLogin();
+//                  doMenuFeatures(sc);
                     break;
                 case 2:
                     doRegistration();
@@ -192,7 +192,6 @@ public class Main {
             Long custId = personSessionBeanRemote.createNewPerson(newCust);
             System.out.println("You have been successfully registered as a Merlion Airlines customer!\n");
 
-            doMenuFeatures(sc, custId);
 
         } catch (EJBTransactionRolledbackException e) {
             System.out.println("Sorry, you have inputted invalid values. Try again.\n");
@@ -222,8 +221,8 @@ public class Main {
             if (username.length() > 0 && password.length() > 0) {
                 Person currPerson = personSessionBeanRemote.login(username, password);
                 System.out.println("Welcome " + currPerson.getFirstName() + ", you're logged in!\n");
-
-                doMenuFeatures(sc, currPerson.getId());
+                doMenuFeatures(sc);
+                
 
             } else {
                 System.out.println("No matching account found or wrong login details. Please try again.\n");
@@ -234,54 +233,6 @@ public class Main {
             System.out.println("Oh no... An error has occurred.\n");
             runApp();
         }
-    }
-
-    private static void doMenuFeatures(Scanner sc, Long customerId) {
-        Integer response = 0;
-        Person person = personSessionBeanRemote.retrievePersonById(customerId);
-        while (true) {
-            System.out.println("\n\n==== Menu Interface ====");
-            System.out.println("You are logged in as " + person.getFirstName() + " " + person.getLastName() + " \n");
-            System.out.println("1. Search for Flights");
-            System.out.println("2. Reserve Flights");
-            System.out.println("3. View My Flight Reservation Details");
-            System.out.println("4. View All My Flight Reservations");
-            System.out.println("5. Logout");
-            System.out.print("> ");
-            response = sc.nextInt();
-
-            switch (response) {
-                case 1:
-                    System.out.println("You have selected 'Search for Flights'\n");
-                    doSearchFlights();
-                    break;
-                case 2:
-                    System.out.println("You have selected 'Reserve Flights'\n");
-                    doReserveFlight(sc, customerId);
-                    break;
-
-                case 3:
-                    System.out.println("You have selected 'View My Flight Reservation Details'\n");
-                    doViewFlightReservationDetails(sc, customerId);
-                    break;
-
-                case 4:
-                    System.out.println("You have selected 'View All My Flight Reservations'\n");
-                    doViewAllFlightReservations(sc, customerId);
-                    break;
-
-                case 5:
-                    System.out.println("You have logged out.\n");
-                    runApp();
-                    break;
-
-                default:
-                    System.out.println("Invalid input. Please try again.\n");
-                    doMenuFeatures(sc, customerId);
-                    break;
-            }
-        }
-
     }
 
     private static void doSearchFlights() {
@@ -321,7 +272,6 @@ public class Main {
             System.out.println("> 4. View All My Flight Reservations");
             System.out.println("> 5. Logout");
             System.out.print("> ");
-            sc.nextLine();
             response = sc.nextInt();
             switch (response) {
                 case 1:
@@ -502,10 +452,10 @@ public class Main {
                     
                     String flightNumB = pair.getValue().getFlightSchedulePlan().getFlight().getFlightNumber();
                     CabinClassType ccTypeB = fcc.getCabinClass().getType();
-//                    BigDecimal amountB = fcc.getFare().getFareAmount();
-//                    long totalFareB = (long) (amountB.doubleValue() * numPass);
-                    BigDecimal amountB = new BigDecimal("300");
-                    long totalFareB = (long) 300 * numPass;
+                    BigDecimal amountB = fcc.getFare().getFareAmount();
+                    long totalFareB = (long) (amountB.doubleValue() * numPass);
+//                    BigDecimal amountB = new BigDecimal("300");
+//                    long totalFareB = (long) 300 * numPass;
 
                     String departureTimeB = new SimpleDateFormat("EEE, MMM dd, yyyy, hh:mm a").format(pair.getValue().getDepartureTime());
                     String arrivalTimeB = new SimpleDateFormat("EEE, MMM dd, yyyy, hh:mm a").format(pair.getValue().getArrivalTime());
